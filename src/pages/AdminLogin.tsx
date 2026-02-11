@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
 import { useAuthStore } from '@/stores/authStore';
@@ -26,6 +26,20 @@ export default function AdminLogin() {
   const navigate = useNavigate();
   const { login } = useAuthStore();
   const { toast } = useToast();
+
+  // Prevent Google Safe Browsing from indexing login page
+  useEffect(() => {
+    let meta = document.querySelector('meta[name="robots"]');
+    if (!meta) {
+      meta = document.createElement('meta');
+      meta.setAttribute('name', 'robots');
+      document.head.appendChild(meta);
+    }
+    meta.setAttribute('content', 'noindex, nofollow');
+    return () => {
+      meta?.remove();
+    };
+  }, []);
 
   const [step, setStep] = useState<Step>('login');
   const [email, setEmail] = useState('');
@@ -191,6 +205,7 @@ export default function AdminLogin() {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       className={inputClass}
+                      autoComplete="username"
                     />
                   </div>
                   <div className="relative">
@@ -202,6 +217,7 @@ export default function AdminLogin() {
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       className={cn(inputClass, 'pr-11')}
+                      autoComplete="current-password"
                     />
                     <button
                       type="button"
@@ -250,6 +266,7 @@ export default function AdminLogin() {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       className={inputClass}
+                      autoComplete="email"
                     />
                   </div>
                   <motion.button
@@ -294,6 +311,7 @@ export default function AdminLogin() {
                       value={otp}
                       onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
                       className={cn(inputClass, 'text-center tracking-[0.5em] font-mono text-lg')}
+                      autoComplete="one-time-code"
                     />
                   </div>
                   <motion.button
@@ -336,6 +354,7 @@ export default function AdminLogin() {
                       value={newPassword}
                       onChange={(e) => setNewPassword(e.target.value)}
                       className={cn(inputClass, 'pr-11')}
+                      autoComplete="new-password"
                     />
                     <button
                       type="button"

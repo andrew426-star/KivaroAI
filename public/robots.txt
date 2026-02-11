@@ -1,8 +1,9 @@
 User-agent: *
 Allow: /
 
-# Block admin pages from indexing
+# Block admin pages from crawling and indexing
 Disallow: /admin
+Disallow: /admin/
 Disallow: /admin/login
 
 # Sitemap
