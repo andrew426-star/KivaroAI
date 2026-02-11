@@ -17,7 +17,7 @@ function MethodologyCards() {
   const [expandedId, setExpandedId] = useState<number | null>(null);
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
       {PROCESS_STEPS.slice(0, 4).map((step, i) => {
         const isExpanded = expandedId === step.id;
         return (
@@ -128,7 +128,7 @@ export default function About() {
                   About Kivaro AI
                 </span>
               </span>
-              <h1 className="font-display text-4xl lg:text-5xl xl:text-6xl font-extrabold leading-[1.1] text-balance">
+              <h1 className="font-display text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-extrabold leading-[1.1] text-balance">
                 Structured AI for{' '}
                 <span className="text-gradient-animated">Investment Excellence</span>
               </h1>
@@ -158,7 +158,7 @@ export default function About() {
                 <img
                   src={aboutHero}
                   alt="Abstract representation of AI-driven financial intelligence"
-                  className="w-full h-[320px] lg:h-[420px] object-cover rounded-2xl transition-transform duration-700 group-hover:scale-[1.03]"
+                  className="w-full h-[240px] sm:h-[320px] lg:h-[420px] object-cover rounded-2xl transition-transform duration-700 group-hover:scale-[1.03]"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-background/70 via-transparent to-background/20 rounded-2xl" />
                 <div className="absolute inset-0 border border-primary/10 rounded-2xl transition-all duration-500 group-hover:border-primary/25" />
@@ -194,7 +194,7 @@ export default function About() {
                   </div>
                 </div>
                 <div className="lg:col-span-8 p-8 lg:p-10 flex flex-col justify-center">
-                  <blockquote className="text-foreground/85 leading-relaxed text-pretty text-lg italic">
+                  <blockquote className="text-foreground/85 leading-relaxed text-pretty text-base sm:text-lg italic">
                     "We work with hedge funds and investment teams that want artificial intelligence implemented with structure, discipline, and measurable impact — not experimentation for its own sake. The objective is operational leverage through intelligent systems. That is the standard we build to."
                   </blockquote>
                   <p className="mt-5 text-sm text-muted-foreground leading-relaxed text-pretty">

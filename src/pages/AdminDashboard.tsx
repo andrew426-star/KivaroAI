@@ -524,7 +524,8 @@ export default function AdminDashboard() {
 
         {/* Table */}
         <GlowCard>
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto -mx-px">
+            <div className="min-w-[640px]">
             {loading ? (
               <div className="flex items-center justify-center py-20">
                 <div className="size-8 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
@@ -615,6 +616,7 @@ export default function AdminDashboard() {
             )}
           </div>
 
+            </div>
           {/* Expanded detail */}
           <AnimatePresence>
             {selectedRow && (

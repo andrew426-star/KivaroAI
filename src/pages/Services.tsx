@@ -48,7 +48,7 @@ export default function Services() {
                   Capabilities
                 </span>
               </span>
-              <h1 className="font-display text-4xl lg:text-5xl xl:text-6xl font-extrabold leading-[1.1] text-balance">
+              <h1 className="font-display text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-extrabold leading-[1.1] text-balance">
                 AI Systems for{' '}
                 <span className="text-gradient-animated">Hedge Fund Operations</span>
               </h1>

@@ -19,7 +19,7 @@ export default function Footer() {
         />
         <div className="mx-auto max-w-[1400px] px-6 lg:px-10 py-16 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-8 relative">
           <div>
-            <h3 className="font-display text-2xl lg:text-3xl font-bold text-foreground">
+            <h3 className="font-display text-xl sm:text-2xl lg:text-3xl font-bold text-foreground text-balance">
               Ready to automate your fund operations?
             </h3>
             <p className="mt-2 text-muted-foreground max-w-lg">
@@ -41,9 +41,9 @@ export default function Footer() {
 
       {/* Main Footer */}
       <div className="mx-auto max-w-[1400px] px-6 lg:px-10 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-8">
+        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-10 lg:gap-8">
           {/* Brand */}
-          <div className="lg:col-span-1">
+          <div className="col-span-2 md:col-span-1 lg:col-span-1">
             <Link to="/" className="flex items-center gap-2.5 group">
               <img
                 src={kivaroLogo}

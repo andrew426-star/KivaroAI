@@ -41,7 +41,7 @@ export default function Home() {
   return (
     <>
       {/* ===== HERO SECTION ===== */}
-      <section className="relative min-h-screen flex items-center overflow-hidden">
+      <section className="relative min-h-[calc(100dvh-104px)] lg:min-h-screen flex items-center overflow-hidden">
         {/* Background Image Layer */}
         <div className="absolute inset-0">
           <img
@@ -60,7 +60,7 @@ export default function Home() {
 
         {/* Hero Content */}
         <div className="relative z-base mx-auto max-w-[1400px] w-full px-6 lg:px-10 pt-16 pb-20 lg:pt-8 lg:pb-0">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-6 items-center min-h-[calc(100vh-108px)]">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-6 items-center">
             {/* Left: Text */}
             <div className="lg:col-span-7 xl:col-span-6">
               <motion.div
@@ -80,7 +80,7 @@ export default function Home() {
 
                 <motion.h1
                   variants={item}
-                  className="font-display text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-extrabold leading-[1.05] tracking-tight text-balance"
+                  className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-extrabold leading-[1.08] tracking-tight text-balance"
                 >
                   Intelligent Systems.{' '}
                   <span className="text-gradient-animated">Disciplined</span>{' '}
@@ -89,17 +89,17 @@ export default function Home() {
 
                 <motion.p
                   variants={item}
-                  className="mt-6 text-lg text-muted-foreground leading-relaxed max-w-xl text-pretty"
+                  className="mt-4 sm:mt-6 text-base sm:text-lg text-muted-foreground leading-relaxed max-w-xl text-pretty"
                 >
                   Kivaro AI converts artificial intelligence into disciplined operational advantage for modern fund teams — from due diligence automation to investment data pipelines and internal knowledge systems.
                 </motion.p>
 
                 {/* CTAs */}
-                <motion.div variants={item} className="mt-8 flex flex-wrap items-center gap-4">
+                <motion.div variants={item} className="mt-6 sm:mt-8 flex flex-wrap items-center gap-3 sm:gap-4">
                   <Link to="/contact">
                     <MagneticButton
                       as="div"
-                      className="inline-flex items-center gap-2 rounded-lg bg-primary px-7 py-3.5 text-sm font-semibold text-primary-foreground transition-shadow duration-300 hover:shadow-[0_0_30px_hsla(152,76%,46%,0.35),_0_0_60px_hsla(152,76%,46%,0.1)] active:scale-[0.97]"
+                      className="inline-flex items-center gap-2 rounded-lg bg-primary px-5 sm:px-7 py-3 sm:py-3.5 text-sm font-semibold text-primary-foreground transition-shadow duration-300 hover:shadow-[0_0_30px_hsla(152,76%,46%,0.35),_0_0_60px_hsla(152,76%,46%,0.1)] active:scale-[0.97]"
                       strength={0.15}
                     >
                       Schedule Discovery Call
@@ -108,7 +108,7 @@ export default function Home() {
                   </Link>
                   <Link
                     to="/services"
-                    className="inline-flex items-center gap-2 rounded-lg border border-border/60 bg-secondary/40 px-6 py-3.5 text-sm font-medium text-foreground hover:border-primary/30 hover:bg-secondary transition-all duration-300 active:scale-[0.97]"
+                    className="inline-flex items-center gap-2 rounded-lg border border-border/60 bg-secondary/40 px-5 sm:px-6 py-3 sm:py-3.5 text-sm font-medium text-foreground hover:border-primary/30 hover:bg-secondary transition-all duration-300 active:scale-[0.97]"
                   >
                     Explore Services
                     <ArrowRight className="size-4" />
@@ -116,7 +116,7 @@ export default function Home() {
                 </motion.div>
 
                 {/* Feature Pills */}
-                <motion.div variants={item} className="mt-10 flex flex-wrap gap-3">
+                <motion.div variants={item} className="mt-6 sm:mt-10 flex flex-wrap gap-2 sm:gap-3">
                   {HERO_FEATURES.map(({ icon: Ic, label }, fi) => (
                     <motion.div
                       key={label}

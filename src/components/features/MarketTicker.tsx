@@ -35,12 +35,12 @@ export default function MarketTicker() {
   const doubled = [...items, ...items];
 
   return (
-    <div className="relative overflow-hidden border-y border-primary/10 bg-background/60 backdrop-blur-sm py-3">
+    <div className="relative overflow-hidden border-y border-primary/10 bg-background/60 backdrop-blur-sm py-2.5 h-10">
       <div className="animate-ticker flex whitespace-nowrap">
         {doubled.map((item, i) => (
           <div
             key={`${item.symbol}-${i}`}
-            className="inline-flex items-center gap-3 px-6 border-r border-border/30 last:border-0"
+            className="inline-flex items-center gap-2 sm:gap-3 px-4 sm:px-6 border-r border-border/30 last:border-0"
           >
             <span className="text-xs font-display font-semibold text-muted-foreground/70 tracking-wider">
               {item.symbol}

@@ -266,7 +266,7 @@ export default function Process() {
                   Methodology
                 </span>
               </span>
-              <h1 className="font-display text-4xl lg:text-5xl xl:text-6xl font-extrabold leading-[1.1] text-balance">
+              <h1 className="font-display text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-extrabold leading-[1.1] text-balance">
                 Seven-Phase{' '}
                 <span className="text-gradient-animated">Deployment Model</span>
               </h1>
@@ -282,7 +282,7 @@ export default function Process() {
       <section className="relative z-base pb-8">
         <div className="mx-auto max-w-[1400px] px-6 lg:px-10">
           <SectionReveal direction="up">
-            <div className="flex flex-wrap justify-center gap-2">
+            <div className="flex flex-wrap justify-center gap-1.5 sm:gap-2">
               {PROCESS_STEPS.map((s, i) => {
                 const StepIcon = ICON_MAP[s.icon] || Scan;
                 return (
@@ -290,7 +290,7 @@ export default function Process() {
                     key={s.id}
                     onClick={() => setActivePhase(i)}
                     className={cn(
-                      'relative flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-300 overflow-hidden',
+                      'relative flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-4 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-medium transition-all duration-300 overflow-hidden',
                       i === activePhase
                         ? 'bg-primary/10 text-primary border border-primary/30 shadow-[0_0_20px_hsla(152,76%,46%,0.12)]'
                         : 'text-muted-foreground hover:text-foreground hover:bg-secondary/60 border border-transparent active:scale-95'
@@ -303,10 +303,10 @@ export default function Process() {
                         transition={{ type: 'spring', stiffness: 350, damping: 30 }}
                       />
                     )}
-                    <span className="relative z-10 flex items-center gap-2">
-                      <StepIcon className="size-4" />
-                      <span className="hidden sm:inline">{s.title}</span>
-                      <span className="sm:hidden font-display text-xs">Phase {s.id}</span>
+                    <span className="relative z-10 flex items-center gap-1.5 sm:gap-2">
+                      <StepIcon className="size-3.5 sm:size-4" />
+                      <span className="hidden md:inline">{s.title}</span>
+                      <span className="md:hidden font-display">P{s.id}</span>
                     </span>
                   </button>
                 );
@@ -349,7 +349,7 @@ export default function Process() {
                             </span>
                             <span className="text-xs text-muted-foreground font-display uppercase tracking-wider">Phase {step.id} of 7</span>
                           </div>
-                          <h2 className="font-display text-2xl lg:text-3xl font-bold text-foreground">
+                          <h2 className="font-display text-xl sm:text-2xl lg:text-3xl font-bold text-foreground">
                             {step.title}
                           </h2>
                         </div>

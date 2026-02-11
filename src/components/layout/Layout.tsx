@@ -22,8 +22,8 @@ export default function Layout() {
       <div className="fixed top-16 left-0 right-0 z-[40]">
         <MarketTicker />
       </div>
-      {/* Spacer for fixed header (64px) + ticker (~44px) */}
-      <div className="h-[108px] shrink-0" aria-hidden="true" />
+      {/* Spacer for fixed header (64px) + ticker (40px) */}
+      <div className="h-[104px] shrink-0" aria-hidden="true" />
       <main className="relative z-base flex-1">
         <Outlet />
       </main>

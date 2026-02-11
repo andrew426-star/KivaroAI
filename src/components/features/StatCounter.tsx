@@ -46,7 +46,7 @@ export default function StatCounter({ value, suffix = '', label }: StatCounterPr
   return (
     <div ref={ref} className="text-center group">
       <div
-        className={`font-display text-4xl lg:text-5xl font-extrabold tabular-nums transition-all duration-500 ${
+        className={`font-display text-3xl sm:text-4xl lg:text-5xl font-extrabold tabular-nums transition-all duration-500 ${
           done ? 'text-gradient-animated' : 'text-gradient-green'
         }`}
       >

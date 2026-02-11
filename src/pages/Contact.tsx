@@ -57,7 +57,7 @@ export default function Contact() {
                   Get In Touch
                 </span>
               </span>
-              <h1 className="font-display text-4xl lg:text-5xl xl:text-6xl font-extrabold leading-[1.1] text-balance">
+              <h1 className="font-display text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-extrabold leading-[1.1] text-balance">
                 Start Your{' '}
                 <span className="text-gradient-animated">Discovery</span>
               </h1>
