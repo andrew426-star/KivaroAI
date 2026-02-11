@@ -1,0 +1,160 @@
+import { useState, useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { NAV_LINKS, SITE_CONFIG } from '@/constants/config';
+import { Menu, X } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { cn } from '@/lib/utils';
+import kivaroLogo from '@/assets/kivaro-logo.png';
+
+export default function Header() {
+  const { pathname } = useLocation();
+  const [scrolled, setScrolled] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 40);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [pathname]);
+
+  return (
+    <header
+      className={cn(
+        'fixed top-0 left-0 right-0 z-nav bg-background h-16 transition-shadow duration-300',
+        scrolled && 'border-b border-border shadow-[0_4px_20px_hsla(0,0%,0%,0.3)]'
+      )}
+    >
+      <nav className="mx-auto flex max-w-[1400px] items-center justify-between px-6 lg:px-10 h-full">
+        {/* Logo */}
+        <Link to="/" className="flex items-center gap-2.5 group" aria-label="Kivaro AI Home">
+          <motion.img
+            src={kivaroLogo}
+            alt="Kivaro AI Logo"
+            className="size-9 object-contain drop-shadow-[0_0_6px_hsla(152,76%,46%,0.3)]"
+            whileHover={{ scale: 1.1, rotate: 5 }}
+            transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+          />
+          <span className="font-display text-lg font-bold tracking-tight text-foreground transition-colors duration-300 group-hover:text-primary">
+            {SITE_CONFIG.name}
+          </span>
+        </Link>
+
+        {/* Desktop Nav */}
+        <div className="hidden md:flex items-center gap-1">
+          {NAV_LINKS.map((link) => (
+            <Link
+              key={link.href}
+              to={link.href}
+              className={cn(
+                'relative px-4 py-2 text-sm font-medium transition-all duration-300 rounded-md',
+                pathname === link.href
+                  ? 'text-primary'
+                  : 'text-muted-foreground hover:text-foreground'
+              )}
+            >
+              {link.label}
+              {pathname === link.href && (
+                <motion.div
+                  layoutId="nav-indicator"
+                  className="absolute bottom-0 left-2 right-2 h-px bg-primary shadow-[0_0_8px_hsla(152,76%,46%,0.4)]"
+                  transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+                />
+              )}
+            </Link>
+          ))}
+        </div>
+
+        {/* Desktop CTA */}
+        <Link
+          to="/contact"
+          className="hidden md:inline-flex items-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground transition-all duration-300 hover:shadow-[0_0_24px_hsla(152,76%,46%,0.35)] hover:scale-[1.03] active:scale-[0.97] btn-magnetic overflow-hidden relative"
+        >
+          <span className="relative z-10">Start Consultation</span>
+        </Link>
+
+        {/* Mobile Toggle */}
+        <button
+          onClick={() => setMobileOpen(!mobileOpen)}
+          className="md:hidden relative size-10 flex items-center justify-center rounded-lg hover:bg-secondary transition-all duration-200 active:scale-90"
+          aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
+        >
+          <AnimatePresence mode="wait">
+            {mobileOpen ? (
+              <motion.div
+                key="close"
+                initial={{ rotate: -90, opacity: 0 }}
+                animate={{ rotate: 0, opacity: 1 }}
+                exit={{ rotate: 90, opacity: 0 }}
+                transition={{ duration: 0.2 }}
+              >
+                <X className="size-5" />
+              </motion.div>
+            ) : (
+              <motion.div
+                key="menu"
+                initial={{ rotate: 90, opacity: 0 }}
+                animate={{ rotate: 0, opacity: 1 }}
+                exit={{ rotate: -90, opacity: 0 }}
+                transition={{ duration: 0.2 }}
+              >
+                <Menu className="size-5" />
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </button>
+      </nav>
+
+      {/* Mobile Menu */}
+      <AnimatePresence>
+        {mobileOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.3, ease: 'easeOut' }}
+            className="md:hidden bg-background border-t border-border overflow-hidden"
+          >
+            <div className="flex flex-col px-6 py-4 gap-1">
+              {NAV_LINKS.map((link, i) => (
+                <motion.div
+                  key={link.href}
+                  initial={{ opacity: 0, x: -16 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: i * 0.05 + 0.1, duration: 0.3 }}
+                >
+                  <Link
+                    to={link.href}
+                    className={cn(
+                      'px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 block active:scale-[0.98]',
+                      pathname === link.href
+                        ? 'text-primary bg-primary/5'
+                        : 'text-muted-foreground hover:text-foreground hover:bg-secondary'
+                    )}
+                  >
+                    {link.label}
+                  </Link>
+                </motion.div>
+              ))}
+              <motion.div
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3, duration: 0.3 }}
+              >
+                <Link
+                  to="/contact"
+                  className="mt-2 flex items-center justify-center rounded-lg bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground active:scale-[0.97] transition-transform"
+                >
+                  Start Consultation
+                </Link>
+              </motion.div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </header>
+  );
+}
