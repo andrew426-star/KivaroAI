@@ -35,6 +35,7 @@ export default function Home() {
   usePageMeta({
     title: 'Kivaro AI — AI Automation & Intelligence for Hedge Funds',
     description: 'Kivaro AI converts artificial intelligence into disciplined operational advantage for hedge funds. We automate research workflows, streamline fund operations, and build secure AI systems across the Southern U.S. — reducing research processing time by 73% and automating 40+ operational tasks.',
+    canonicalPath: '/',
   });
 
   return (

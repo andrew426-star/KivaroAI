@@ -112,6 +112,7 @@ export default function About() {
   usePageMeta({
     title: 'About Kivaro AI — Founded by Andrew Thomas | AI for Hedge Funds',
     description: 'Kivaro AI was founded in 2025 by Andrew Thomas in Louisiana to bring structured AI execution into professional investment environments. We serve hedge funds across Texas, Louisiana, Georgia, Mississippi, and Florida with a seven-phase deployment methodology emphasizing disciplined execution, fund-grade security, and measurable operational gains.',
+    canonicalPath: '/about',
   });
 
   return (

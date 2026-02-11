@@ -242,6 +242,7 @@ export default function Process() {
   usePageMeta({
     title: 'Seven-Phase AI Deployment Methodology — Kivaro AI',
     description: 'Kivaro AI\'s seven-phase deployment model for hedge funds: Discovery & Systems Audit, Use-Case Prioritization, Architecture Design, Controlled Implementation, Integration Layering, Training & Adoption, and Optimization & Oversight. Each phase includes validation checkpoints, deliverables, and performance benchmarks for institutional-grade AI deployment.',
+    canonicalPath: '/process',
   });
 
   const [activePhase, setActivePhase] = useState(0);

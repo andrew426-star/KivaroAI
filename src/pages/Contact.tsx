@@ -38,6 +38,7 @@ export default function Contact() {
   usePageMeta({
     title: 'Contact Kivaro AI — Schedule a Discovery Call',
     description: 'Contact Kivaro AI to schedule a discovery call and map your hedge fund\'s highest-impact automation opportunities. Email andrew.thomas@kivaroai.com or call (985)-205-7688. We respond to qualified inquiries within one business day. On-site advisory available across Texas, Louisiana, Georgia, Mississippi, and Florida.',
+    canonicalPath: '/contact',
   });
 
   return (
