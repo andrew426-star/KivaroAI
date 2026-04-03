@@ -4,7 +4,7 @@ import { ArrowUpRight, ArrowRight, MapPin, Calendar, Shield, Eye, Target, Users,
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { motion, AnimatePresence } from 'framer-motion';
 import aboutHero from '@/assets/about-hero.jpg';
-import founderHeadshot from '@/assets/founder-headshot.jpg';
+import founderHeadshot from '@/assets/founder-headshot.jpeg';
 import { REGIONS } from '@/constants/config';
 import { PROCESS_STEPS } from '@/constants/mockData';
 import GlowCard from '@/components/features/GlowCard';
