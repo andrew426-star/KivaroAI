@@ -174,9 +174,9 @@ export const STATS: Stat[] = [
 
 export const TOOLS: ToolItem[] = [
   { name: 'StackAI', description: 'Secure AI workflow orchestration', category: 'Core Platform' },
-  { name: 'ChatGPT', description: 'Advanced language model integration', category: 'AI Models' },
+  { name: 'Claude', description: 'Enterprise LLM intelligence', category: 'AI Models' },
   { name: 'Voiceflow', description: 'Conversational AI agent builder', category: 'AI Agents' },
-  { name: 'Make.com', description: 'Workflow automation & orchestration', category: 'Automation' },
+  { name: 'OpenClaw', description: 'AI infrastructure & orchestration', category: 'AI Infrastructure' },
   { name: 'Airtable', description: 'Structured data management', category: 'Data' },
   { name: 'Custom APIs', description: 'Bespoke integration endpoints', category: 'Architecture' },
 ];

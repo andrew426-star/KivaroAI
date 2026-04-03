@@ -6,9 +6,9 @@ import { motion } from 'framer-motion';
 
 const TOOL_ICONS: Record<string, string> = {
   StackAI: '⬡',
-  ChatGPT: '◈',
+  Claude: '◈',
   Voiceflow: '◉',
-  'Make.com': '⟐',
+  OpenClaw: '⟐',
   Airtable: '⊞',
   'Custom APIs': '⟁',
 };

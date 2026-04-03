@@ -4,6 +4,7 @@ import { ArrowUpRight, ArrowRight, MapPin, Calendar, Shield, Eye, Target, Users,
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { motion, AnimatePresence } from 'framer-motion';
 import aboutHero from '@/assets/about-hero.jpg';
+import founderHeadshot from '@/assets/founder-headshot.jpg';
 import { REGIONS } from '@/constants/config';
 import { PROCESS_STEPS } from '@/constants/mockData';
 import GlowCard from '@/components/features/GlowCard';
@@ -183,9 +184,13 @@ export default function About() {
                   <motion.div
                     whileHover={{ scale: 1.05, rotate: 2 }}
                     transition={{ type: 'spring', stiffness: 300, damping: 15 }}
-                    className="size-24 rounded-2xl bg-gradient-to-br from-primary/20 to-kv-mint/10 border border-primary/20 flex items-center justify-center mb-5"
+                    className="size-28 rounded-2xl overflow-hidden border-2 border-primary/20 mb-5 shadow-[0_0_30px_hsla(152,76%,46%,0.1)]"
                   >
-                    <span className="font-display text-3xl font-bold text-primary">AT</span>
+                    <img
+                      src={founderHeadshot}
+                      alt="Andrew Thomas — Founder & Principal, Kivaro AI"
+                      className="w-full h-full object-cover object-top"
+                    />
                   </motion.div>
                   <h3 className="font-display text-xl font-bold text-foreground">Andrew Thomas</h3>
                   <p className="text-sm text-primary/70 font-medium mt-1">Founder & Principal</p>
