@@ -63,65 +63,168 @@ const PHASE_DETAILS: Record<number, { overview: string; deliverables: string[]; 
   },
 };
 
-// Mini workflow diagram for each phase
+// Phase-specific workflow data with explicit connections
+interface FlowNode {
+  id: string;
+  label: string;
+  x: number;
+  y: number;
+  type: 'source' | 'process' | 'gate' | 'output' | 'feedback';
+  sublabel?: string;
+}
+interface FlowEdge {
+  from: string;
+  to: string;
+  style?: 'solid' | 'dashed';
+  label?: string;
+}
+interface PhaseFlow {
+  nodes: FlowNode[];
+  edges: FlowEdge[];
+}
+
+const PHASE_FLOWS: Record<number, PhaseFlow> = {
+  1: {
+    nodes: [
+      { id: 'kickoff', label: 'Kickoff', sublabel: 'Stakeholder Interviews', x: 6, y: 50, type: 'source' },
+      { id: 'workflow', label: 'Workflow Mapping', sublabel: 'Research · Reporting · Ops', x: 28, y: 25, type: 'process' },
+      { id: 'techstack', label: 'Tech Inventory', sublabel: 'Tools · APIs · Data', x: 28, y: 75, type: 'process' },
+      { id: 'gaps', label: 'Gap Analysis', sublabel: 'Friction · Bottlenecks', x: 54, y: 50, type: 'gate' },
+      { id: 'matrix', label: 'Opportunity Matrix', sublabel: 'Ranked Automation Targets', x: 78, y: 35, type: 'output' },
+      { id: 'report', label: 'Audit Report', sublabel: 'Findings & Recommendations', x: 78, y: 68, type: 'output' },
+    ],
+    edges: [
+      { from: 'kickoff', to: 'workflow' },
+      { from: 'kickoff', to: 'techstack' },
+      { from: 'workflow', to: 'gaps' },
+      { from: 'techstack', to: 'gaps' },
+      { from: 'gaps', to: 'matrix', label: 'High Impact' },
+      { from: 'gaps', to: 'report', label: 'Full Scope' },
+    ],
+  },
+  2: {
+    nodes: [
+      { id: 'opps', label: 'Opportunities', sublabel: 'From Phase 1 Audit', x: 6, y: 50, type: 'source' },
+      { id: 'impact', label: 'Impact Scoring', sublabel: 'ROI · Time Savings', x: 28, y: 25, type: 'process' },
+      { id: 'feasibility', label: 'Feasibility Check', sublabel: 'Tech · Data · Team', x: 28, y: 75, type: 'process' },
+      { id: 'risk', label: 'Risk Assessment', sublabel: 'Compliance · Disruption', x: 52, y: 50, type: 'gate' },
+      { id: 'align', label: 'Stakeholder Align', sublabel: 'Approval Gate', x: 72, y: 50, type: 'gate' },
+      { id: 'roadmap', label: 'Prioritized Roadmap', sublabel: 'Sequenced Use Cases', x: 92, y: 50, type: 'output' },
+    ],
+    edges: [
+      { from: 'opps', to: 'impact' },
+      { from: 'opps', to: 'feasibility' },
+      { from: 'impact', to: 'risk' },
+      { from: 'feasibility', to: 'risk' },
+      { from: 'risk', to: 'align', label: 'Viable' },
+      { from: 'align', to: 'roadmap', label: 'Approved' },
+    ],
+  },
+  3: {
+    nodes: [
+      { id: 'reqs', label: 'Requirements', sublabel: 'From Roadmap', x: 6, y: 50, type: 'source' },
+      { id: 'aidesign', label: 'AI Flow Design', sublabel: 'StackAI · Claude · Agents', x: 26, y: 25, type: 'process' },
+      { id: 'security', label: 'Security Design', sublabel: 'Encryption · Isolation', x: 26, y: 75, type: 'process' },
+      { id: 'integration', label: 'Integration Map', sublabel: 'APIs · Data Connectors', x: 50, y: 50, type: 'process' },
+      { id: 'review', label: 'Architecture Review', sublabel: 'Compliance Validation', x: 72, y: 50, type: 'gate' },
+      { id: 'blueprint', label: 'Blueprint', sublabel: 'System Architecture', x: 92, y: 30, type: 'output' },
+      { id: 'specs', label: 'Spec Docs', sublabel: 'Integration Specs', x: 92, y: 70, type: 'output' },
+    ],
+    edges: [
+      { from: 'reqs', to: 'aidesign' },
+      { from: 'reqs', to: 'security' },
+      { from: 'aidesign', to: 'integration' },
+      { from: 'security', to: 'integration' },
+      { from: 'integration', to: 'review' },
+      { from: 'review', to: 'blueprint', label: 'Approved' },
+      { from: 'review', to: 'specs' },
+    ],
+  },
+  4: {
+    nodes: [
+      { id: 'blueprint', label: 'Blueprint', sublabel: 'From Phase 3', x: 6, y: 50, type: 'source' },
+      { id: 'build', label: 'Build Sprint', sublabel: 'Component Development', x: 24, y: 30, type: 'process' },
+      { id: 'test', label: 'Testing', sublabel: 'Unit · Integration', x: 24, y: 70, type: 'process' },
+      { id: 'gate', label: 'Quality Gate', sublabel: 'Pass / Fail', x: 46, y: 50, type: 'gate' },
+      { id: 'benchmark', label: 'Benchmark', sublabel: 'vs. Performance Targets', x: 66, y: 35, type: 'process' },
+      { id: 'rollback', label: 'Rollback Plan', sublabel: 'Safety Net', x: 66, y: 70, type: 'process' },
+      { id: 'deploy', label: 'Deploy Phase', sublabel: 'Controlled Release', x: 90, y: 50, type: 'output' },
+    ],
+    edges: [
+      { from: 'blueprint', to: 'build' },
+      { from: 'build', to: 'test' },
+      { from: 'test', to: 'gate' },
+      { from: 'gate', to: 'benchmark', label: 'Pass' },
+      { from: 'gate', to: 'rollback', label: 'Fail', style: 'dashed' },
+      { from: 'benchmark', to: 'deploy' },
+      { from: 'rollback', to: 'build', style: 'dashed' },
+    ],
+  },
+  5: {
+    nodes: [
+      { id: 'deployed', label: 'Deployed System', sublabel: 'From Phase 4', x: 6, y: 50, type: 'source' },
+      { id: 'api', label: 'API Connectors', sublabel: 'CRM · PMS · Data', x: 26, y: 25, type: 'process' },
+      { id: 'datasync', label: 'Data Sync', sublabel: 'ETL · Validation', x: 26, y: 75, type: 'process' },
+      { id: 'isolated', label: 'Isolated Test', sublabel: 'Per Integration', x: 50, y: 50, type: 'gate' },
+      { id: 'e2e', label: 'E2E Validation', sublabel: 'Full Pipeline Test', x: 72, y: 50, type: 'gate' },
+      { id: 'live', label: 'Go Live', sublabel: 'Production Release', x: 92, y: 50, type: 'output' },
+    ],
+    edges: [
+      { from: 'deployed', to: 'api' },
+      { from: 'deployed', to: 'datasync' },
+      { from: 'api', to: 'isolated' },
+      { from: 'datasync', to: 'isolated' },
+      { from: 'isolated', to: 'e2e', label: 'Verified' },
+      { from: 'e2e', to: 'live', label: 'All Clear' },
+    ],
+  },
+  6: {
+    nodes: [
+      { id: 'livesystem', label: 'Live System', sublabel: 'Operational', x: 6, y: 50, type: 'source' },
+      { id: 'workshops', label: 'Workshops', sublabel: 'Hands-on Training', x: 26, y: 25, type: 'process' },
+      { id: 'docs', label: 'Documentation', sublabel: 'Playbooks · Runbooks', x: 26, y: 75, type: 'process' },
+      { id: 'admin', label: 'Admin Training', sublabel: 'Config · Maintenance', x: 50, y: 35, type: 'process' },
+      { id: 'knowledge', label: 'Knowledge Transfer', sublabel: 'Q&A · Handoff', x: 50, y: 70, type: 'process' },
+      { id: 'competency', label: 'Competency Check', sublabel: 'Team Validation', x: 74, y: 50, type: 'gate' },
+      { id: 'ready', label: 'Team Autonomous', sublabel: 'Self-sufficient Ops', x: 92, y: 50, type: 'output' },
+    ],
+    edges: [
+      { from: 'livesystem', to: 'workshops' },
+      { from: 'livesystem', to: 'docs' },
+      { from: 'workshops', to: 'admin' },
+      { from: 'docs', to: 'knowledge' },
+      { from: 'admin', to: 'competency' },
+      { from: 'knowledge', to: 'competency' },
+      { from: 'competency', to: 'ready', label: 'Certified' },
+    ],
+  },
+  7: {
+    nodes: [
+      { id: 'production', label: 'Production', sublabel: 'Running Systems', x: 6, y: 50, type: 'source' },
+      { id: 'monitor', label: 'Monitor', sublabel: 'Alerts · Dashboards', x: 24, y: 30, type: 'process' },
+      { id: 'data', label: 'Perf Data', sublabel: 'Metrics Collection', x: 24, y: 70, type: 'process' },
+      { id: 'analyze', label: 'Analysis', sublabel: 'Trends · Anomalies', x: 46, y: 50, type: 'process' },
+      { id: 'optimize', label: 'Optimize', sublabel: 'Refine Workflows', x: 66, y: 30, type: 'process' },
+      { id: 'expand', label: 'Expand', sublabel: 'New Capabilities', x: 66, y: 70, type: 'process' },
+      { id: 'review', label: 'Quarterly Review', sublabel: 'Strategic Alignment', x: 90, y: 50, type: 'output' },
+    ],
+    edges: [
+      { from: 'production', to: 'monitor' },
+      { from: 'production', to: 'data' },
+      { from: 'monitor', to: 'analyze' },
+      { from: 'data', to: 'analyze' },
+      { from: 'analyze', to: 'optimize' },
+      { from: 'analyze', to: 'expand' },
+      { from: 'optimize', to: 'review' },
+      { from: 'expand', to: 'review' },
+      { from: 'review', to: 'production', style: 'dashed' },
+    ],
+  },
+};
+
 function PhaseFlowDiagram({ phaseId }: { phaseId: number }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animRef = useRef<number>(0);
-
-  const PHASE_NODES: Record<number, { id: string; label: string; x: number; y: number; type: 'source' | 'process' | 'output' }[]> = {
-    1: [
-      { id: 'audit', label: 'Audit', x: 10, y: 50, type: 'source' },
-      { id: 'map', label: 'Map Workflows', x: 35, y: 30, type: 'process' },
-      { id: 'assess', label: 'Assess Stack', x: 35, y: 70, type: 'process' },
-      { id: 'identify', label: 'Identify Gaps', x: 65, y: 50, type: 'process' },
-      { id: 'report', label: 'Audit Report', x: 90, y: 50, type: 'output' },
-    ],
-    2: [
-      { id: 'opps', label: 'Opportunities', x: 10, y: 50, type: 'source' },
-      { id: 'score', label: 'Score Impact', x: 35, y: 30, type: 'process' },
-      { id: 'risk', label: 'Assess Risk', x: 35, y: 70, type: 'process' },
-      { id: 'rank', label: 'Rank & Align', x: 65, y: 50, type: 'process' },
-      { id: 'roadmap', label: 'Roadmap', x: 90, y: 50, type: 'output' },
-    ],
-    3: [
-      { id: 'req', label: 'Requirements', x: 10, y: 50, type: 'source' },
-      { id: 'design', label: 'Design Flows', x: 30, y: 30, type: 'process' },
-      { id: 'security', label: 'Security Layer', x: 30, y: 70, type: 'process' },
-      { id: 'spec', label: 'Integrations', x: 55, y: 50, type: 'process' },
-      { id: 'blueprint', label: 'Blueprint', x: 80, y: 30, type: 'output' },
-      { id: 'docs', label: 'Specs Doc', x: 80, y: 70, type: 'output' },
-    ],
-    4: [
-      { id: 'plan', label: 'Phase Plan', x: 8, y: 50, type: 'source' },
-      { id: 'build', label: 'Build', x: 28, y: 30, type: 'process' },
-      { id: 'test', label: 'Test', x: 28, y: 70, type: 'process' },
-      { id: 'validate', label: 'Validate', x: 52, y: 50, type: 'process' },
-      { id: 'benchmark', label: 'Benchmark', x: 75, y: 30, type: 'process' },
-      { id: 'deploy', label: 'Deploy', x: 92, y: 50, type: 'output' },
-    ],
-    5: [
-      { id: 'systems', label: 'Systems', x: 10, y: 50, type: 'source' },
-      { id: 'connect', label: 'Connect APIs', x: 35, y: 30, type: 'process' },
-      { id: 'data', label: 'Data Sync', x: 35, y: 70, type: 'process' },
-      { id: 'e2e', label: 'E2E Testing', x: 65, y: 50, type: 'process' },
-      { id: 'live', label: 'Go Live', x: 90, y: 50, type: 'output' },
-    ],
-    6: [
-      { id: 'team', label: 'Team', x: 10, y: 50, type: 'source' },
-      { id: 'train', label: 'Training', x: 35, y: 30, type: 'process' },
-      { id: 'docs', label: 'Documentation', x: 35, y: 70, type: 'process' },
-      { id: 'handoff', label: 'Knowledge Transfer', x: 65, y: 50, type: 'process' },
-      { id: 'ready', label: 'Team Ready', x: 90, y: 50, type: 'output' },
-    ],
-    7: [
-      { id: 'monitor', label: 'Monitor', x: 10, y: 50, type: 'source' },
-      { id: 'analyze', label: 'Analyze', x: 30, y: 30, type: 'process' },
-      { id: 'optimize', label: 'Optimize', x: 30, y: 70, type: 'process' },
-      { id: 'expand', label: 'Expand', x: 55, y: 50, type: 'process' },
-      { id: 'review', label: 'Review', x: 78, y: 30, type: 'process' },
-      { id: 'evolve', label: 'Evolve', x: 92, y: 50, type: 'output' },
-    ],
-  };
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -136,90 +239,173 @@ function PhaseFlowDiagram({ phaseId }: { phaseId: number }) {
     const w = rect.width;
     const h = rect.height;
 
-    const nodes = PHASE_NODES[phaseId] || PHASE_NODES[1];
+    const flow = PHASE_FLOWS[phaseId] || PHASE_FLOWS[1];
+    const nodeMap = new Map(flow.nodes.map((n) => [n.id, { ...n, px: (n.x / 100) * w, py: (n.y / 100) * h }]));
     let time = 0;
 
+    const typeColors: Record<string, { fill: string; stroke: string; glow: number }> = {
+      source: { fill: 'hsla(152, 76%, 46%, 0.22)', stroke: 'hsla(152, 76%, 46%, 0.5)', glow: 0.08 },
+      process: { fill: 'hsla(160, 70%, 40%, 0.15)', stroke: 'hsla(152, 76%, 46%, 0.35)', glow: 0.05 },
+      gate: { fill: 'hsla(42, 90%, 55%, 0.18)', stroke: 'hsla(42, 90%, 55%, 0.45)', glow: 0.07 },
+      output: { fill: 'hsla(82, 80%, 52%, 0.2)', stroke: 'hsla(82, 80%, 55%, 0.5)', glow: 0.1 },
+      feedback: { fill: 'hsla(200, 70%, 50%, 0.15)', stroke: 'hsla(200, 70%, 50%, 0.35)', glow: 0.05 },
+    };
+
+    function bezierPoint(t: number, p0: number, cp1: number, cp2: number, p3: number) {
+      const mt = 1 - t;
+      return mt * mt * mt * p0 + 3 * mt * mt * t * cp1 + 3 * mt * t * t * cp2 + t * t * t * p3;
+    }
+
+    function drawArrowhead(cx: CanvasRenderingContext2D, toX: number, toY: number, fromX: number, fromY: number, size: number, color: string) {
+      const angle = Math.atan2(toY - fromY, toX - fromX);
+      cx.beginPath();
+      cx.moveTo(toX, toY);
+      cx.lineTo(toX - size * Math.cos(angle - Math.PI / 7), toY - size * Math.sin(angle - Math.PI / 7));
+      cx.lineTo(toX - size * Math.cos(angle + Math.PI / 7), toY - size * Math.sin(angle + Math.PI / 7));
+      cx.closePath();
+      cx.fillStyle = color;
+      cx.fill();
+    }
+
+    function drawNodeShape(cx: CanvasRenderingContext2D, x: number, y: number, r: number, type: string, colors: { fill: string; stroke: string }) {
+      if (type === 'gate') {
+        // Diamond shape for gates
+        cx.beginPath();
+        cx.moveTo(x, y - r);
+        cx.lineTo(x + r, y);
+        cx.lineTo(x, y + r);
+        cx.lineTo(x - r, y);
+        cx.closePath();
+      } else if (type === 'output') {
+        // Rounded rect for outputs
+        const hw = r * 1.2;
+        const hh = r * 0.85;
+        const cr = 5;
+        cx.beginPath();
+        cx.moveTo(x - hw + cr, y - hh);
+        cx.lineTo(x + hw - cr, y - hh);
+        cx.quadraticCurveTo(x + hw, y - hh, x + hw, y - hh + cr);
+        cx.lineTo(x + hw, y + hh - cr);
+        cx.quadraticCurveTo(x + hw, y + hh, x + hw - cr, y + hh);
+        cx.lineTo(x - hw + cr, y + hh);
+        cx.quadraticCurveTo(x - hw, y + hh, x - hw, y + hh - cr);
+        cx.lineTo(x - hw, y - hh + cr);
+        cx.quadraticCurveTo(x - hw, y - hh, x - hw + cr, y - hh);
+        cx.closePath();
+      } else {
+        // Circle for source / process
+        cx.beginPath();
+        cx.arc(x, y, r, 0, Math.PI * 2);
+      }
+      cx.fillStyle = colors.fill;
+      cx.fill();
+      cx.strokeStyle = colors.stroke;
+      cx.lineWidth = 1.4;
+      cx.stroke();
+    }
+
     const draw = () => {
-      time += 0.012;
+      time += 0.01;
       ctx.clearRect(0, 0, w, h);
 
-      const positioned = nodes.map((n) => ({
-        ...n,
-        px: (n.x / 100) * w,
-        py: (n.y / 100) * h,
-      }));
+      // Draw edges
+      flow.edges.forEach((edge, ei) => {
+        const from = nodeMap.get(edge.from);
+        const to = nodeMap.get(edge.to);
+        if (!from || !to) return;
 
-      // Draw connections
-      for (let i = 0; i < positioned.length - 1; i++) {
-        const from = positioned[i];
-        const to = positioned[i + 1];
+        const fpx = from.px;
+        const fpy = from.py;
+        const tpx = to.px;
+        const tpy = to.py;
+
+        const cp1x = fpx + (tpx - fpx) * 0.45;
+        const cp1y = fpy;
+        const cp2x = fpx + (tpx - fpx) * 0.55;
+        const cp2y = tpy;
+
         ctx.beginPath();
-        const cx1 = from.px + (to.px - from.px) * 0.5;
-        const cy1 = from.py;
-        const cx2 = from.px + (to.px - from.px) * 0.5;
-        const cy2 = to.py;
-        ctx.moveTo(from.px, from.py);
-        ctx.bezierCurveTo(cx1, cy1, cx2, cy2, to.px, to.py);
-        ctx.strokeStyle = 'hsla(152, 76%, 46%, 0.2)';
+        ctx.moveTo(fpx, fpy);
+        ctx.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, tpx, tpy);
+        if (edge.style === 'dashed') {
+          ctx.setLineDash([4, 4]);
+          ctx.strokeStyle = 'hsla(152, 76%, 46%, 0.12)';
+        } else {
+          ctx.setLineDash([]);
+          ctx.strokeStyle = 'hsla(152, 76%, 46%, 0.2)';
+        }
         ctx.lineWidth = 1.2;
         ctx.stroke();
+        ctx.setLineDash([]);
 
-        // Animated particle
-        const t = (Math.sin(time * 0.7 + i * 0.8) + 1) / 2;
-        const bx = Math.pow(1 - t, 3) * from.px + 3 * Math.pow(1 - t, 2) * t * cx1 + 3 * (1 - t) * Math.pow(t, 2) * cx2 + Math.pow(t, 3) * to.px;
-        const by = Math.pow(1 - t, 3) * from.py + 3 * Math.pow(1 - t, 2) * t * cy1 + 3 * (1 - t) * Math.pow(t, 2) * cy2 + Math.pow(t, 3) * to.py;
+        // Arrowhead near target
+        const arrowT = 0.88;
+        const ax = bezierPoint(arrowT, fpx, cp1x, cp2x, tpx);
+        const ay = bezierPoint(arrowT, fpy, cp1y, cp2y, tpy);
+        const arrowColor = edge.style === 'dashed' ? 'hsla(152, 76%, 46%, 0.15)' : 'hsla(152, 76%, 46%, 0.3)';
+        drawArrowhead(ctx, tpx, tpy, ax, ay, 6, arrowColor);
+
+        // Animated particle along edge
+        const speed = 0.6 + ei * 0.12;
+        const pt = ((time * speed + ei * 0.7) % 1);
+        const px = bezierPoint(pt, fpx, cp1x, cp2x, tpx);
+        const py = bezierPoint(pt, fpy, cp1y, cp2y, tpy);
+        const particleGlow = ctx.createRadialGradient(px, py, 0, px, py, 6);
+        particleGlow.addColorStop(0, 'hsla(152, 76%, 56%, 0.5)');
+        particleGlow.addColorStop(1, 'hsla(152, 76%, 56%, 0)');
         ctx.beginPath();
-        ctx.arc(bx, by, 2, 0, Math.PI * 2);
-        ctx.fillStyle = 'hsla(152, 76%, 56%, 0.6)';
+        ctx.arc(px, py, 6, 0, Math.PI * 2);
+        ctx.fillStyle = particleGlow;
         ctx.fill();
-      }
-
-      // Additional cross-connections for phases with branching
-      if (positioned.length > 3) {
-        const from = positioned[0];
-        const to = positioned[2];
         ctx.beginPath();
-        ctx.moveTo(from.px, from.py);
-        const mx = (from.px + to.px) / 2;
-        ctx.bezierCurveTo(mx, from.py, mx, to.py, to.px, to.py);
-        ctx.strokeStyle = 'hsla(152, 76%, 46%, 0.12)';
-        ctx.lineWidth = 1;
-        ctx.stroke();
-      }
+        ctx.arc(px, py, 2, 0, Math.PI * 2);
+        ctx.fillStyle = 'hsla(152, 76%, 66%, 0.8)';
+        ctx.fill();
+
+        // Edge label
+        if (edge.label) {
+          const lt = 0.5;
+          const lx = bezierPoint(lt, fpx, cp1x, cp2x, tpx);
+          const ly = bezierPoint(lt, fpy, cp1y, cp2y, tpy) - 8;
+          ctx.font = '500 7.5px Outfit, sans-serif';
+          ctx.fillStyle = 'hsla(152, 76%, 56%, 0.45)';
+          ctx.textAlign = 'center';
+          ctx.fillText(edge.label, lx, ly);
+        }
+      });
 
       // Draw nodes
-      positioned.forEach((node, idx) => {
-        const pulse = Math.sin(time * 1.5 + idx * 0.9) * 0.15 + 0.85;
-        const r = (node.type === 'output' ? 20 : node.type === 'source' ? 18 : 16) * pulse;
+      flow.nodes.forEach((node, idx) => {
+        const n = nodeMap.get(node.id);
+        if (!n) return;
+        const pulse = Math.sin(time * 1.8 + idx * 1.1) * 0.1 + 0.9;
+        const baseR = node.type === 'output' ? 18 : node.type === 'source' ? 17 : node.type === 'gate' ? 16 : 15;
+        const r = baseR * pulse;
+        const colors = typeColors[node.type] || typeColors.process;
 
-        // Glow
-        const gradient = ctx.createRadialGradient(node.px, node.py, 0, node.px, node.py, r * 2.5);
-        gradient.addColorStop(0, `hsla(152, 76%, 46%, ${node.type === 'output' ? 0.12 : 0.06})`);
-        gradient.addColorStop(1, 'hsla(152, 76%, 46%, 0)');
+        // Outer glow
+        const glow = ctx.createRadialGradient(n.px, n.py, 0, n.px, n.py, r * 3);
+        glow.addColorStop(0, colors.stroke.replace(/[\d.]+\)$/, `${colors.glow})`) );
+        glow.addColorStop(1, 'hsla(152, 76%, 46%, 0)');
         ctx.beginPath();
-        ctx.arc(node.px, node.py, r * 2.5, 0, Math.PI * 2);
-        ctx.fillStyle = gradient;
+        ctx.arc(n.px, n.py, r * 3, 0, Math.PI * 2);
+        ctx.fillStyle = glow;
         ctx.fill();
 
-        // Circle
-        ctx.beginPath();
-        ctx.arc(node.px, node.py, r, 0, Math.PI * 2);
-        const colorMap = {
-          source: 'hsla(152, 76%, 46%, 0.25)',
-          process: 'hsla(160, 80%, 42%, 0.18)',
-          output: 'hsla(82, 80%, 55%, 0.22)',
-        };
-        ctx.fillStyle = colorMap[node.type];
-        ctx.fill();
-        ctx.strokeStyle = `hsla(152, 76%, 46%, 0.35)`;
-        ctx.lineWidth = 1.2;
-        ctx.stroke();
+        drawNodeShape(ctx, n.px, n.py, r, node.type, colors);
 
-        // Label
-        ctx.font = '500 9px Outfit, sans-serif';
-        ctx.fillStyle = 'hsla(140, 20%, 85%, 0.7)';
+        // Node label
+        ctx.font = 'bold 8.5px Outfit, sans-serif';
+        ctx.fillStyle = 'hsla(140, 25%, 90%, 0.85)';
         ctx.textAlign = 'center';
-        ctx.fillText(node.label, node.px, node.py + r + 14);
+        ctx.fillText(node.label, n.px, n.py + r + 13);
+
+        // Sublabel
+        if (node.sublabel) {
+          ctx.font = '400 7px Outfit, sans-serif';
+          ctx.fillStyle = 'hsla(140, 15%, 70%, 0.5)';
+          ctx.fillText(node.sublabel, n.px, n.py + r + 23);
+        }
       });
 
       animRef.current = requestAnimationFrame(draw);
@@ -232,7 +418,7 @@ function PhaseFlowDiagram({ phaseId }: { phaseId: number }) {
   return (
     <canvas
       ref={canvasRef}
-      className="w-full h-[160px] lg:h-[200px]"
+      className="w-full h-[200px] lg:h-[260px]"
       style={{ imageRendering: 'auto' }}
     />
   );
