@@ -11,7 +11,6 @@ import SectionReveal from '@/components/features/SectionReveal';
 import StatCounter from '@/components/features/StatCounter';
 import WorkflowDiagram from '@/components/features/WorkflowDiagram';
 import ProcessTimeline from '@/components/features/ProcessTimeline';
-import ToolStack from '@/components/features/ToolStack';
 import MarketBars from '@/components/features/MarketBars';
 import MagneticButton from '@/components/features/MagneticButton';
 
@@ -336,22 +335,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ===== TOOL STACK ===== */}
-      <section className="relative z-base py-20 lg:py-28">
-        <div className="mx-auto max-w-[1400px] px-6 lg:px-10">
-          <SectionReveal direction="up">
-            <div className="text-center mb-10">
-              <h2 className="font-display text-2xl lg:text-3xl font-bold text-foreground">
-                Platform & Tooling
-              </h2>
-              <p className="mt-2 text-muted-foreground max-w-lg mx-auto">
-                Proven platforms integrated into secure, fund-grade architectures.
-              </p>
-            </div>
-          </SectionReveal>
-          <ToolStack />
-        </div>
-      </section>
 
       {/* ===== REGIONS ===== */}
       <section className="relative z-base py-20 lg:py-28">
