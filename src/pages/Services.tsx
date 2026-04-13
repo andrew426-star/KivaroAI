@@ -57,6 +57,7 @@ export default function Services() {
                   as="h1"
                   className="font-display text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-extrabold leading-[1.1]"
                   delay={2}
+                  gradientFrom={3}
                 />
                 <p className="mt-5 text-lg text-muted-foreground leading-relaxed max-w-2xl text-pretty">
                   Nine specialized service lines spanning research automation, operational intelligence, custom AI agents, and secure infrastructure architecture. Each designed for institutional-grade deployment.

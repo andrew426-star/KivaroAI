@@ -12,6 +12,7 @@ import GlowCard from '@/components/features/GlowCard';
 import SectionReveal from '@/components/features/SectionReveal';
 import MarketBars from '@/components/features/MarketBars';
 import MagneticButton from '@/components/features/MagneticButton';
+import SplitTextReveal from '@/components/features/SplitTextReveal';
 
 const ICON_MAP: Record<string, React.ElementType> = {
   Scan, Target, PenTool, Rocket, Layers, GraduationCap, TrendingUp,
@@ -452,10 +453,13 @@ export default function Process() {
                   Methodology
                 </span>
               </span>
-              <h1 className="font-display text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-extrabold leading-[1.1] text-balance">
-                Seven-Phase{' '}
-                <span className="text-gradient-animated">Deployment Model</span>
-              </h1>
+              <SplitTextReveal
+                text="Seven-Phase Deployment Model"
+                as="h1"
+                className="font-display text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-extrabold leading-[1.1]"
+                delay={2}
+                gradientFrom={1}
+              />
               <p className="mt-5 text-lg text-muted-foreground leading-relaxed text-pretty">
                 Our structured, institutional methodology is designed for controlled implementation with validation at every stage. Each phase builds on the last, ensuring quality, security, and measurable results.
               </p>

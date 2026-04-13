@@ -137,6 +137,7 @@ export default function About() {
                 as="h1"
                 className="font-display text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-extrabold leading-[1.1]"
                 delay={2}
+                gradientFrom={3}
               />
               <p className="mt-5 text-lg text-muted-foreground leading-relaxed text-pretty">
                 Kivaro AI was established to bring structured AI execution into professional investment environments. We serve hedge funds that require more than experimentation — they require dependable systems, disciplined workflows, and measurable operational gains.

@@ -6,6 +6,7 @@ import ContactForm from '@/components/features/ContactForm';
 import GlowCard from '@/components/features/GlowCard';
 import SectionReveal from '@/components/features/SectionReveal';
 import MarketBars from '@/components/features/MarketBars';
+import SplitTextReveal from '@/components/features/SplitTextReveal';
 
 const CONTACT_DETAILS = [
   {
@@ -57,10 +58,13 @@ export default function Contact() {
                   Get In Touch
                 </span>
               </span>
-              <h1 className="font-display text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-extrabold leading-[1.1] text-balance">
-                Start Your{' '}
-                <span className="text-gradient-animated">Discovery</span>
-              </h1>
+              <SplitTextReveal
+                text="Start Your Discovery"
+                as="h1"
+                className="font-display text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-extrabold leading-[1.1]"
+                delay={2}
+                gradientFrom={2}
+              />
               <p className="mt-5 text-lg text-muted-foreground leading-relaxed text-pretty">
                 Schedule a discovery call to map your highest-impact automation opportunities. We respond to qualified inquiries within one business day.
               </p>
