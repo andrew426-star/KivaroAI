@@ -1,10 +1,11 @@
-import { Outlet, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
 import Header from './Header';
 import Footer from './Footer';
 import ParticleField from '@/components/features/ParticleField';
 import GridBackground from '@/components/features/GridBackground';
 import MarketTicker from '@/components/features/MarketTicker';
+import AnimatedOutlet from '@/components/layout/AnimatedOutlet';
 
 export default function Layout() {
   const { pathname } = useLocation();
@@ -25,7 +26,7 @@ export default function Layout() {
       {/* Spacer for fixed header (64px) + ticker (40px) */}
       <div className="h-[104px] shrink-0" aria-hidden="true" />
       <main className="relative z-base flex-1">
-        <Outlet />
+        <AnimatedOutlet />
       </main>
       <Footer />
     </div>
