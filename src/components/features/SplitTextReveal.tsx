@@ -6,6 +6,8 @@ interface SplitTextRevealProps {
   className?: string;
   delay?: number;
   as?: 'h1' | 'h2' | 'h3' | 'p' | 'span';
+  /** Words (by index) that should use the gradient style */
+  gradientFrom?: number;
 }
 
 const wordVariants = {
@@ -33,6 +35,7 @@ export default function SplitTextReveal({
   className,
   delay = 0,
   as: Tag = 'h1',
+  gradientFrom,
 }: SplitTextRevealProps) {
   const words = text.split(' ');
 
@@ -41,7 +44,7 @@ export default function SplitTextReveal({
       {words.map((word, i) => (
         <span key={`${word}-${i}`} className="inline-block overflow-hidden mr-[0.3em]">
           <motion.span
-            className="inline-block"
+            className={cn('inline-block', gradientFrom !== undefined && i >= gradientFrom && 'text-gradient-animated')}
             variants={wordVariants}
             initial="hidden"
             animate="visible"

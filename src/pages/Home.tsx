@@ -94,6 +94,7 @@ export default function Home() {
                     as="h1"
                     className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-extrabold leading-[1.08] tracking-tight"
                     delay={2}
+                    gradientFrom={2}
                   />
 
                   <motion.p
