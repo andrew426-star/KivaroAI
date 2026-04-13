@@ -13,6 +13,9 @@ import WorkflowDiagram from '@/components/features/WorkflowDiagram';
 import ProcessTimeline from '@/components/features/ProcessTimeline';
 import MarketBars from '@/components/features/MarketBars';
 import MagneticButton from '@/components/features/MagneticButton';
+import TextMarquee from '@/components/features/TextMarquee';
+import SplitTextReveal from '@/components/features/SplitTextReveal';
+import CursorSpotlight from '@/components/features/CursorSpotlight';
 
 const HERO_FEATURES = [
   { icon: Zap, label: 'Workflow Automation' },
@@ -30,6 +33,9 @@ const item = {
   show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: 'easeOut' } },
 };
 
+const MARQUEE_WORDS_1 = ['AI Automation', 'Hedge Funds', 'Workflow Intelligence', 'Due Diligence', 'Data Pipelines', 'Fund Operations', 'Secure Architecture'];
+const MARQUEE_WORDS_2 = ['Research Automation', 'Portfolio Analytics', 'Custom AI Agents', 'Knowledge Systems', 'Strategy Dashboards', 'Reporting Automation', 'Compliance Systems'];
+
 export default function Home() {
   usePageMeta({
     title: 'Kivaro AI — AI Automation & Intelligence for Hedge Funds',
@@ -40,135 +46,143 @@ export default function Home() {
   return (
     <>
       {/* ===== HERO SECTION ===== */}
-      <section className="relative min-h-[calc(100dvh-104px)] lg:min-h-screen flex items-center overflow-hidden">
-        {/* Background Image Layer */}
-        <div className="absolute inset-0">
-          <img
-            src={heroBg}
-            alt=""
-            className="absolute inset-0 w-full h-full object-cover opacity-25"
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-background/60 via-background/80 to-background" />
-          <div className="absolute inset-0 bg-gradient-to-r from-background via-transparent to-background/90" />
-        </div>
+      <CursorSpotlight size={800} intensity={0.08}>
+        <section className="relative min-h-[calc(100dvh-104px)] lg:min-h-screen flex items-center overflow-hidden">
+          {/* Background Image Layer with parallax-like motion */}
+          <motion.div
+            className="absolute inset-0"
+            initial={{ scale: 1.08 }}
+            animate={{ scale: 1 }}
+            transition={{ duration: 2, ease: 'easeOut' }}
+          >
+            <img
+              src={heroBg}
+              alt=""
+              className="absolute inset-0 w-full h-full object-cover opacity-25"
+            />
+            <div className="absolute inset-0 bg-gradient-to-b from-background/60 via-background/80 to-background" />
+            <div className="absolute inset-0 bg-gradient-to-r from-background via-transparent to-background/90" />
+          </motion.div>
 
-        {/* Ambient market bars background accent */}
-        <div className="absolute bottom-24 left-10 right-10 opacity-[0.06] pointer-events-none">
-          <MarketBars barCount={80} />
-        </div>
+          {/* Ambient market bars background accent */}
+          <div className="absolute bottom-24 left-10 right-10 opacity-[0.06] pointer-events-none">
+            <MarketBars barCount={80} />
+          </div>
 
-        {/* Hero Content */}
-        <div className="relative z-base mx-auto max-w-[1400px] w-full px-6 lg:px-10 pt-16 pb-20 lg:pt-8 lg:pb-0">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-6 items-center">
-            {/* Left: Text */}
-            <div className="lg:col-span-7 xl:col-span-6">
-              <motion.div
-                variants={container}
-                initial="hidden"
-                animate="show"
-              >
-                {/* Tag */}
-                <motion.div variants={item}>
-                  <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 mb-6">
-                    <span className="size-1.5 rounded-full bg-primary animate-glow-pulse" />
-                    <span className="text-xs font-medium text-primary/80 tracking-wide uppercase font-display">
-                      AI Automation for Hedge Funds
-                    </span>
-                  </div>
-                </motion.div>
-
-                <motion.h1
-                  variants={item}
-                  className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-extrabold leading-[1.08] tracking-tight text-balance"
+          {/* Hero Content */}
+          <div className="relative z-base mx-auto max-w-[1400px] w-full px-6 lg:px-10 pt-16 pb-20 lg:pt-8 lg:pb-0">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-6 items-center">
+              {/* Left: Text */}
+              <div className="lg:col-span-7 xl:col-span-6">
+                <motion.div
+                  variants={container}
+                  initial="hidden"
+                  animate="show"
                 >
-                  Intelligent Systems.{' '}
-                  <span className="text-gradient-animated">Disciplined</span>{' '}
-                  Execution.
-                </motion.h1>
+                  {/* Tag */}
+                  <motion.div variants={item}>
+                    <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 mb-6">
+                      <span className="size-1.5 rounded-full bg-primary animate-glow-pulse" />
+                      <span className="text-xs font-medium text-primary/80 tracking-wide uppercase font-display">
+                        AI Automation for Hedge Funds
+                      </span>
+                    </div>
+                  </motion.div>
 
-                <motion.p
-                  variants={item}
-                  className="mt-4 sm:mt-6 text-base sm:text-lg text-muted-foreground leading-relaxed max-w-xl text-pretty"
-                >
-                  Kivaro AI converts artificial intelligence into disciplined operational advantage for modern fund teams — from due diligence automation to investment data pipelines and internal knowledge systems.
-                </motion.p>
+                  <SplitTextReveal
+                    text="Intelligent Systems. Disciplined Execution."
+                    as="h1"
+                    className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-extrabold leading-[1.08] tracking-tight"
+                    delay={2}
+                  />
 
-                {/* CTAs */}
-                <motion.div variants={item} className="mt-6 sm:mt-8 flex flex-wrap items-center gap-3 sm:gap-4">
-                  <Link to="/contact">
-                    <MagneticButton
-                      as="div"
-                      className="inline-flex items-center gap-2 rounded-lg bg-primary px-5 sm:px-7 py-3 sm:py-3.5 text-sm font-semibold text-primary-foreground transition-shadow duration-300 hover:shadow-[0_0_30px_hsla(152,76%,46%,0.35),_0_0_60px_hsla(152,76%,46%,0.1)] active:scale-[0.97]"
-                      strength={0.15}
-                    >
-                      Schedule Discovery Call
-                      <ArrowUpRight className="size-4" />
-                    </MagneticButton>
-                  </Link>
-                  <Link
-                    to="/services"
-                    className="inline-flex items-center gap-2 rounded-lg border border-border/60 bg-secondary/40 px-5 sm:px-6 py-3 sm:py-3.5 text-sm font-medium text-foreground hover:border-primary/30 hover:bg-secondary transition-all duration-300 active:scale-[0.97]"
+                  <motion.p
+                    variants={item}
+                    className="mt-4 sm:mt-6 text-base sm:text-lg text-muted-foreground leading-relaxed max-w-xl text-pretty"
                   >
-                    Explore Services
-                    <ArrowRight className="size-4" />
-                  </Link>
-                </motion.div>
+                    Kivaro AI converts artificial intelligence into disciplined operational advantage for modern fund teams — from due diligence automation to investment data pipelines and internal knowledge systems.
+                  </motion.p>
 
-                {/* Feature Pills */}
-                <motion.div variants={item} className="mt-6 sm:mt-10 flex flex-wrap gap-2 sm:gap-3">
-                  {HERO_FEATURES.map(({ icon: Ic, label }, fi) => (
-                    <motion.div
-                      key={label}
-                      whileHover={{ scale: 1.05, borderColor: 'hsla(152, 76%, 46%, 0.3)' }}
-                      transition={{ duration: 0.2 }}
-                      className="flex items-center gap-2 rounded-lg bg-kv-surface/60 border border-border/40 px-4 py-2 cursor-default"
+                  {/* CTAs */}
+                  <motion.div variants={item} className="mt-6 sm:mt-8 flex flex-wrap items-center gap-3 sm:gap-4">
+                    <Link to="/contact">
+                      <MagneticButton
+                        as="div"
+                        className="inline-flex items-center gap-2 rounded-lg bg-primary px-5 sm:px-7 py-3 sm:py-3.5 text-sm font-semibold text-primary-foreground transition-shadow duration-300 hover:shadow-[0_0_30px_hsla(152,76%,46%,0.35),_0_0_60px_hsla(152,76%,46%,0.1)] active:scale-[0.97]"
+                        strength={0.15}
+                      >
+                        Schedule Discovery Call
+                        <ArrowUpRight className="size-4" />
+                      </MagneticButton>
+                    </Link>
+                    <Link
+                      to="/services"
+                      className="inline-flex items-center gap-2 rounded-lg border border-border/60 bg-secondary/40 px-5 sm:px-6 py-3 sm:py-3.5 text-sm font-medium text-foreground hover:border-primary/30 hover:bg-secondary transition-all duration-300 active:scale-[0.97]"
                     >
-                      <Ic className="size-3.5 text-primary/70" />
-                      <span className="text-xs text-foreground/70 font-medium">{label}</span>
-                    </motion.div>
-                  ))}
+                      Explore Services
+                      <ArrowRight className="size-4" />
+                    </Link>
+                  </motion.div>
+
+                  {/* Feature Pills */}
+                  <motion.div variants={item} className="mt-6 sm:mt-10 flex flex-wrap gap-2 sm:gap-3">
+                    {HERO_FEATURES.map(({ icon: Ic, label }) => (
+                      <motion.div
+                        key={label}
+                        whileHover={{ scale: 1.05, borderColor: 'hsla(152, 76%, 46%, 0.3)' }}
+                        transition={{ duration: 0.2 }}
+                        className="flex items-center gap-2 rounded-lg bg-kv-surface/60 border border-border/40 px-4 py-2 cursor-default"
+                      >
+                        <Ic className="size-3.5 text-primary/70" />
+                        <span className="text-xs text-foreground/70 font-medium">{label}</span>
+                      </motion.div>
+                    ))}
+                  </motion.div>
                 </motion.div>
+              </div>
+
+              {/* Right: Workflow Diagram */}
+              <motion.div
+                initial={{ opacity: 0, x: 40, filter: 'blur(10px)' }}
+                animate={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
+                transition={{ duration: 1.2, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                className="lg:col-span-5 xl:col-span-6"
+              >
+                <div className="relative rounded-2xl overflow-hidden bg-kv-surface/30 border border-border/40 backdrop-blur-sm p-4 lg:p-6 group hover:border-primary/20 transition-all duration-500">
+                  <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
+                  <div className="flex items-center gap-2 mb-4">
+                    <div className="flex gap-1.5">
+                      <span className="size-2.5 rounded-full bg-primary/40 animate-glow-pulse" />
+                      <span className="size-2.5 rounded-full bg-kv-mint/30" style={{ animationDelay: '0.5s' }} />
+                      <span className="size-2.5 rounded-full bg-kv-lime/30" style={{ animationDelay: '1s' }} />
+                    </div>
+                    <span className="text-[10px] font-display font-medium text-muted-foreground/60 uppercase tracking-widest ml-2">
+                      AI Workflow Pipeline — Live
+                    </span>
+                    <span className="ml-auto size-2 rounded-full bg-emerald-400/60 animate-pulse" />
+                  </div>
+                  <WorkflowDiagram />
+                  <div className="mt-3 flex items-center justify-between text-[10px] text-muted-foreground/40 font-display uppercase tracking-widest">
+                    <span>Data Ingestion</span>
+                    <span>Processing</span>
+                    <span>Output</span>
+                  </div>
+                  {/* Bottom market bars accent */}
+                  <div className="mt-3 opacity-50">
+                    <MarketBars barCount={30} />
+                  </div>
+                </div>
               </motion.div>
             </div>
-
-            {/* Right: Workflow Diagram */}
-            <motion.div
-              initial={{ opacity: 0, x: 40, filter: 'blur(6px)' }}
-              animate={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
-              transition={{ duration: 0.9, delay: 0.4, ease: 'easeOut' }}
-              className="lg:col-span-5 xl:col-span-6"
-            >
-              <div className="relative rounded-2xl overflow-hidden bg-kv-surface/30 border border-border/40 backdrop-blur-sm p-4 lg:p-6 group hover:border-primary/20 transition-all duration-500">
-                <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
-                <div className="flex items-center gap-2 mb-4">
-                  <div className="flex gap-1.5">
-                    <span className="size-2.5 rounded-full bg-primary/40 animate-glow-pulse" />
-                    <span className="size-2.5 rounded-full bg-kv-mint/30" style={{ animationDelay: '0.5s' }} />
-                    <span className="size-2.5 rounded-full bg-kv-lime/30" style={{ animationDelay: '1s' }} />
-                  </div>
-                  <span className="text-[10px] font-display font-medium text-muted-foreground/60 uppercase tracking-widest ml-2">
-                    AI Workflow Pipeline — Live
-                  </span>
-                  <span className="ml-auto size-2 rounded-full bg-emerald-400/60 animate-pulse" />
-                </div>
-                <WorkflowDiagram />
-                <div className="mt-3 flex items-center justify-between text-[10px] text-muted-foreground/40 font-display uppercase tracking-widest">
-                  <span>Data Ingestion</span>
-                  <span>Processing</span>
-                  <span>Output</span>
-                </div>
-                {/* Bottom market bars accent */}
-                <div className="mt-3 opacity-50">
-                  <MarketBars barCount={30} />
-                </div>
-              </div>
-            </motion.div>
           </div>
-        </div>
 
-        {/* Bottom gradient fade */}
-        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-background to-transparent" />
-      </section>
+          {/* Bottom gradient fade */}
+          <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-background to-transparent" />
+        </section>
+      </CursorSpotlight>
+
+      {/* ===== MARQUEE DIVIDER ===== */}
+      <TextMarquee words={MARQUEE_WORDS_1} className="py-6 lg:py-8" />
 
       {/* ===== STATS SECTION ===== */}
       <section className="relative z-base py-20 lg:py-28">
@@ -254,6 +268,9 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ===== MARQUEE DIVIDER 2 (reverse) ===== */}
+      <TextMarquee words={MARQUEE_WORDS_2} className="py-6 lg:py-8" reverse />
+
       {/* ===== WORKFLOW VISUALIZATION ===== */}
       <section className="relative z-base py-20 lg:py-28">
         <div className="mx-auto max-w-[1400px] px-6 lg:px-10">
@@ -270,9 +287,9 @@ export default function Home() {
                 We design AI workflows using visual, no-code orchestration platforms. Each pipeline is mapped, validated, and optimized before deployment — giving your team full visibility into how data flows through intelligent systems.
               </p>
               <div className="mt-6 space-y-3">
-                {['Drag-and-drop pipeline design', 'Real-time monitoring dashboards', 'Version-controlled workflow history'].map((item, idx) => (
+                {['Drag-and-drop pipeline design', 'Real-time monitoring dashboards', 'Version-controlled workflow history'].map((featureItem, idx) => (
                   <motion.div
-                    key={item}
+                    key={featureItem}
                     initial={{ opacity: 0, x: -12 }}
                     whileInView={{ opacity: 1, x: 0 }}
                     viewport={{ once: true }}
@@ -280,14 +297,14 @@ export default function Home() {
                     className="flex items-center gap-3"
                   >
                     <span className="size-1.5 rounded-full bg-primary" />
-                    <span className="text-sm text-foreground/80">{item}</span>
+                    <span className="text-sm text-foreground/80">{featureItem}</span>
                   </motion.div>
                 ))}
               </div>
             </SectionReveal>
 
             <SectionReveal className="lg:col-span-7" delay={150} direction="right">
-              <div className="relative rounded-2xl overflow-hidden group">
+              <div className="relative rounded-2xl overflow-hidden group hover-elastic">
                 <img
                   src={workflowVisual}
                   alt="AI workflow visualization showing connected automation nodes"
@@ -387,36 +404,38 @@ export default function Home() {
       </section>
 
       {/* ===== BOTTOM CTA ===== */}
-      <section className="relative z-base py-20 lg:py-32 overflow-hidden">
-        <div className="absolute inset-0 opacity-[0.03] pointer-events-none">
-          <MarketBars barCount={100} />
-        </div>
-        <div className="mx-auto max-w-[1400px] px-6 lg:px-10 relative z-10">
-          <SectionReveal direction="blur">
-            <div className="text-center">
-              <h2 className="font-display text-3xl lg:text-5xl font-extrabold text-foreground text-balance">
-                Precision over hype.{' '}
-                <span className="text-gradient-animated">Measurable advantage.</span>
-              </h2>
-              <p className="mt-5 text-lg text-muted-foreground max-w-2xl mx-auto text-pretty">
-                Convert AI capability into fund-grade operational systems. Schedule a discovery call to map your highest-impact automation opportunities.
-              </p>
-              <div className="mt-8 flex flex-wrap justify-center gap-4">
-                <Link to="/contact">
-                  <MagneticButton
-                    as="div"
-                    className="inline-flex items-center gap-2 rounded-lg bg-primary px-8 py-4 text-base font-semibold text-primary-foreground transition-shadow duration-300 hover:shadow-[0_0_40px_hsla(152,76%,46%,0.35),_0_0_80px_hsla(152,76%,46%,0.1)] active:scale-[0.97]"
-                    strength={0.12}
-                  >
-                    Start Consultation
-                    <ArrowUpRight className="size-5" />
-                  </MagneticButton>
-                </Link>
+      <CursorSpotlight size={700} intensity={0.05}>
+        <section className="relative z-base py-20 lg:py-32 overflow-hidden">
+          <div className="absolute inset-0 opacity-[0.03] pointer-events-none">
+            <MarketBars barCount={100} />
+          </div>
+          <div className="mx-auto max-w-[1400px] px-6 lg:px-10 relative z-10">
+            <SectionReveal direction="blur">
+              <div className="text-center">
+                <h2 className="font-display text-3xl lg:text-5xl font-extrabold text-foreground text-balance">
+                  Precision over hype.{' '}
+                  <span className="text-gradient-animated">Measurable advantage.</span>
+                </h2>
+                <p className="mt-5 text-lg text-muted-foreground max-w-2xl mx-auto text-pretty">
+                  Convert AI capability into fund-grade operational systems. Schedule a discovery call to map your highest-impact automation opportunities.
+                </p>
+                <div className="mt-8 flex flex-wrap justify-center gap-4">
+                  <Link to="/contact">
+                    <MagneticButton
+                      as="div"
+                      className="inline-flex items-center gap-2 rounded-lg bg-primary px-8 py-4 text-base font-semibold text-primary-foreground transition-shadow duration-300 hover:shadow-[0_0_40px_hsla(152,76%,46%,0.35),_0_0_80px_hsla(152,76%,46%,0.1)] active:scale-[0.97]"
+                      strength={0.12}
+                    >
+                      Start Consultation
+                      <ArrowUpRight className="size-5" />
+                    </MagneticButton>
+                  </Link>
+                </div>
               </div>
-            </div>
-          </SectionReveal>
-        </div>
-      </section>
+            </SectionReveal>
+          </div>
+        </section>
+      </CursorSpotlight>
     </>
   );
 }

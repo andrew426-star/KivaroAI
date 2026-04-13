@@ -48,12 +48,12 @@ export default function StatCounter({ value, suffix = '', label }: StatCounterPr
       <div
         className={`font-display text-3xl sm:text-4xl lg:text-5xl font-extrabold tabular-nums transition-all duration-500 ${
           done ? 'text-gradient-animated' : 'text-gradient-green'
-        }`}
+        } ${inView && !done ? 'counting-blur' : ''}`}
       >
         {display}
         <span>{suffix}</span>
       </div>
-      <div className="mt-3 mx-auto w-8 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent transition-all duration-700 group-hover:w-16" />
+      <div className="mt-3 mx-auto h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent transition-all duration-1000 ease-out w-0 group-hover:w-24" style={{ width: done ? '48px' : '0px' }} />
       <p className="mt-2 text-sm text-muted-foreground leading-snug max-w-[200px] mx-auto">
         {label}
       </p>

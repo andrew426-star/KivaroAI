@@ -34,6 +34,22 @@ export default function GridBackground() {
           ease: 'easeInOut',
         }}
       />
+      {/* Secondary ambient glow */}
+      <motion.div
+        className="absolute w-[400px] h-[400px] rounded-full"
+        style={{
+          background: 'radial-gradient(circle, hsla(82, 80%, 55%, 0.008) 0%, transparent 60%)',
+        }}
+        animate={{
+          x: ['60%', '10%', '50%', '60%'],
+          y: ['50%', '20%', '40%', '50%'],
+        }}
+        transition={{
+          duration: 30,
+          repeat: Infinity,
+          ease: 'easeInOut',
+        }}
+      />
     </div>
   );
 }

@@ -8,6 +8,9 @@ import ServiceCard from '@/components/features/ServiceCard';
 import SectionReveal from '@/components/features/SectionReveal';
 import MarketBars from '@/components/features/MarketBars';
 import MagneticButton from '@/components/features/MagneticButton';
+import TextMarquee from '@/components/features/TextMarquee';
+import SplitTextReveal from '@/components/features/SplitTextReveal';
+import CursorSpotlight from '@/components/features/CursorSpotlight';
 import { cn } from '@/lib/utils';
 
 const CATEGORIES = [
@@ -35,30 +38,34 @@ export default function Services() {
   return (
     <>
       {/* Hero */}
-      <section className="relative z-base pt-16 pb-16 lg:pt-24 lg:pb-20 overflow-hidden">
-        <div className="absolute bottom-0 left-0 right-0 opacity-[0.04] pointer-events-none h-20">
-          <MarketBars barCount={60} />
-        </div>
-        <div className="mx-auto max-w-[1400px] px-6 lg:px-10 relative">
-          <SectionReveal direction="blur">
-            <div className="max-w-3xl">
-              <span className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 mb-5">
-                <span className="size-1.5 rounded-full bg-primary animate-glow-pulse" />
-                <span className="text-xs font-medium text-primary/80 tracking-wide uppercase font-display">
-                  Capabilities
+      <CursorSpotlight size={700} intensity={0.06}>
+        <section className="relative z-base pt-16 pb-16 lg:pt-24 lg:pb-20 overflow-hidden">
+          <div className="absolute bottom-0 left-0 right-0 opacity-[0.04] pointer-events-none h-20">
+            <MarketBars barCount={60} />
+          </div>
+          <div className="mx-auto max-w-[1400px] px-6 lg:px-10 relative">
+            <SectionReveal direction="blur">
+              <div className="max-w-3xl">
+                <span className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 mb-5">
+                  <span className="size-1.5 rounded-full bg-primary animate-glow-pulse" />
+                  <span className="text-xs font-medium text-primary/80 tracking-wide uppercase font-display">
+                    Capabilities
+                  </span>
                 </span>
-              </span>
-              <h1 className="font-display text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-extrabold leading-[1.1] text-balance">
-                AI Systems for{' '}
-                <span className="text-gradient-animated">Hedge Fund Operations</span>
-              </h1>
-              <p className="mt-5 text-lg text-muted-foreground leading-relaxed max-w-2xl text-pretty">
-                Nine specialized service lines spanning research automation, operational intelligence, custom AI agents, and secure infrastructure architecture. Each designed for institutional-grade deployment.
-              </p>
-            </div>
-          </SectionReveal>
-        </div>
-      </section>
+                <SplitTextReveal
+                  text="AI Systems for Hedge Fund Operations"
+                  as="h1"
+                  className="font-display text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-extrabold leading-[1.1]"
+                  delay={2}
+                />
+                <p className="mt-5 text-lg text-muted-foreground leading-relaxed max-w-2xl text-pretty">
+                  Nine specialized service lines spanning research automation, operational intelligence, custom AI agents, and secure infrastructure architecture. Each designed for institutional-grade deployment.
+                </p>
+              </div>
+            </SectionReveal>
+          </div>
+        </section>
+      </CursorSpotlight>
 
       {/* Category Filter + Service List */}
       <section className="relative z-base pb-20 lg:pb-32">
@@ -107,6 +114,11 @@ export default function Services() {
           </motion.div>
 
           {/* Bottom CTA */}
+          <TextMarquee
+            words={['Research', 'Operations', 'Intelligence', 'Architecture', 'Automation', 'Security', 'Compliance']}
+            className="py-8"
+            reverse
+          />
           <SectionReveal direction="scale">
             <div className="mt-16 text-center">
               <p className="text-muted-foreground mb-4">

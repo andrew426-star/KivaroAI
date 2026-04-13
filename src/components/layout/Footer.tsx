@@ -4,10 +4,17 @@ import { MapPin, Mail, Phone, ArrowUpRight, ArrowRight } from 'lucide-react';
 import { motion } from 'framer-motion';
 import kivaroLogo from '@/assets/kivaro-logo.png';
 import MagneticButton from '@/components/features/MagneticButton';
+import TextMarquee from '@/components/features/TextMarquee';
 
 export default function Footer() {
   return (
     <footer className="relative z-base border-t border-border bg-background/80">
+      {/* Scrolling brand marquee */}
+      <TextMarquee
+        words={['Kivaro AI', 'Hedge Fund Intelligence', 'AI Automation', 'Disciplined Execution', 'Fund-Grade Systems']}
+        className="py-5 border-b border-border/30"
+      />
+
       {/* Top CTA Band */}
       <div className="border-b border-border overflow-hidden relative">
         {/* Ambient gradient */}

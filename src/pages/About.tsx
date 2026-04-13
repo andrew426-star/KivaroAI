@@ -12,6 +12,9 @@ import SectionReveal from '@/components/features/SectionReveal';
 import FAQSection from '@/components/features/FAQSection';
 import MarketBars from '@/components/features/MarketBars';
 import MagneticButton from '@/components/features/MagneticButton';
+import TextMarquee from '@/components/features/TextMarquee';
+import SplitTextReveal from '@/components/features/SplitTextReveal';
+import CursorSpotlight from '@/components/features/CursorSpotlight';
 import { cn } from '@/lib/utils';
 
 function MethodologyCards() {
@@ -129,10 +132,12 @@ export default function About() {
                   About Kivaro AI
                 </span>
               </span>
-              <h1 className="font-display text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-extrabold leading-[1.1] text-balance">
-                Structured AI for{' '}
-                <span className="text-gradient-animated">Investment Excellence</span>
-              </h1>
+              <SplitTextReveal
+                text="Structured AI for Investment Excellence"
+                as="h1"
+                className="font-display text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-extrabold leading-[1.1]"
+                delay={2}
+              />
               <p className="mt-5 text-lg text-muted-foreground leading-relaxed text-pretty">
                 Kivaro AI was established to bring structured AI execution into professional investment environments. We serve hedge funds that require more than experimentation — they require dependable systems, disciplined workflows, and measurable operational gains.
               </p>
@@ -175,6 +180,10 @@ export default function About() {
       </section>
 
       {/* Founder */}
+      <TextMarquee
+        words={['Discipline', 'Precision', 'Intelligence', 'Execution', 'Systems', 'Automation', 'Advantage']}
+        className="py-4"
+      />
       <section className="relative z-base py-20 lg:py-28">
         <div className="mx-auto max-w-[1400px] px-6 lg:px-10">
           <SectionReveal direction="scale">
@@ -182,9 +191,9 @@ export default function About() {
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-0">
                 <div className="lg:col-span-4 p-8 lg:p-10 flex flex-col items-center lg:items-start justify-center border-b lg:border-b-0 lg:border-r border-border/40">
                   <motion.div
-                    whileHover={{ scale: 1.05, rotate: 2 }}
-                    transition={{ type: 'spring', stiffness: 300, damping: 15 }}
-                    className="size-28 rounded-2xl overflow-hidden border-2 border-primary/20 mb-5 shadow-[0_0_30px_hsla(152,76%,46%,0.1)]"
+                    whileHover={{ scale: 1.08, rotate: 3 }}
+                    transition={{ type: 'spring', stiffness: 300, damping: 12 }}
+                    className="size-28 rounded-2xl overflow-hidden border-2 border-primary/20 mb-5 shadow-[0_0_40px_hsla(152,76%,46%,0.12)]"
                   >
                     <img
                       src={founderHeadshot}

@@ -334,3 +334,147 @@
 .stagger-children > *:nth-child(6) { animation-delay: 400ms; }
 .stagger-children > *:nth-child(7) { animation-delay: 480ms; }
 .stagger-children > *:nth-child(8) { animation-delay: 560ms; }
+
+/* === Capital Club–Inspired Effects === */
+
+/* Infinite horizontal text marquee */
+@keyframes marquee-scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-marquee {
+  animation: marquee-scroll 25s linear infinite;
+}
+
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+
+/* Reverse marquee */
+@keyframes marquee-scroll-reverse {
+  0% { transform: translateX(-50%); }
+  100% { transform: translateX(0); }
+}
+
+.animate-marquee-reverse {
+  animation: marquee-scroll-reverse 25s linear infinite;
+}
+
+.animate-marquee-reverse:hover {
+  animation-play-state: paused;
+}
+
+/* Noise / grain texture overlay */
+.noise-overlay::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 256px 256px;
+  mix-blend-mode: overlay;
+}
+
+/* 3D Tilt card hover perspective */
+.perspective-container {
+  perspective: 1200px;
+}
+
+.tilt-card {
+  transform-style: preserve-3d;
+  transition: transform 0.4s cubic-bezier(0.03, 0.98, 0.52, 0.99);
+}
+
+/* Cinematic text split reveal */
+@keyframes text-reveal-up {
+  0% {
+    opacity: 0;
+    transform: translateY(100%) rotateX(-80deg);
+    filter: blur(4px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) rotateX(0deg);
+    filter: blur(0);
+  }
+}
+
+.text-reveal-word {
+  display: inline-block;
+  overflow: hidden;
+}
+
+.text-reveal-word > span {
+  display: inline-block;
+  animation: text-reveal-up 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Horizontal rule glow pulse */
+@keyframes hr-glow {
+  0%, 100% { opacity: 0.4; width: 60px; }
+  50% { opacity: 1; width: 120px; }
+}
+
+.hr-glow-pulse {
+  animation: hr-glow 3s ease-in-out infinite;
+}
+
+/* Smooth elastic scale on hover */
+.hover-elastic {
+  transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.hover-elastic:hover {
+  transform: scale(1.04);
+}
+
+/* Dramatic section divider line */
+@keyframes line-expand {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+.line-reveal {
+  transform-origin: left;
+  animation: line-expand 1.2s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Cursor glow / spotlight effect */
+.cursor-spotlight {
+  position: relative;
+  overflow: hidden;
+}
+
+.cursor-spotlight::after {
+  content: '';
+  position: absolute;
+  width: 600px;
+  height: 600px;
+  border-radius: 50%;
+  background: radial-gradient(circle, hsla(152, 76%, 46%, 0.04) 0%, transparent 70%);
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  left: var(--spotlight-x, 50%);
+  top: var(--spotlight-y, 50%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.cursor-spotlight:hover::after {
+  opacity: 1;
+}
+
+/* Smooth counter blur during count-up */
+@keyframes count-blur {
+  0% { filter: blur(6px); opacity: 0.5; }
+  80% { filter: blur(1px); opacity: 0.9; }
+  100% { filter: blur(0px); opacity: 1; }
+}
+
+.counting-blur {
+  animation: count-blur 1.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+}

@@ -34,9 +34,9 @@ export default function Header() {
           <motion.img
             src={kivaroLogo}
             alt="Kivaro AI Logo"
-            className="size-9 object-contain drop-shadow-[0_0_6px_hsla(152,76%,46%,0.3)]"
-            whileHover={{ scale: 1.1, rotate: 5 }}
-            transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+            className="size-9 object-contain drop-shadow-[0_0_8px_hsla(152,76%,46%,0.35)]"
+            whileHover={{ scale: 1.12, rotate: 6, filter: 'drop-shadow(0 0 12px hsla(152,76%,46%,0.5))' }}
+            transition={{ type: 'spring', stiffness: 400, damping: 12 }}
           />
           <span className="font-display text-lg font-bold tracking-tight text-foreground transition-colors duration-300 group-hover:text-primary">
             {SITE_CONFIG.name}
@@ -71,7 +71,7 @@ export default function Header() {
         {/* Desktop CTA */}
         <Link
           to="/contact"
-          className="hidden md:inline-flex items-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground transition-all duration-300 hover:shadow-[0_0_24px_hsla(152,76%,46%,0.35)] hover:scale-[1.03] active:scale-[0.97] btn-magnetic overflow-hidden relative"
+          className="hidden md:inline-flex items-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground transition-all duration-300 hover:shadow-[0_0_30px_hsla(152,76%,46%,0.4),_0_0_60px_hsla(152,76%,46%,0.1)] hover:scale-[1.04] active:scale-[0.96] btn-magnetic overflow-hidden relative"
         >
           <span className="relative z-10">Start Consultation</span>
         </Link>
