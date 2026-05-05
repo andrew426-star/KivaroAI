@@ -6,12 +6,14 @@ import ParticleField from '@/components/features/ParticleField';
 import GridBackground from '@/components/features/GridBackground';
 import MarketTicker from '@/components/features/MarketTicker';
 import AnimatedOutlet from '@/components/layout/AnimatedOutlet';
+import { trackPageView } from '@/lib/analytics';
 
 export default function Layout() {
   const { pathname } = useLocation();
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'instant' });
+    trackPageView(pathname);
   }, [pathname]);
 
   return (
