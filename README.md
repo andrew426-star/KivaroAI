@@ -1,61 +1,65 @@
-# Welcome to your OnSpace project
+# Kivaro AI — Website
 
-## How can I edit this code?
+AI Automation & Intelligence for Hedge Funds.  
+Live at [kivaroai.com](https://kivaroai.com).
 
-There are several ways of editing your application.
+## Tech Stack
 
-**Use OnSpace**
+- **React 18** + TypeScript + Vite
+- **Tailwind CSS** + shadcn/ui
+- **Framer Motion** animations
+- **Supabase** — auth, form submissions, analytics
+- **React Router v6** — client-side routing
 
-Simply visit the [OnSpace Project]() and start prompting.
+## Local Development
 
-Changes made via OnSpace will be committed automatically to this repo.
+```bash
+# 1. Install dependencies
+npm install
 
-**Use your preferred IDE**
+# 2. Copy env template and fill in your Supabase credentials
+cp .env.example .env
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in OnSpace.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# 3. Start dev server
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+## Deployment
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+This project deploys to Vercel from GitHub. Every push to `main` triggers an automatic deploy.
 
-**Use GitHub Codespaces**
+**Environment variables** required in Vercel project settings:
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+| Variable | Description |
+|---|---|
+| `VITE_SUPABASE_URL` | Your Supabase project URL |
+| `VITE_SUPABASE_ANON_KEY` | Your Supabase anon/public key |
 
-## What technologies are used for this project?
+## Supabase Setup
 
-This project is built with:
+1. Create a project at [supabase.com](https://supabase.com)
+2. Run migrations in **Supabase → SQL Editor**:
+   - `supabase/migrations/20250505000000_analytics.sql`
+   - `supabase/migrations/20250505000001_submissions.sql`
+3. Deploy the edge function: `supabase functions deploy submit-inquiry`
+4. Set edge function secrets in Supabase Dashboard → Edge Functions → Secrets:
+   - `RESEND_API_KEY` — for email notifications
+   - `N8N_WEBHOOK_URL` — optional, forwards submissions to n8n
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+## Project Structure
 
-## How can I deploy this project?
-
-Simply open [OnSpace]() and click on Share -> Publish.
+```
+src/
+  components/
+    admin/      # Admin dashboard tabs
+    features/   # Animated UI components
+    layout/     # Header, Footer, Layout
+    ui/         # shadcn/ui primitives
+  constants/    # Site config, nav links, mock data
+  hooks/        # useAuth, usePageMeta, etc.
+  pages/        # Home, Services, About, Process, Contact, Admin
+  lib/          # Supabase client, utils
+supabase/
+  functions/    # Edge functions (submit-inquiry)
+  migrations/   # SQL migrations
+```

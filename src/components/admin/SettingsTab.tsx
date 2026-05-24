@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import {
   User, Mail, Phone, MapPin, Calendar, Shield, Download,
-  CheckCircle2, AlertCircle, Copy, ExternalLink, Server,
+  CheckCircle2, Copy, ExternalLink, Server,
   Lock, Eye, EyeOff,
 } from 'lucide-react';
 import GlowCard from '@/components/features/GlowCard';
@@ -116,71 +116,6 @@ export default function SettingsTab({ adminEmail, allSubmissions, allSessions, a
                 </div>
               </div>
             ))}
-          </div>
-        </div>
-      </GlowCard>
-
-      {/* Removing OnSpace.ai Banner */}
-      <GlowCard>
-        <div className="p-5 border-b border-border/50">
-          <div className="flex items-center gap-2">
-            <AlertCircle className="size-4 text-amber-400" />
-            <h3 className="font-display text-sm font-bold text-foreground">Remove OnSpace.ai Branding Banner</h3>
-          </div>
-        </div>
-        <div className="p-5 space-y-4">
-          <p className="text-sm text-muted-foreground leading-relaxed">
-            The "Ideas → Web | OnSpace.AI" banner at the top of your site is injected by OnSpace.ai's
-            hosting platform at the CDN level — it's not in your source code. The only way to permanently
-            remove it is to host this React app yourself on a platform you control and point your domain DNS there.
-          </p>
-
-          <div className="space-y-3">
-            <p className="text-xs font-display font-semibold uppercase tracking-wider text-muted-foreground">
-              Recommended hosting options (all have free tiers)
-            </p>
-
-            {[
-              {
-                name:   'Vercel',
-                desc:   'Best for React apps. Zero-config, instant deploys from GitHub.',
-                steps:  ['Push this repo to GitHub', 'Connect repo at vercel.com/new', 'Vercel auto-detects Vite — click Deploy', 'Add kivaroai.com in Project → Domains'],
-                color:  'text-white',
-              },
-              {
-                name:   'Netlify',
-                desc:   'Also excellent. Build command: vite build, publish dir: dist.',
-                steps:  ['Push to GitHub', 'app.netlify.com → Add new site → Import from Git', 'Build command: npm run build, Publish dir: dist', 'Add custom domain under Site settings → Domain management'],
-                color:  'text-teal-400',
-              },
-            ].map(host => (
-              <div key={host.name} className="rounded-lg border border-border/50 bg-background/50 p-4">
-                <div className="flex items-center justify-between mb-2">
-                  <span className={cn('font-display font-bold text-sm', host.color)}>{host.name}</span>
-                  <span className="text-[10px] text-emerald-400 font-display uppercase tracking-wider bg-emerald-400/10 border border-emerald-400/20 rounded px-1.5 py-0.5">Free</span>
-                </div>
-                <p className="text-xs text-muted-foreground mb-3">{host.desc}</p>
-                <ol className="space-y-1">
-                  {host.steps.map((step, i) => (
-                    <li key={i} className="flex items-start gap-2 text-xs text-foreground/70">
-                      <span className="font-display font-bold text-primary/70 shrink-0">{i + 1}.</span>
-                      {step}
-                    </li>
-                  ))}
-                </ol>
-              </div>
-            ))}
-
-            <div className="rounded-lg border border-border/40 bg-primary/3 p-4">
-              <p className="text-xs font-display font-semibold uppercase tracking-wider text-muted-foreground mb-2">
-                After deploying, update DNS at your registrar
-              </p>
-              <p className="text-xs text-muted-foreground leading-relaxed">
-                In your domain registrar (where you registered kivaroai.com), update the A record or
-                CNAME to point to your new host. Both Vercel and Netlify provide the exact DNS values
-                in their domain settings. Propagation takes 5–30 minutes.
-              </p>
-            </div>
           </div>
         </div>
       </GlowCard>
