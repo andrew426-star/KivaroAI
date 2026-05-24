@@ -65,20 +65,3 @@ CREATE POLICY "auth_all_sessions" ON public.visitor_sessions
 
 CREATE POLICY "auth_all_views" ON public.page_views
   FOR ALL TO authenticated USING (true) WITH CHECK (true);
-
--- ----------------------------------------------------------------
--- Also grant authenticated DELETE on form_submissions (for admin)
--- ----------------------------------------------------------------
-DO $$
-BEGIN
-  IF NOT EXISTS (
-    SELECT 1 FROM pg_policies
-    WHERE tablename = 'form_submissions'
-      AND policyname = 'auth_delete_submissions'
-  ) THEN
-    EXECUTE '
-      CREATE POLICY auth_delete_submissions ON public.form_submissions
-        FOR DELETE TO authenticated USING (true)
-    ';
-  END IF;
-END $$;
