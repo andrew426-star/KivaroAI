@@ -1,9 +1,8 @@
 -- Analytics: visitor sessions and page views
--- Run this in your Supabase SQL editor or via the CLI
+-- Safe to re-run: uses IF NOT EXISTS + drops policies before recreating
 
 -- ----------------------------------------------------------------
 -- visitor_sessions
--- One row per browser session (sessionStorage-scoped)
 -- ----------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS public.visitor_sessions (
   id              UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -21,7 +20,6 @@ CREATE TABLE IF NOT EXISTS public.visitor_sessions (
 
 -- ----------------------------------------------------------------
 -- page_views
--- One row per page visit within a session
 -- ----------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS public.page_views (
   id               UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -33,17 +31,25 @@ CREATE TABLE IF NOT EXISTS public.page_views (
 );
 
 -- Indexes
-CREATE INDEX IF NOT EXISTS idx_vs_created_at   ON public.visitor_sessions (created_at DESC);
-CREATE INDEX IF NOT EXISTS idx_vs_session_id   ON public.visitor_sessions (session_id);
-CREATE INDEX IF NOT EXISTS idx_pv_created_at   ON public.page_views (created_at DESC);
-CREATE INDEX IF NOT EXISTS idx_pv_session_id   ON public.page_views (session_id);
-CREATE INDEX IF NOT EXISTS idx_pv_page         ON public.page_views (page);
+CREATE INDEX IF NOT EXISTS idx_vs_created_at  ON public.visitor_sessions (created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_vs_session_id  ON public.visitor_sessions (session_id);
+CREATE INDEX IF NOT EXISTS idx_pv_created_at  ON public.page_views (created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_pv_session_id  ON public.page_views (session_id);
+CREATE INDEX IF NOT EXISTS idx_pv_page        ON public.page_views (page);
 
 -- ----------------------------------------------------------------
 -- Row Level Security
 -- ----------------------------------------------------------------
 ALTER TABLE public.visitor_sessions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.page_views       ENABLE ROW LEVEL SECURITY;
+
+-- Drop existing policies so re-runs don't fail
+DROP POLICY IF EXISTS "anon_insert_sessions"  ON public.visitor_sessions;
+DROP POLICY IF EXISTS "anon_update_sessions"  ON public.visitor_sessions;
+DROP POLICY IF EXISTS "auth_all_sessions"     ON public.visitor_sessions;
+DROP POLICY IF EXISTS "anon_insert_views"     ON public.page_views;
+DROP POLICY IF EXISTS "anon_update_views"     ON public.page_views;
+DROP POLICY IF EXISTS "auth_all_views"        ON public.page_views;
 
 -- Anon can INSERT (tracking from public website)
 CREATE POLICY "anon_insert_sessions" ON public.visitor_sessions

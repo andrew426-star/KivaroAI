@@ -1,4 +1,6 @@
 -- Form submissions from the contact/inquiry form
+-- Safe to re-run: uses IF NOT EXISTS + drops policies before recreating
+
 CREATE TABLE IF NOT EXISTS public.form_submissions (
   id            UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
   name          TEXT        NOT NULL,
@@ -13,11 +15,15 @@ CREATE TABLE IF NOT EXISTS public.form_submissions (
   created_at    TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
-CREATE INDEX IF NOT EXISTS idx_fs_created_at    ON public.form_submissions (created_at DESC);
-CREATE INDEX IF NOT EXISTS idx_fs_email         ON public.form_submissions (email);
-CREATE INDEX IF NOT EXISTS idx_fs_inquiry_type  ON public.form_submissions (inquiry_type);
+CREATE INDEX IF NOT EXISTS idx_fs_created_at   ON public.form_submissions (created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_fs_email        ON public.form_submissions (email);
+CREATE INDEX IF NOT EXISTS idx_fs_inquiry_type ON public.form_submissions (inquiry_type);
 
 ALTER TABLE public.form_submissions ENABLE ROW LEVEL SECURITY;
+
+-- Drop existing policies so re-runs don't fail
+DROP POLICY IF EXISTS "anon_insert_submissions" ON public.form_submissions;
+DROP POLICY IF EXISTS "auth_all_submissions"    ON public.form_submissions;
 
 -- Anon can INSERT (public contact form)
 CREATE POLICY "anon_insert_submissions" ON public.form_submissions
