@@ -173,12 +173,18 @@ export const STATS: Stat[] = [
 ];
 
 export const TOOLS: ToolItem[] = [
-  { name: 'StackAI', description: 'Secure AI workflow orchestration', category: 'Core Platform' },
-  { name: 'Claude', description: 'Enterprise LLM intelligence', category: 'AI Models' },
-  { name: 'Voiceflow', description: 'Conversational AI agent builder', category: 'AI Agents' },
-  { name: 'OpenClaw', description: 'AI infrastructure & orchestration', category: 'AI Infrastructure' },
-  { name: 'Airtable', description: 'Structured data management', category: 'Data' },
-  { name: 'Custom APIs', description: 'Bespoke integration endpoints', category: 'Architecture' },
+  { name: 'Claude AI',   description: 'Primary LLM for all agent intelligence layers',  category: 'AI' },
+  { name: 'ElevenLabs',  description: 'Voice synthesis for conversational AI systems',   category: 'AI' },
+  { name: 'Next.js',     description: 'Production-grade React framework',                category: 'Frontend' },
+  { name: 'TypeScript',  description: 'Type-safe development across all codebases',      category: 'Frontend' },
+  { name: 'Python',      description: 'Backend AI pipelines and data processing',        category: 'Backend' },
+  { name: 'Node.js',     description: 'Event-driven API and integration services',       category: 'Backend' },
+  { name: 'Supabase',    description: 'Postgres database, auth, and realtime layer',     category: 'Data' },
+  { name: 'MongoDB',     description: 'Document storage for unstructured AI data',       category: 'Data' },
+  { name: 'Docker',      description: 'Containerised, reproducible deployments',         category: 'Infrastructure' },
+  { name: 'Railway',     description: 'Server infrastructure and service hosting',       category: 'Infrastructure' },
+  { name: 'Vercel',      description: 'Edge deployment and frontend delivery',           category: 'Infrastructure' },
+  { name: 'React',       description: 'Component-driven UI architecture',                category: 'Frontend' },
 ];
 
 export const FAQS: FAQ[] = [
