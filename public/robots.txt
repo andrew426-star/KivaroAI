@@ -7,4 +7,4 @@ Disallow: /admin/
 Disallow: /admin/login
 
 # Sitemap
-Sitemap: https://www.kivaro.ai/sitemap.xml
+Sitemap: https://www.kivaroai.com/sitemap.xml
