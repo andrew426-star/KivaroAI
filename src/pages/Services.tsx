@@ -11,7 +11,6 @@ import MagneticButton from '@/components/features/MagneticButton';
 import TextMarquee from '@/components/features/TextMarquee';
 import SplitTextReveal from '@/components/features/SplitTextReveal';
 import CursorSpotlight from '@/components/features/CursorSpotlight';
-import AgentTeamSection from '@/components/features/AgentTeamSection';
 import { cn } from '@/lib/utils';
 
 const CATEGORIES = [
@@ -117,9 +116,6 @@ export default function Services() {
 
         </div>
       </section>
-
-      {/* Agent Team */}
-      <AgentTeamSection />
 
       <section className="relative z-base pb-20">
         <div className="mx-auto max-w-[1400px] px-6 lg:px-10">

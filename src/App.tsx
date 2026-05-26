@@ -10,6 +10,7 @@ const Services = lazy(() => import('@/pages/Services'));
 const About = lazy(() => import('@/pages/About'));
 const Contact = lazy(() => import('@/pages/Contact'));
 const Process = lazy(() => import('@/pages/Process'));
+const Agents = lazy(() => import('@/pages/Agents'));
 const AdminLogin = lazy(() => import('@/pages/AdminLogin'));
 const AdminDashboard = lazy(() => import('@/pages/AdminDashboard'));
 
@@ -37,6 +38,7 @@ function App() {
           <Route element={<Layout />}>
             <Route path="/" element={<Home />} />
             <Route path="/services" element={<Services />} />
+            <Route path="/agents" element={<Agents />} />
             <Route path="/about" element={<About />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/process" element={<Process />} />
