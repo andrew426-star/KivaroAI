@@ -1,9 +1,8 @@
 import { Link } from 'react-router-dom';
-import { ArrowUpRight, ArrowRight, Zap, Lock, TrendingUp, BarChart3, Network, Brain } from 'lucide-react';
+import { ArrowUpRight, ArrowRight, Zap, Lock, TrendingUp, BarChart3, Network } from 'lucide-react';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { motion } from 'framer-motion';
 import heroBg from '@/assets/hero-bg.jpg';
-import workflowVisual from '@/assets/workflow-visual.jpg';
 import { SERVICES, STATS } from '@/constants/mockData';
 import { REGIONS } from '@/constants/config';
 import GlowCard from '@/components/features/GlowCard';
@@ -16,6 +15,7 @@ import MagneticButton from '@/components/features/MagneticButton';
 import TextMarquee from '@/components/features/TextMarquee';
 import SplitTextReveal from '@/components/features/SplitTextReveal';
 import CursorSpotlight from '@/components/features/CursorSpotlight';
+import ToolStack from '@/components/features/ToolStack';
 
 const HERO_FEATURES = [
   { icon: Zap, label: 'Workflow Automation' },
@@ -272,55 +272,24 @@ export default function Home() {
       {/* ===== MARQUEE DIVIDER 2 (reverse) ===== */}
       <TextMarquee words={MARQUEE_WORDS_2} className="py-6 lg:py-8" reverse />
 
-      {/* ===== WORKFLOW VISUALIZATION ===== */}
+      {/* ===== TECH STACK ===== */}
       <section className="relative z-base py-20 lg:py-28">
         <div className="mx-auto max-w-[1400px] px-6 lg:px-10">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-            <SectionReveal className="lg:col-span-5" direction="left">
+          <SectionReveal direction="blur">
+            <div className="text-center mb-12">
               <span className="inline-flex items-center gap-2 text-xs font-display font-semibold text-primary/70 uppercase tracking-widest mb-3">
-                <Brain className="size-3.5" />
-                No-Code Intelligence
+                <Network className="size-3.5" />
+                Built In-House
               </span>
-              <h2 className="font-display text-3xl lg:text-4xl font-bold text-foreground text-balance">
-                Visual Workflow Architecture
+              <h2 className="font-display text-3xl lg:text-4xl font-bold text-foreground">
+                The Stack Behind Every Deployment
               </h2>
-              <p className="mt-4 text-muted-foreground leading-relaxed text-pretty">
-                We design AI workflows using visual, no-code orchestration platforms. Each pipeline is mapped, validated, and optimized before deployment — giving your team full visibility into how data flows through intelligent systems.
+              <p className="mt-3 text-muted-foreground max-w-2xl mx-auto text-pretty">
+                Every Kivaro AI system is built on production-grade infrastructure — no off-the-shelf wrappers, no visual no-code tools. Custom pipelines, sovereign agents, and institutional-grade architecture from the ground up.
               </p>
-              <div className="mt-6 space-y-3">
-                {['Drag-and-drop pipeline design', 'Real-time monitoring dashboards', 'Version-controlled workflow history'].map((featureItem, idx) => (
-                  <motion.div
-                    key={featureItem}
-                    initial={{ opacity: 0, x: -12 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: idx * 0.1 + 0.2, duration: 0.4 }}
-                    className="flex items-center gap-3"
-                  >
-                    <span className="size-1.5 rounded-full bg-primary" />
-                    <span className="text-sm text-foreground/80">{featureItem}</span>
-                  </motion.div>
-                ))}
-              </div>
-            </SectionReveal>
-
-            <SectionReveal className="lg:col-span-7" delay={150} direction="right">
-              <div className="relative rounded-2xl overflow-hidden group hover-elastic">
-                <img
-                  src={workflowVisual}
-                  alt="AI workflow visualization showing connected automation nodes"
-                  className="w-full h-auto rounded-2xl transition-transform duration-700 group-hover:scale-[1.02]"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-background/60 via-transparent to-transparent rounded-2xl" />
-                <div className="absolute inset-0 border border-primary/10 rounded-2xl transition-all duration-500 group-hover:border-primary/25" />
-                {/* HUD overlay corners */}
-                <div className="absolute top-3 left-3 w-6 h-6 border-t-2 border-l-2 border-primary/30 rounded-tl-md" />
-                <div className="absolute top-3 right-3 w-6 h-6 border-t-2 border-r-2 border-primary/30 rounded-tr-md" />
-                <div className="absolute bottom-3 left-3 w-6 h-6 border-b-2 border-l-2 border-primary/30 rounded-bl-md" />
-                <div className="absolute bottom-3 right-3 w-6 h-6 border-b-2 border-r-2 border-primary/30 rounded-br-md" />
-              </div>
-            </SectionReveal>
-          </div>
+            </div>
+          </SectionReveal>
+          <ToolStack />
         </div>
       </section>
 
