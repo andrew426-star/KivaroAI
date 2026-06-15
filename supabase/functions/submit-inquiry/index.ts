@@ -102,6 +102,40 @@ Deno.serve(async (req: Request) => {
       console.log("No N8N_WEBHOOK_URL configured, skipping webhook forwarding");
     }
 
+    // Push to the K.I.V central ecosystem (real-time form-submission event).
+    // Env-gated + fire-and-forget — never affects the user's submission.
+    const kivBase = Deno.env.get("KIV_API_URL");
+    const kivKey = Deno.env.get("KIV_ECOSYSTEM_KEY");
+    if (kivBase && kivKey) {
+      try {
+        const kivRes = await fetch(`${kivBase}/api/ecosystem/push`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-KIV-App": "website",
+            "X-KIV-Key": kivKey,
+          },
+          body: JSON.stringify({
+            type: "intel_website",
+            title: `New inquiry: ${body.name}${body.company ? " · " + body.company : ""}`,
+            summary: body.inquiryType,
+            severity: "success",
+            topic: "form_submission",
+            payload: {
+              id: data.id,
+              name: body.name,
+              company: body.company || "",
+              inquiry_type: body.inquiryType,
+              submitted_at: data.submitted_at,
+            },
+          }),
+        });
+        console.log("K.I.V ecosystem push:", kivRes.status);
+      } catch (kivErr) {
+        console.error("K.I.V ecosystem push error:", kivErr);
+      }
+    }
+
     // Send email notification via Resend
     const resendApiKey = Deno.env.get("RESEND_API_KEY");
     if (resendApiKey) {
