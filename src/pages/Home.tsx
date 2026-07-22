@@ -1,8 +1,8 @@
+import { lazy, Suspense } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowUpRight, ArrowRight, Zap, Lock, TrendingUp, BarChart3, Network } from 'lucide-react';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { motion } from 'framer-motion';
-import heroBg from '@/assets/hero-bg.jpg';
 import { SERVICES, STATS } from '@/constants/mockData';
 import { REGIONS } from '@/constants/config';
 import GlowCard from '@/components/features/GlowCard';
@@ -16,6 +16,8 @@ import TextMarquee from '@/components/features/TextMarquee';
 import SplitTextReveal from '@/components/features/SplitTextReveal';
 import CursorSpotlight from '@/components/features/CursorSpotlight';
 import ToolStack from '@/components/features/ToolStack';
+
+const HeroScene = lazy(() => import('@/components/features/HeroScene'));
 
 const HERO_FEATURES = [
   { icon: Zap, label: 'Workflow Automation' },
@@ -33,13 +35,13 @@ const item = {
   show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: 'easeOut' } },
 };
 
-const MARQUEE_WORDS_1 = ['AI Automation', 'Hedge Funds', 'Workflow Intelligence', 'Due Diligence', 'Data Pipelines', 'Fund Operations', 'Secure Architecture'];
+const MARQUEE_WORDS_1 = ['AI Automation', 'Institutional Finance', 'Workflow Intelligence', 'Due Diligence', 'Data Pipelines', 'Fund Operations', 'Secure Architecture'];
 const MARQUEE_WORDS_2 = ['Research Automation', 'Portfolio Analytics', 'Custom AI Agents', 'Knowledge Systems', 'Strategy Dashboards', 'Reporting Automation', 'Compliance Systems'];
 
 export default function Home() {
   usePageMeta({
-    title: 'Kivaro AI — AI Automation & Intelligence for Hedge Funds',
-    description: 'Kivaro AI converts artificial intelligence into disciplined operational advantage for hedge funds. We automate research workflows, streamline fund operations, and build secure AI systems across the Southern U.S. — reducing research processing time by 73% and automating 40+ operational tasks.',
+    title: 'Kivaro AI — AI Automation & Intelligence for Institutional Investment Firms',
+    description: 'Kivaro AI converts artificial intelligence into disciplined operational advantage for hedge funds, investment banks, private equity firms, and venture capital firms. We automate research workflows, streamline firm operations, and build secure AI systems across the Southern U.S. — reducing research processing time by 73% and automating 40+ operational tasks.',
     canonicalPath: '/',
   });
 
@@ -48,26 +50,19 @@ export default function Home() {
       {/* ===== HERO SECTION ===== */}
       <CursorSpotlight size={800} intensity={0.08}>
         <section className="relative min-h-[calc(100dvh-104px)] lg:min-h-screen flex items-center overflow-hidden">
-          {/* Background Image Layer with parallax-like motion */}
+          {/* Live 3D Data-Terrain Background */}
           <motion.div
             className="absolute inset-0"
-            initial={{ scale: 1.08 }}
-            animate={{ scale: 1 }}
-            transition={{ duration: 2, ease: 'easeOut' }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 1.8, ease: 'easeOut' }}
           >
-            <img
-              src={heroBg}
-              alt=""
-              className="absolute inset-0 w-full h-full object-cover opacity-25"
-            />
-            <div className="absolute inset-0 bg-gradient-to-b from-background/60 via-background/80 to-background" />
+            <Suspense fallback={null}>
+              <HeroScene />
+            </Suspense>
+            <div className="absolute inset-0 bg-gradient-to-b from-background/45 via-background/75 to-background" />
             <div className="absolute inset-0 bg-gradient-to-r from-background via-transparent to-background/90" />
           </motion.div>
-
-          {/* Ambient market bars background accent */}
-          <div className="absolute bottom-24 left-10 right-10 opacity-[0.06] pointer-events-none">
-            <MarketBars barCount={80} />
-          </div>
 
           {/* Hero Content */}
           <div className="relative z-base mx-auto max-w-[1400px] w-full px-6 lg:px-10 pt-16 pb-20 lg:pt-8 lg:pb-0">
@@ -84,7 +79,7 @@ export default function Home() {
                     <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 mb-6">
                       <span className="size-1.5 rounded-full bg-primary animate-glow-pulse" />
                       <span className="text-xs font-medium text-primary/80 tracking-wide uppercase font-display">
-                        AI Automation for Hedge Funds
+                        AI Automation for Investment Firms
                       </span>
                     </div>
                   </motion.div>
@@ -101,7 +96,7 @@ export default function Home() {
                     variants={item}
                     className="mt-4 sm:mt-6 text-base sm:text-lg text-muted-foreground leading-relaxed max-w-xl text-pretty"
                   >
-                    Kivaro AI converts artificial intelligence into disciplined operational advantage for modern fund teams — from due diligence automation to investment data pipelines and internal knowledge systems.
+                    Kivaro AI converts artificial intelligence into disciplined operational advantage for hedge funds, investment banks, private equity, and venture capital firms — from due diligence automation to investment data pipelines and internal knowledge systems.
                   </motion.p>
 
                   {/* CTAs */}
@@ -220,10 +215,10 @@ export default function Home() {
                   Capabilities
                 </span>
                 <h2 className="font-display text-3xl lg:text-4xl font-bold text-foreground text-balance">
-                  Fund-Grade AI Systems
+                  Institutional-Grade AI Systems
                 </h2>
                 <p className="mt-3 text-muted-foreground max-w-lg text-pretty">
-                  Purpose-built automation and intelligence solutions designed for the operational rigor and security requirements of hedge fund environments.
+                  Purpose-built automation and intelligence solutions designed for the operational rigor and security requirements of institutional investment environments.
                 </p>
               </div>
               <Link
@@ -387,7 +382,7 @@ export default function Home() {
                   <span className="text-gradient-animated">Measurable advantage.</span>
                 </h2>
                 <p className="mt-5 text-lg text-muted-foreground max-w-2xl mx-auto text-pretty">
-                  Convert AI capability into fund-grade operational systems. Schedule a discovery call to map your highest-impact automation opportunities.
+                  Convert AI capability into institutional-grade operational systems. Schedule a discovery call to map your highest-impact automation opportunities.
                 </p>
                 <div className="mt-8 flex flex-wrap justify-center gap-4">
                   <Link to="/contact">

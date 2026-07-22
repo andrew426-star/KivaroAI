@@ -70,7 +70,7 @@ export default function Agents() {
                   className="inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition-shadow duration-300 hover:shadow-[0_0_30px_hsla(152,76%,46%,0.35)] active:scale-[0.97]"
                   strength={0.15}
                 >
-                  Deploy a Team for Your Fund
+                  Deploy a Team for Your Firm
                   <ArrowRight className="size-4" />
                 </MagneticButton>
               </Link>
@@ -101,7 +101,7 @@ export default function Agents() {
               <span className="text-gradient-animated">agent team?</span>
             </h2>
             <p className="mt-4 text-muted-foreground max-w-xl mx-auto text-pretty">
-              We scope, build, and deploy a custom division structure tailored to your fund's
+              We scope, build, and deploy a custom division structure tailored to your firm's
               workflows — research, operations, finance, and beyond.
             </p>
             <div className="mt-8">

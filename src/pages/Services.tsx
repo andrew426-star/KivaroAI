@@ -23,8 +23,8 @@ const CATEGORIES = [
 
 export default function Services() {
   usePageMeta({
-    title: 'AI Services for Hedge Funds — Kivaro AI',
-    description: 'Kivaro AI offers nine specialized AI service lines for hedge funds: research workflow automation, investment data pipelines, AI-assisted due diligence, fund operations automation, custom AI agents, internal knowledge systems, reporting automation, strategy dashboards, and secure AI stack architecture. All built for institutional-grade security and compliance.',
+    title: 'AI Services for Institutional Investment Firms — Kivaro AI',
+    description: 'Kivaro AI offers nine specialized AI service lines for hedge funds, investment banks, private equity firms, and venture capital firms: research workflow automation, investment data pipelines, AI-assisted due diligence, fund operations automation, custom AI agents, internal knowledge systems, reporting automation, strategy dashboards, and secure AI stack architecture. All built for institutional-grade security and compliance.',
     canonicalPath: '/services',
   });
 
@@ -53,7 +53,7 @@ export default function Services() {
                   </span>
                 </span>
                 <SplitTextReveal
-                  text="AI Systems for Hedge Fund Operations"
+                  text="AI Systems for Institutional Investment Operations"
                   as="h1"
                   className="font-display text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-extrabold leading-[1.1]"
                   delay={2}

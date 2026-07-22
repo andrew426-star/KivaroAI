@@ -43,7 +43,7 @@ export const SERVICES: Service[] = [
   {
     id: 'operations-automation',
     title: 'Fund Operations Automation',
-    description: 'Eliminate manual bottlenecks across fund administration, NAV calculations, reconciliation, and operational reporting through intelligent automation.',
+    description: 'Eliminate manual bottlenecks across fund administration, deal and portfolio reconciliation, NAV calculations, and operational reporting through intelligent automation.',
     icon: 'Cog',
     features: [
       'Trade reconciliation and exception handling',
@@ -124,7 +124,7 @@ export const PROCESS_STEPS: ProcessStep[] = [
   {
     id: 1,
     title: 'Discovery & Systems Audit',
-    description: 'Operational mapping of fund research, reporting, and data workflows to understand existing infrastructure and identify automation surfaces.',
+    description: 'Operational mapping of firm research, reporting, and data workflows to understand existing infrastructure and identify automation surfaces.',
     icon: 'Scan',
   },
   {
@@ -136,7 +136,7 @@ export const PROCESS_STEPS: ProcessStep[] = [
   {
     id: 3,
     title: 'Architecture Design',
-    description: 'Secure AI workflow and agent architecture using StackAI and integrated tools, designed for fund-grade security and compliance requirements.',
+    description: 'Secure AI workflow and agent architecture using StackAI and integrated tools, designed for institutional-grade security and compliance requirements.',
     icon: 'PenTool',
   },
   {
@@ -148,7 +148,7 @@ export const PROCESS_STEPS: ProcessStep[] = [
   {
     id: 5,
     title: 'Integration Layering',
-    description: 'Connection to existing fund tools, data sources, and reporting systems with minimal disruption to active operations.',
+    description: 'Connection to existing firm tools, data sources, and reporting systems with minimal disruption to active operations.',
     icon: 'Layers',
   },
   {
@@ -160,7 +160,7 @@ export const PROCESS_STEPS: ProcessStep[] = [
   {
     id: 7,
     title: 'Optimization & Oversight',
-    description: 'Ongoing refinement, monitoring, and expansion of AI capabilities based on performance data and evolving fund requirements.',
+    description: 'Ongoing refinement, monitoring, and expansion of AI capabilities based on performance data and evolving firm requirements.',
     icon: 'TrendingUp',
   },
 ];
@@ -189,8 +189,8 @@ export const TOOLS: ToolItem[] = [
 
 export const FAQS: FAQ[] = [
   {
-    question: 'What types of hedge funds does Kivaro AI work with?',
-    answer: 'We work with quantitative funds, hybrid discretionary funds, multi-strategy firms, and alternative investment organizations across the Southern United States. Our systems are adaptable to various fund sizes and strategies.',
+    question: 'What types of investment firms does Kivaro AI work with?',
+    answer: 'We work with hedge funds, investment banks, private equity firms, venture capital firms, and other alternative investment institutions across the Southern United States. Our systems are adaptable to various firm sizes, asset classes, and strategies.',
   },
   {
     question: 'How do you handle data security and compliance?',

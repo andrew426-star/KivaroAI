@@ -31,7 +31,7 @@ const DIVISIONS: Division[] = [
     glow: 'rgba(56,189,248,0.15)',
     agents: [
       { id: 'atlas',    name: 'Atlas',    role: 'AI Landscape Monitor',     division: 'RNI', description: 'Tracks emerging AI tools, models, and competitor moves to surface opportunities for Kivaro\'s roadmap and clients.' },
-      { id: 'meridian', name: 'Meridian', role: 'Fintech & Alts Analyst',   division: 'RNI', description: 'Delivers institutional-grade analysis on hedge funds, private equity, family offices, and alternative asset classes.' },
+      { id: 'meridian', name: 'Meridian', role: 'Fintech & Alts Analyst',   division: 'RNI', description: 'Delivers institutional-grade analysis on hedge funds, investment banks, private equity, venture capital, family offices, and alternative asset classes.' },
       { id: 'oracle',   name: 'Oracle',   role: 'Markets & Crypto Intel',   division: 'RNI', description: 'Monitors price action, on-chain data, macro signals, and crypto narrative cycles across equities and digital assets.' },
       { id: 'cipher',   name: 'Cipher',   role: 'Central Banking & Macro',  division: 'RNI', description: 'Decodes Fed policy, yield curves, inflation regimes, and monetary flows with second-order analysis for fund clients.' },
     ],

@@ -49,7 +49,7 @@ export function usePageMeta({ title, description, canonicalPath }: PageMeta) {
 
     return () => {
       // Reset to default on unmount
-      document.title = 'Kivaro AI — AI Automation & Intelligence for Hedge Funds';
+      document.title = 'Kivaro AI — AI Automation & Intelligence for Institutional Investment Firms';
     };
   }, [title, description, canonicalPath]);
 }

@@ -11,7 +11,7 @@ export default function Footer() {
     <footer className="relative z-base border-t border-border bg-background/80">
       {/* Scrolling brand marquee */}
       <TextMarquee
-        words={['Kivaro AI', 'Hedge Fund Intelligence', 'AI Automation', 'Disciplined Execution', 'Fund-Grade Systems']}
+        words={['Kivaro AI', 'Institutional Investment Intelligence', 'AI Automation', 'Disciplined Execution', 'Institutional-Grade Systems']}
         className="py-5 border-b border-border/30"
       />
 
@@ -27,7 +27,7 @@ export default function Footer() {
         <div className="mx-auto max-w-[1400px] px-6 lg:px-10 py-16 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-8 relative">
           <div>
             <h3 className="font-display text-xl sm:text-2xl lg:text-3xl font-bold text-foreground text-balance">
-              Ready to automate your fund operations?
+              Ready to automate your firm's operations?
             </h3>
             <p className="mt-2 text-muted-foreground max-w-lg">
               Schedule a discovery call to map your highest-impact automation opportunities.
@@ -62,7 +62,7 @@ export default function Footer() {
               </span>
             </Link>
             <p className="mt-4 text-sm text-muted-foreground leading-relaxed max-w-xs">
-              Specialized AI automation and intelligence partner for hedge funds across the Southern United States.
+              Specialized AI automation and intelligence partner for hedge funds, investment banks, private equity, and venture capital firms across the Southern United States.
             </p>
             <div className="mt-5 flex flex-col gap-2">
               <div className="flex items-center gap-2 text-sm text-muted-foreground">

@@ -21,13 +21,13 @@ const ICON_MAP: Record<string, React.ElementType> = {
 // Extended descriptions for each phase
 const PHASE_DETAILS: Record<number, { overview: string; deliverables: string[]; duration: string; keyActivities: string[] }> = {
   1: {
-    overview: 'We begin every engagement with a comprehensive operational audit. Our team maps your fund\'s existing research workflows, reporting pipelines, data infrastructure, and team communication patterns. This deep-dive assessment surfaces the friction points, manual bottlenecks, and data silos that represent your highest-impact automation opportunities.',
+    overview: 'We begin every engagement with a comprehensive operational audit. Our team maps your firm\'s existing research workflows, reporting pipelines, data infrastructure, and team communication patterns. This deep-dive assessment surfaces the friction points, manual bottlenecks, and data silos that represent your highest-impact automation opportunities.',
     deliverables: ['Current-state workflow documentation', 'Technology stack assessment', 'Data flow mapping report', 'Automation opportunity matrix'],
     duration: '1–2 weeks',
     keyActivities: ['Stakeholder interviews with key team members', 'Existing system and tool inventory', 'Data source and flow mapping', 'Manual process identification and time analysis'],
   },
   2: {
-    overview: 'Not every automation opportunity delivers equal value. We rank identified opportunities using a proprietary scoring framework that weighs impact on fund operations, technical feasibility, implementation risk, and time-to-value. This disciplined prioritization ensures we target the workflows that will generate the fastest and most measurable operational gains.',
+    overview: 'Not every automation opportunity delivers equal value. We rank identified opportunities using a proprietary scoring framework that weighs impact on firm operations, technical feasibility, implementation risk, and time-to-value. This disciplined prioritization ensures we target the workflows that will generate the fastest and most measurable operational gains.',
     deliverables: ['Prioritized use-case roadmap', 'Impact vs. feasibility scoring matrix', 'Risk assessment per use case', 'Recommended implementation sequence'],
     duration: '3–5 days',
     keyActivities: ['Scoring each opportunity on impact, feasibility, and risk', 'Stakeholder alignment workshops', 'ROI projection modeling per use case', 'Final prioritization and sequencing'],
@@ -39,13 +39,13 @@ const PHASE_DETAILS: Record<number, { overview: string; deliverables: string[]; 
     keyActivities: ['AI workflow and agent architecture design', 'Security and compliance requirement mapping', 'Integration point specification', 'Performance benchmark definition'],
   },
   4: {
-    overview: 'Implementation proceeds in controlled phases with validation checkpoints at every stage. Each workflow component is built, tested, and verified against performance benchmarks before moving to the next phase. This disciplined approach minimizes disruption to active fund operations while ensuring each deployed system meets institutional reliability standards.',
+    overview: 'Implementation proceeds in controlled phases with validation checkpoints at every stage. Each workflow component is built, tested, and verified against performance benchmarks before moving to the next phase. This disciplined approach minimizes disruption to active firm operations while ensuring each deployed system meets institutional reliability standards.',
     deliverables: ['Deployed workflow components', 'Test reports and benchmark results', 'Phase validation sign-off documents', 'Rollback procedures for each phase'],
     duration: '2–4 weeks per phase',
     keyActivities: ['Phased component buildout', 'Unit and integration testing at each checkpoint', 'Performance benchmarking against targets', 'Stakeholder review and approval gates'],
   },
   5: {
-    overview: 'New AI systems are layered into your existing fund infrastructure through carefully orchestrated integration. We connect to your current tools, data sources, CRM, portfolio management, and reporting systems with minimal disruption. Every integration is tested in isolation and then validated end-to-end before going live.',
+    overview: 'New AI systems are layered into your existing firm infrastructure through carefully orchestrated integration. We connect to your current tools, data sources, CRM, portfolio management, and reporting systems with minimal disruption. Every integration is tested in isolation and then validated end-to-end before going live.',
     deliverables: ['Integration configuration documentation', 'End-to-end test results', 'Fallback and error-handling protocols', 'Monitoring dashboard setup'],
     duration: '1–2 weeks',
     keyActivities: ['API and data connector configuration', 'Isolated integration testing', 'End-to-end validation across systems', 'Error handling and alerting setup'],
@@ -57,7 +57,7 @@ const PHASE_DETAILS: Record<number, { overview: string; deliverables: string[]; 
     keyActivities: ['Hands-on training workshops for operators', 'Admin and configuration training', 'Documentation walkthroughs', 'Knowledge transfer and Q&A sessions'],
   },
   7: {
-    overview: 'Post-deployment, we provide ongoing monitoring, performance analysis, and iterative optimization. As your fund\'s needs evolve, we refine existing workflows, expand AI capabilities, and ensure your systems continue to deliver measurable operational advantage. This phase transforms the initial deployment into a continuously improving intelligence layer.',
+    overview: 'Post-deployment, we provide ongoing monitoring, performance analysis, and iterative optimization. As your firm\'s needs evolve, we refine existing workflows, expand AI capabilities, and ensure your systems continue to deliver measurable operational advantage. This phase transforms the initial deployment into a continuously improving intelligence layer.',
     deliverables: ['Monthly performance reports', 'Optimization recommendations', 'Capability expansion roadmap', 'Ongoing monitoring and alert configuration'],
     duration: 'Ongoing',
     keyActivities: ['Performance data review and analysis', 'Workflow optimization iterations', 'New feature and capability scoping', 'Quarterly strategic review sessions'],
@@ -428,7 +428,7 @@ function PhaseFlowDiagram({ phaseId }: { phaseId: number }) {
 export default function Process() {
   usePageMeta({
     title: 'Seven-Phase AI Deployment Methodology — Kivaro AI',
-    description: 'Kivaro AI\'s seven-phase deployment model for hedge funds: Discovery & Systems Audit, Use-Case Prioritization, Architecture Design, Controlled Implementation, Integration Layering, Training & Adoption, and Optimization & Oversight. Each phase includes validation checkpoints, deliverables, and performance benchmarks for institutional-grade AI deployment.',
+    description: 'Kivaro AI\'s seven-phase deployment model for hedge funds, investment banks, private equity firms, and venture capital firms: Discovery & Systems Audit, Use-Case Prioritization, Architecture Design, Controlled Implementation, Integration Layering, Training & Adoption, and Optimization & Oversight. Each phase includes validation checkpoints, deliverables, and performance benchmarks for institutional-grade AI deployment.',
     canonicalPath: '/process',
   });
 
@@ -742,7 +742,7 @@ export default function Process() {
                 <span className="text-gradient-animated">deployment journey?</span>
               </h2>
               <p className="mt-4 text-muted-foreground max-w-lg mx-auto text-pretty">
-                Schedule a discovery call to begin Phase 1 and map your fund's highest-impact automation opportunities.
+                Schedule a discovery call to begin Phase 1 and map your firm's highest-impact automation opportunities.
               </p>
               <div className="mt-8">
                 <Link to="/contact">

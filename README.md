@@ -1,6 +1,6 @@
 # Kivaro AI — Website
 
-AI Automation & Intelligence for Hedge Funds.  
+AI Automation & Intelligence for Institutional Investment Firms — hedge funds, investment banks, private equity, and venture capital.  
 Live at [kivaroai.com](https://kivaroai.com).
 
 ## Tech Stack

@@ -2,8 +2,8 @@ import type { NavLink } from '@/types';
 
 export const SITE_CONFIG = {
   name: 'Kivaro AI',
-  tagline: 'AI Automation & Intelligence for Hedge Funds',
-  description: 'Kivaro AI designs secure, high-performance AI workflows that accelerate research, streamline operations, and strengthen decision infrastructure for hedge funds.',
+  tagline: 'AI Automation & Intelligence for Institutional Investment Firms',
+  description: 'Kivaro AI designs secure, high-performance AI workflows that accelerate research, streamline operations, and strengthen decision infrastructure for hedge funds, investment banks, private equity firms, and venture capital firms.',
   founded: 2025,
   founder: 'Andrew Thomas',
   location: 'Louisiana, United States',

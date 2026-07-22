@@ -102,20 +102,20 @@ const VALUES = [
   },
   {
     icon: Target,
-    title: 'Fund-Grade Standards',
+    title: 'Institutional-Grade Standards',
     description: 'Security, compliance, and institutional reliability are built into every architecture decision — not bolted on after the fact.',
   },
   {
     icon: Users,
     title: 'Systems Partner',
-    description: 'We operate as an embedded extension of fund teams, not a software vendor. Long-term partnership over transactional delivery.',
+    description: 'We operate as an embedded extension of investment teams, not a software vendor. Long-term partnership over transactional delivery.',
   },
 ];
 
 export default function About() {
   usePageMeta({
-    title: 'About Kivaro AI — Founded by Andrew Thomas | AI for Hedge Funds',
-    description: 'Kivaro AI was founded in 2025 by Andrew Thomas in Louisiana to bring structured AI execution into professional investment environments. We serve hedge funds across Texas, Louisiana, Georgia, Mississippi, and Florida with a seven-phase deployment methodology emphasizing disciplined execution, fund-grade security, and measurable operational gains.',
+    title: 'About Kivaro AI — Founded by Andrew Thomas | AI for Institutional Investment Firms',
+    description: 'Kivaro AI was founded in 2025 by Andrew Thomas in Louisiana to bring structured AI execution into professional investment environments. We serve hedge funds, investment banks, private equity firms, and venture capital firms across Texas, Louisiana, Georgia, Mississippi, and Florida with a seven-phase deployment methodology emphasizing disciplined execution, institutional-grade security, and measurable operational gains.',
     canonicalPath: '/about',
   });
 
@@ -140,7 +140,7 @@ export default function About() {
                 gradientFrom={3}
               />
               <p className="mt-5 text-lg text-muted-foreground leading-relaxed text-pretty">
-                Kivaro AI was established to bring structured AI execution into professional investment environments. We serve hedge funds that require more than experimentation — they require dependable systems, disciplined workflows, and measurable operational gains.
+                Kivaro AI was established to bring structured AI execution into professional investment environments. We serve hedge funds, investment banks, private equity firms, and venture capital firms that require more than experimentation — they require dependable systems, disciplined workflows, and measurable operational gains.
               </p>
               <div className="mt-6 flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
                 <motion.div
@@ -210,10 +210,10 @@ export default function About() {
                 </div>
                 <div className="lg:col-span-8 p-8 lg:p-10 flex flex-col justify-center">
                   <blockquote className="text-foreground/85 leading-relaxed text-pretty text-base sm:text-lg italic">
-                    "We work with hedge funds and investment teams that want artificial intelligence implemented with structure, discipline, and measurable impact — not experimentation for its own sake. The objective is operational leverage through intelligent systems. That is the standard we build to."
+                    "We work with hedge funds, investment banks, private equity firms, venture capital firms, and other institutional investors that want artificial intelligence implemented with structure, discipline, and measurable impact — not experimentation for its own sake. The objective is operational leverage through intelligent systems. That is the standard we build to."
                   </blockquote>
                   <p className="mt-5 text-sm text-muted-foreground leading-relaxed text-pretty">
-                    Andrew founded Kivaro AI to close the execution gap between advanced AI capabilities and practical deployment inside fund environments. His approach emphasizes methodical systems building over experimental prototyping.
+                    Andrew founded Kivaro AI to close the execution gap between advanced AI capabilities and practical deployment inside institutional investment environments. His approach emphasizes methodical systems building over experimental prototyping.
                   </p>
                 </div>
               </div>
@@ -304,7 +304,7 @@ export default function About() {
                 Service Footprint
               </h2>
               <p className="mt-3 text-muted-foreground max-w-lg mx-auto">
-                Serving hedge funds across the Southern United States with hybrid-remote delivery and on-site advisory.
+                Serving hedge funds, investment banks, private equity, and venture capital firms across the Southern United States with hybrid-remote delivery and on-site advisory.
               </p>
             </div>
           </SectionReveal>

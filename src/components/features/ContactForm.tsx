@@ -228,7 +228,7 @@ export default function ContactForm() {
           onFocus={() => setFocusedField('message')}
           onBlur={() => setFocusedField(null)}
           rows={5}
-          placeholder="Describe your fund's automation needs or the workflow challenges you're looking to address..."
+          placeholder="Describe your firm's automation needs or the workflow challenges you're looking to address..."
           className={cn(inputClass, 'resize-none')}
         />
       </div>
