@@ -12,13 +12,14 @@ export const SITE_CONFIG = {
 } as const;
 
 export const NAV_LINKS: NavLink[] = [
-  { label: 'Home', href: '/' },
-  { label: 'Services', href: '/services' },
-  { label: 'Agents', href: '/agents' },
-  { label: 'Process', href: '/process' },
-  { label: 'About', href: '/about' },
-  { label: 'Contact', href: '/contact' },
+  { label: 'Home', href: '#the-brain' },
+  { label: 'Agents', href: '#agents' },
+  { label: 'Workflow', href: '#workflow' },
+  { label: 'Trust', href: '#trust' },
+  { label: 'Deploy', href: '#deploy' },
 ];
+
+export const SECTION_IDS = NAV_LINKS.map((link) => link.href.slice(1));
 
 export const REGIONS = [
   { state: 'Texas', abbr: 'TX' },

@@ -6,11 +6,11 @@ interface HeroEyebrowProps {
   className?: string;
 }
 
-// Structurally identical hero pill markup that was duplicated across all 6
-// pages (only the label text differed) — consolidated here specifically so
-// layoutId="hero-eyebrow" can morph it between pages during the now-
-// overlapping route transition (AnimatedOutlet.tsx), the same shared-layout
-// technique already proven internally by Header.tsx's "nav-indicator".
+// Shared hero pill component. Its layoutId="hero-eyebrow" was originally
+// added so the pill could morph between pages during route transitions on
+// the old multi-page site; on the single-page layout there's only ever one
+// instance mounted, so the layoutId is a harmless no-op — kept for the
+// shared-layout technique's own sake (matches Header.tsx's "nav-indicator").
 export default function HeroEyebrow({ label, className }: HeroEyebrowProps) {
   return (
     <motion.div

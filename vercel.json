@@ -1,4 +1,11 @@
 {
+  "redirects": [
+    { "source": "/services", "destination": "/#agents", "permanent": true },
+    { "source": "/agents", "destination": "/#agents", "permanent": true },
+    { "source": "/process", "destination": "/#deploy", "permanent": true },
+    { "source": "/about", "destination": "/#trust", "permanent": true },
+    { "source": "/contact", "destination": "/#deploy", "permanent": true }
+  ],
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.html" }
   ]

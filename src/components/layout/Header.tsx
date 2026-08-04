@@ -1,14 +1,13 @@
 import { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { NAV_LINKS, SITE_CONFIG } from '@/constants/config';
+import { NAV_LINKS, SITE_CONFIG, SECTION_IDS } from '@/constants/config';
 import { Menu, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
-import { ROUTE_PRELOADERS } from '@/lib/routePreload';
+import { useScrollSpy } from '@/hooks/useScrollSpy';
 import kivaroLogo from '@/assets/kivaro-logo.png';
 
 export default function Header() {
-  const { pathname } = useLocation();
+  const activeId = useScrollSpy(SECTION_IDS);
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -17,10 +16,6 @@ export default function Header() {
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
-
-  useEffect(() => {
-    setMobileOpen(false);
-  }, [pathname]);
 
   return (
     <header
@@ -31,7 +26,7 @@ export default function Header() {
     >
       <nav className="mx-auto flex max-w-[1400px] items-center justify-between px-6 lg:px-10 h-full">
         {/* Logo */}
-        <Link to="/" className="flex items-center gap-2.5 group" aria-label="Kivaro AI Home">
+        <a href="#the-brain" className="flex items-center gap-2.5 group" aria-label="Kivaro AI Home">
           <motion.img
             src={kivaroLogo}
             alt="Kivaro AI Logo"
@@ -42,42 +37,40 @@ export default function Header() {
           <span className="font-display text-lg font-bold tracking-tight text-foreground transition-colors duration-300 group-hover:text-primary">
             {SITE_CONFIG.name}
           </span>
-        </Link>
+        </a>
 
         {/* Desktop Nav */}
         <div className="hidden md:flex items-center gap-1">
           {NAV_LINKS.map((link) => (
-            <Link
+            <a
               key={link.href}
-              to={link.href}
-              onMouseEnter={() => ROUTE_PRELOADERS[link.href]?.()}
-              onFocus={() => ROUTE_PRELOADERS[link.href]?.()}
+              href={link.href}
               className={cn(
                 'relative px-4 py-2 text-sm font-medium transition-all duration-300 rounded-md',
-                pathname === link.href
+                activeId === link.href.slice(1)
                   ? 'text-primary'
                   : 'text-muted-foreground hover:text-foreground'
               )}
             >
               {link.label}
-              {pathname === link.href && (
+              {activeId === link.href.slice(1) && (
                 <motion.div
                   layoutId="nav-indicator"
                   className="absolute bottom-0 left-2 right-2 h-px bg-primary shadow-[0_0_8px_hsla(152,76%,46%,0.4)]"
                   transition={{ type: 'spring', stiffness: 400, damping: 30 }}
                 />
               )}
-            </Link>
+            </a>
           ))}
         </div>
 
         {/* Desktop CTA */}
-        <Link
-          to="/contact"
+        <a
+          href="#deploy"
           className="hidden md:inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground transition-all duration-300 hover:shadow-[0_0_30px_hsla(152,76%,46%,0.4),_0_0_60px_hsla(152,76%,46%,0.1)] hover:scale-[1.04] active:scale-[0.96] btn-magnetic overflow-hidden relative"
         >
           <span className="relative z-10">Start Consultation</span>
-        </Link>
+        </a>
 
         {/* Mobile Toggle */}
         <button
@@ -129,17 +122,18 @@ export default function Header() {
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: i * 0.05 + 0.1, duration: 0.3 }}
                 >
-                  <Link
-                    to={link.href}
+                  <a
+                    href={link.href}
+                    onClick={() => setMobileOpen(false)}
                     className={cn(
                       'px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 block active:scale-[0.98]',
-                      pathname === link.href
+                      activeId === link.href.slice(1)
                         ? 'text-primary bg-primary/5'
                         : 'text-muted-foreground hover:text-foreground hover:bg-secondary'
                     )}
                   >
                     {link.label}
-                  </Link>
+                  </a>
                 </motion.div>
               ))}
               <motion.div
@@ -147,12 +141,13 @@ export default function Header() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3, duration: 0.3 }}
               >
-                <Link
-                  to="/contact"
+                <a
+                  href="#deploy"
+                  onClick={() => setMobileOpen(false)}
                   className="mt-2 flex items-center justify-center rounded-full bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground active:scale-[0.97] transition-transform"
                 >
                   Start Consultation
-                </Link>
+                </a>
               </motion.div>
             </div>
           </motion.div>

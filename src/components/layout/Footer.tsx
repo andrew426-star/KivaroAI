@@ -1,4 +1,3 @@
-import { Link } from 'react-router-dom';
 import { SITE_CONFIG, NAV_LINKS, REGIONS } from '@/constants/config';
 import { MapPin, Mail, Phone, ArrowUpRight, ArrowRight } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -33,7 +32,7 @@ export default function Footer() {
               Schedule a discovery call to map your highest-impact automation opportunities.
             </p>
           </div>
-          <Link to="/contact">
+          <a href="#deploy">
             <MagneticButton
               as="div"
               className="inline-flex items-center gap-2 rounded-full bg-primary px-8 py-3.5 text-sm font-semibold text-primary-foreground transition-shadow duration-300 hover:shadow-[0_0_30px_hsla(152,76%,46%,0.35)] active:scale-[0.97] shrink-0"
@@ -42,7 +41,7 @@ export default function Footer() {
               Schedule Discovery Call
               <ArrowUpRight className="size-4" />
             </MagneticButton>
-          </Link>
+          </a>
         </div>
       </div>
 
@@ -51,7 +50,7 @@ export default function Footer() {
         <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-10 lg:gap-8">
           {/* Brand */}
           <div className="col-span-2 md:col-span-1 lg:col-span-1">
-            <Link to="/" className="flex items-center gap-2.5 group">
+            <a href="#the-brain" className="flex items-center gap-2.5 group">
               <img
                 src={kivaroLogo}
                 alt="Kivaro AI Logo"
@@ -60,7 +59,7 @@ export default function Footer() {
               <span className="font-display text-base font-bold tracking-tight transition-colors duration-300 group-hover:text-primary">
                 {SITE_CONFIG.name}
               </span>
-            </Link>
+            </a>
             <p className="mt-4 text-sm text-muted-foreground leading-relaxed max-w-xs">
               Specialized AI automation and intelligence partner for hedge funds, investment banks, private equity, and venture capital firms across the Southern United States.
             </p>
@@ -88,19 +87,19 @@ export default function Footer() {
             <ul className="flex flex-col gap-2.5">
               {NAV_LINKS.map((link) => (
                 <li key={link.href}>
-                  <Link
-                    to={link.href}
+                  <a
+                    href={link.href}
                     className="text-sm text-foreground/70 hover:text-primary transition-all duration-300 hover:translate-x-1 inline-flex items-center gap-1 group"
                   >
                     {link.label}
                     <ArrowRight className="size-3 opacity-0 -translate-x-2 transition-all duration-300 group-hover:opacity-100 group-hover:translate-x-0" />
-                  </Link>
+                  </a>
                 </li>
               ))}
             </ul>
           </div>
 
-          {/* Services Quick Links */}
+          {/* Capabilities — real SERVICES titles, linking to the Workflow section */}
           <div>
             <h4 className="font-display text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-4">
               Capabilities
@@ -115,13 +114,13 @@ export default function Footer() {
                 'Knowledge Systems',
               ].map((item) => (
                 <li key={item}>
-                  <Link
-                    to="/services"
+                  <a
+                    href="#workflow"
                     className="text-sm text-foreground/70 hover:text-primary transition-all duration-300 hover:translate-x-1 inline-flex items-center gap-1 group"
                   >
                     {item}
                     <ArrowRight className="size-3 opacity-0 -translate-x-2 transition-all duration-300 group-hover:opacity-100 group-hover:translate-x-0" />
-                  </Link>
+                  </a>
                 </li>
               ))}
             </ul>

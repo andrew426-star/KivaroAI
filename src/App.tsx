@@ -4,14 +4,8 @@ import Layout from '@/components/layout/Layout';
 import LoadingScreen from '@/components/features/LoadingScreen';
 import { Toaster } from '@/components/features/Toaster';
 import { useAuth } from '@/hooks/useAuth';
-import { preloadHome, preloadServices, preloadAgents, preloadAbout, preloadContact, preloadProcess } from '@/lib/routePreload';
 
-const Home = lazy(preloadHome);
-const Services = lazy(preloadServices);
-const About = lazy(preloadAbout);
-const Contact = lazy(preloadContact);
-const Process = lazy(preloadProcess);
-const Agents = lazy(preloadAgents);
+const Home = lazy(() => import('@/pages/Home'));
 const AdminLogin = lazy(() => import('@/pages/AdminLogin'));
 const AdminDashboard = lazy(() => import('@/pages/AdminDashboard'));
 
@@ -36,13 +30,18 @@ function App() {
     <>
       <Suspense fallback={<LoadingScreen />}>
         <Routes>
+          {/* Old multi-page routes now redirect into the single-page's
+              matching section, preserving SEO equity for anything that
+              still links to them. vercel.json's redirects handle this at
+              the HTTP layer for production; these are the client-side
+              fallback for local dev/preview where that config isn't applied. */}
+          <Route path="/services" element={<Navigate to="/#agents" replace />} />
+          <Route path="/agents" element={<Navigate to="/#agents" replace />} />
+          <Route path="/process" element={<Navigate to="/#deploy" replace />} />
+          <Route path="/about" element={<Navigate to="/#trust" replace />} />
+          <Route path="/contact" element={<Navigate to="/#deploy" replace />} />
           <Route element={<Layout />}>
             <Route path="/" element={<Home />} />
-            <Route path="/services" element={<Services />} />
-            <Route path="/agents" element={<Agents />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/process" element={<Process />} />
           </Route>
           <Route
             path="/admin/login"

@@ -1,15 +1,18 @@
 import { useInView } from '@/hooks/useInView';
 import { useEffect, useRef, useState } from 'react';
+import { animate } from 'framer-motion';
 
 interface StatCounterProps {
   value: string;
   suffix?: string;
   label: string;
+  /** Counts down to a negative target and renders a leading minus. */
+  signed?: boolean;
 }
 
-export default function StatCounter({ value, suffix = '', label }: StatCounterProps) {
+export default function StatCounter({ value, suffix = '', label, signed = false }: StatCounterProps) {
   const [ref, inView] = useInView(0.3);
-  const [display, setDisplay] = useState('0');
+  const [display, setDisplay] = useState(signed ? '-0' : '0');
   const [done, setDone] = useState(false);
   const hasAnimated = useRef(false);
 
@@ -24,24 +27,19 @@ export default function StatCounter({ value, suffix = '', label }: StatCounterPr
       return;
     }
 
-    const duration = 1800;
-    const steps = 50;
-    const stepTime = duration / steps;
-    let current = 0;
-
-    const timer = setInterval(() => {
-      current += numericValue / steps;
-      if (current >= numericValue) {
-        setDisplay(String(numericValue));
+    const target = signed ? -Math.abs(numericValue) : numericValue;
+    const controls = animate(0, target, {
+      duration: 1.8,
+      ease: 'easeOut',
+      onUpdate: (v) => setDisplay(String(Math.round(v))),
+      onComplete: () => {
+        setDisplay(String(target));
         setDone(true);
-        clearInterval(timer);
-      } else {
-        setDisplay(String(Math.floor(current)));
-      }
-    }, stepTime);
+      },
+    });
 
-    return () => clearInterval(timer);
-  }, [inView, value]);
+    return () => controls.stop();
+  }, [inView, value, signed]);
 
   return (
     <div ref={ref} className="text-center group">

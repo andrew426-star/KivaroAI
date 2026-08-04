@@ -83,7 +83,7 @@ export const DIVISIONS: Division[] = [
   },
 ];
 
-function AgentCard({ agent, color, glow, index }: { agent: Agent; color: string; glow: string; index: number }) {
+export function AgentCard({ agent, color, glow, index, example }: { agent: Agent; color: string; glow: string; index: number; example?: string }) {
   const [hovered, setHovered] = useState(false);
 
   return (
@@ -135,6 +135,16 @@ function AgentCard({ agent, color, glow, index }: { agent: Agent; color: string;
           <p className="mt-1.5 text-xs text-muted-foreground leading-relaxed">
             {agent.description}
           </p>
+          {example && (
+            <div className="mt-2.5 pt-2.5 border-t border-border/30">
+              <span className="text-[9px] font-display uppercase tracking-wider text-muted-foreground/50">
+                Illustrative example
+              </span>
+              <p className="mt-1 text-xs text-foreground/70 leading-relaxed italic">
+                {example}
+              </p>
+            </div>
+          )}
         </div>
       </div>
     </motion.div>

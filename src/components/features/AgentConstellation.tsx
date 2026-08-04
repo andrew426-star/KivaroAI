@@ -13,6 +13,7 @@ interface AgentNode {
   color: string;
   position: [number, number, number];
   divisionIndex: number;
+  divisionId: string;
 }
 
 interface DivisionLink {
@@ -53,7 +54,7 @@ function useConstellationLayout() {
           centroid.y + Math.sin(ai * 1.3) * 0.35,
           centroid.z + Math.sin(localAngle) * localRadius,
         ];
-        nodes.push({ id: agent.id, name: agent.name, role: agent.role, color: division.color, position: pos, divisionIndex: di });
+        nodes.push({ id: agent.id, name: agent.name, role: agent.role, color: division.color, position: pos, divisionIndex: di, divisionId: division.id });
         links.push({
           color: division.color,
           points: [centroid.clone(), new THREE.Vector3(...pos)],
@@ -67,7 +68,9 @@ function useConstellationLayout() {
 
 // Clicking a node scrolls to the matching real 2D AgentCard (id="agent-{id}",
 // added there for exactly this) rather than duplicating the agent's real
-// data a second time in a 3D tooltip beyond name/role.
+// data a second time in a 3D tooltip beyond name/role. On the single-page
+// scrollytelling layout, that card only exists in the DOM when its division
+// tab is active — callers pass onSelectAgent to switch tabs first.
 function scrollToAgentCard(id: string) {
   document.getElementById(`agent-${id}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
@@ -77,11 +80,13 @@ function ConstellationNodes({
   reducedMotion,
   hoveredIndex,
   onHover,
+  onSelectAgent,
 }: {
   nodes: AgentNode[];
   reducedMotion: boolean;
   hoveredIndex: number | null;
   onHover: (index: number | null) => void;
+  onSelectAgent?: (agentId: string, divisionId: string) => void;
 }) {
   const meshRef = useRef<THREE.InstancedMesh>(null);
   const dummy = useMemo(() => new THREE.Object3D(), []);
@@ -126,7 +131,10 @@ function ConstellationNodes({
   };
   const handleClick = (e: ThreeEvent<MouseEvent>) => {
     e.stopPropagation();
-    if (e.instanceId !== undefined) scrollToAgentCard(nodes[e.instanceId].id);
+    if (e.instanceId === undefined) return;
+    const node = nodes[e.instanceId];
+    if (onSelectAgent) onSelectAgent(node.id, node.divisionId);
+    else scrollToAgentCard(node.id);
   };
 
   return (
@@ -171,7 +179,7 @@ function HoverTooltip({ node }: { node: AgentNode }) {
   );
 }
 
-function Scene({ reducedMotion }: { reducedMotion: boolean }) {
+function Scene({ reducedMotion, onSelectAgent }: { reducedMotion: boolean; onSelectAgent?: (agentId: string, divisionId: string) => void }) {
   const groupRef = useRef<THREE.Group>(null);
   const { nodes, links } = useConstellationLayout();
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
@@ -186,14 +194,18 @@ function Scene({ reducedMotion }: { reducedMotion: boolean }) {
       {!reducedMotion && <PointerCameraRig strength={0.3} />}
       <group ref={groupRef}>
         <ConstellationLinks links={links} />
-        <ConstellationNodes nodes={nodes} reducedMotion={reducedMotion} hoveredIndex={hoveredIndex} onHover={setHoveredIndex} />
+        <ConstellationNodes nodes={nodes} reducedMotion={reducedMotion} hoveredIndex={hoveredIndex} onHover={setHoveredIndex} onSelectAgent={onSelectAgent} />
         {hoveredIndex !== null && <HoverTooltip node={nodes[hoveredIndex]} />}
       </group>
     </>
   );
 }
 
-export default function AgentConstellation() {
+interface AgentConstellationProps {
+  onSelectAgent?: (agentId: string, divisionId: string) => void;
+}
+
+export default function AgentConstellation({ onSelectAgent }: AgentConstellationProps) {
   const reducedMotion = usePrefersReducedMotion();
 
   return (
@@ -205,7 +217,7 @@ export default function AgentConstellation() {
         frameloop={reducedMotion ? 'demand' : 'always'}
       >
         <fog attach="fog" args={['#080c0a', 5, 11]} />
-        <Scene reducedMotion={reducedMotion} />
+        <Scene reducedMotion={reducedMotion} onSelectAgent={onSelectAgent} />
       </Canvas>
     </div>
   );

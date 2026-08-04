@@ -5,8 +5,9 @@ import * as THREE from 'three';
  * Live data-terrain shader: an undulating wireframe surface (volatility-surface /
  * market-depth motif) driven entirely on the GPU via layered sine waves.
  *
- * Shared between HeroScene.tsx (Home) and AboutAtmosphere.tsx (About) — extracted
- * so both scenes render from one GLSL source instead of two forks that could drift.
+ * Used by HeroScene.tsx (the Section 01 "Brain" background) — extracted into
+ * its own module so extend() registration and the GLSL source live in one
+ * place rather than being redefined inline.
  */
 export const TerrainMaterial = shaderMaterial(
   { uTime: 0, uIntro: 0, uAmplitudeScale: 1, uColorMid: new THREE.Color('#1cce7b'), uColorHigh: new THREE.Color('#a5e830') },

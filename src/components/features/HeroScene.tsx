@@ -26,6 +26,13 @@ function easeOutCubic(t: number) {
   return 1 - Math.pow(1 - t, 3);
 }
 
+// Exact-fidelity palette colors read directly from the real --primary /
+// --kv-lime HSL tokens via setHSL, replacing the shader's eyeballed hex
+// defaults (#1cce7b / #a5e830) now that this scene is the flagship
+// section-01 visual.
+const COLOR_MID = new THREE.Color().setHSL(152 / 360, 0.76, 0.46);
+const COLOR_HIGH = new THREE.Color().setHSL(82 / 360, 0.8, 0.55);
+
 function Terrain({ segments, reducedMotion }: { segments: number; reducedMotion: boolean }) {
   const ref = useRef<THREE.ShaderMaterial>(null);
 
@@ -53,6 +60,8 @@ function Terrain({ segments, reducedMotion }: { segments: number; reducedMotion:
       <planeGeometry args={[16, 16, segments, segments]} />
       <terrainMaterial
         ref={ref}
+        uColorMid={COLOR_MID}
+        uColorHigh={COLOR_HIGH}
         transparent
         wireframe
         depthWrite={false}
