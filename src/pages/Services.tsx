@@ -133,7 +133,7 @@ export default function Services() {
               <Link to="/contact">
                 <MagneticButton
                   as="div"
-                  className="inline-flex items-center gap-2 rounded-lg bg-primary px-7 py-3.5 text-sm font-semibold text-primary-foreground transition-shadow duration-300 hover:shadow-[0_0_30px_hsla(152,76%,46%,0.35)] active:scale-[0.97]"
+                  className="inline-flex items-center gap-2 rounded-full bg-primary px-7 py-3.5 text-sm font-semibold text-primary-foreground transition-shadow duration-300 hover:shadow-[0_0_30px_hsla(152,76%,46%,0.35)] active:scale-[0.97]"
                   strength={0.12}
                 >
                   Discuss Your Requirements

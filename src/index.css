@@ -478,3 +478,52 @@
 .counting-blur {
   animation: count-blur 1.8s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
+
+/* === Meuze-Inspired Presentation System === */
+/* Reuses existing --foreground/--kv-* tokens only — no new hues. */
+
+/* Hairline bento-grid borders — for structural, non-interactive seams.
+   Distinct in purpose from .glow-border, which stays reserved for
+   interactive/hover elements. */
+.hairline-border {
+  border: 1px solid hsl(var(--foreground) / 0.08);
+}
+
+.hairline-border-hover:hover {
+  border-color: hsl(var(--foreground) / 0.16);
+}
+
+.hairline-divide-x > * + * {
+  border-left: 1px solid hsl(var(--foreground) / 0.08);
+}
+
+.hairline-divide-y > * + * {
+  border-top: 1px solid hsl(var(--foreground) / 0.08);
+}
+
+/* Numbered / tracked-caps eyebrow label */
+.label-eyebrow {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.6875rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+/* Display type scale — clamp() sized against the existing hero H1
+   (text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl) and the
+   existing clamp() precedent in TextMarquee.tsx. Starting values, flagged
+   for real in-browser tuning. */
+.text-display-lg {
+  font-size: clamp(2.75rem, 6vw, 6rem);
+  line-height: 1.05;
+}
+
+.text-display-md {
+  font-size: clamp(2rem, 4vw, 3.5rem);
+  line-height: 1.1;
+}
+
+.text-display-sm {
+  font-size: clamp(1.5rem, 2.5vw, 2.25rem);
+  line-height: 1.2;
+}

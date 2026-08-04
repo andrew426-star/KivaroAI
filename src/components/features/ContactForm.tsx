@@ -253,7 +253,7 @@ export default function ContactForm() {
             whileHover={{ scale: sending ? 1 : 1.01 }}
             whileTap={{ scale: sending ? 1 : 0.98 }}
             className={cn(
-              'w-full flex items-center justify-center gap-2 rounded-lg px-6 py-3.5',
+              'w-full flex items-center justify-center gap-2 rounded-full px-6 py-3.5',
               'bg-primary text-primary-foreground font-semibold text-sm',
               'transition-all duration-300',
               'hover:shadow-[0_0_30px_hsla(152,76%,46%,0.3)]',

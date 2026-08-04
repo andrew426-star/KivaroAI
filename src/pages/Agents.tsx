@@ -67,7 +67,7 @@ export default function Agents() {
               <Link to="/contact">
                 <MagneticButton
                   as="div"
-                  className="inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition-shadow duration-300 hover:shadow-[0_0_30px_hsla(152,76%,46%,0.35)] active:scale-[0.97]"
+                  className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition-shadow duration-300 hover:shadow-[0_0_30px_hsla(152,76%,46%,0.35)] active:scale-[0.97]"
                   strength={0.15}
                 >
                   Deploy a Team for Your Firm
@@ -108,7 +108,7 @@ export default function Agents() {
               <Link to="/contact">
                 <MagneticButton
                   as="div"
-                  className="inline-flex items-center gap-2 rounded-lg bg-primary px-8 py-4 text-base font-semibold text-primary-foreground transition-shadow duration-300 hover:shadow-[0_0_40px_hsla(152,76%,46%,0.35)] active:scale-[0.97]"
+                  className="inline-flex items-center gap-2 rounded-full bg-primary px-8 py-4 text-base font-semibold text-primary-foreground transition-shadow duration-300 hover:shadow-[0_0_40px_hsla(152,76%,46%,0.35)] active:scale-[0.97]"
                   strength={0.12}
                 >
                   Start the Conversation

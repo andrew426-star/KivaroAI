@@ -8,6 +8,9 @@ import founderHeadshot from '@/assets/founder-headshot.jpeg';
 import { REGIONS } from '@/constants/config';
 import { PROCESS_STEPS } from '@/constants/mockData';
 import GlowCard from '@/components/features/GlowCard';
+import HudFrame from '@/components/features/HudFrame';
+import AboutMotif from '@/components/illustrations/about-motif';
+import ScrollParallax from '@/components/features/ScrollParallax';
 import SectionReveal from '@/components/features/SectionReveal';
 import FAQSection from '@/components/features/FAQSection';
 import MarketBars from '@/components/features/MarketBars';
@@ -161,20 +164,17 @@ export default function About() {
             </SectionReveal>
 
             <SectionReveal className="lg:col-span-6" delay={150} direction="right">
-              <div className="relative rounded-2xl overflow-hidden group">
-                <img
-                  src={aboutHero}
-                  alt="Abstract representation of AI-driven financial intelligence"
-                  className="w-full h-[240px] sm:h-[320px] lg:h-[420px] object-cover rounded-2xl transition-transform duration-700 group-hover:scale-[1.03]"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-background/70 via-transparent to-background/20 rounded-2xl" />
-                <div className="absolute inset-0 border border-primary/10 rounded-2xl transition-all duration-500 group-hover:border-primary/25" />
-                {/* HUD corners */}
-                <div className="absolute top-3 left-3 w-6 h-6 border-t-2 border-l-2 border-primary/30 rounded-tl-md" />
-                <div className="absolute top-3 right-3 w-6 h-6 border-t-2 border-r-2 border-primary/30 rounded-tr-md" />
-                <div className="absolute bottom-3 left-3 w-6 h-6 border-b-2 border-l-2 border-primary/30 rounded-bl-md" />
-                <div className="absolute bottom-3 right-3 w-6 h-6 border-b-2 border-r-2 border-primary/30 rounded-br-md" />
-              </div>
+              <ScrollParallax distance={20}>
+                <HudFrame className="rounded-2xl overflow-hidden group">
+                  <img
+                    src={aboutHero}
+                    alt="Abstract representation of AI-driven financial intelligence"
+                    className="w-full h-[240px] sm:h-[320px] lg:h-[420px] object-cover rounded-2xl transition-transform duration-700 group-hover:scale-[1.03]"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-background/70 via-transparent to-background/20 rounded-2xl" />
+                  <div className="absolute inset-0 border border-primary/10 rounded-2xl transition-all duration-500 group-hover:border-primary/25" />
+                </HudFrame>
+              </ScrollParallax>
             </SectionReveal>
           </div>
         </div>
@@ -227,6 +227,9 @@ export default function About() {
         <div className="mx-auto max-w-[1400px] px-6 lg:px-10">
           <SectionReveal direction="blur">
             <div className="text-center mb-12">
+              <HudFrame className="mx-auto mb-4 size-16 flex items-center justify-center" cornerClassName="w-3 h-3 border-primary/20">
+                <AboutMotif className="size-8 text-primary/60" />
+              </HudFrame>
               <h2 className="font-display text-3xl lg:text-4xl font-bold text-foreground">
                 Operating Principles
               </h2>
@@ -319,7 +322,7 @@ export default function About() {
                   viewport={{ once: true }}
                   transition={{ delay: i * 0.08, duration: 0.4 }}
                   whileHover={{ scale: 1.05, y: -2 }}
-                  className="flex items-center gap-3 rounded-xl bg-kv-surface/50 border border-border/40 px-6 py-4 transition-all duration-300 hover:border-primary/20 hover:shadow-[0_0_16px_hsla(152,76%,46%,0.06)]"
+                  className="flex items-center gap-3 rounded-xl bg-kv-surface/50 hairline-border px-6 py-4 transition-all duration-300 hover:border-primary/20 hover:shadow-[0_0_16px_hsla(152,76%,46%,0.06)]"
                 >
                   <div className="size-10 rounded-lg bg-primary/10 border border-primary/15 flex items-center justify-center">
                     <span className="font-display text-sm font-bold text-primary">{r.abbr}</span>

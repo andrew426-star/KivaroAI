@@ -61,7 +61,7 @@ export default function ToolStack() {
                   {tool.description}
                 </p>
                 <span
-                  className="mt-2 text-[10px] font-display uppercase tracking-widest"
+                  className="label-eyebrow mt-2"
                   style={{ color: `${color}80` }}
                 >
                   {tool.category}

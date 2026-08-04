@@ -3,9 +3,6 @@ import { Link } from 'react-router-dom';
 import { ArrowUpRight, ArrowRight, ArrowLeft, ChevronRight } from 'lucide-react';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { motion, AnimatePresence } from 'framer-motion';
-import {
-  Scan, Target, PenTool, Rocket, Layers, GraduationCap, TrendingUp,
-} from 'lucide-react';
 import { PROCESS_STEPS } from '@/constants/mockData';
 import { cn } from '@/lib/utils';
 import GlowCard from '@/components/features/GlowCard';
@@ -13,10 +10,9 @@ import SectionReveal from '@/components/features/SectionReveal';
 import MarketBars from '@/components/features/MarketBars';
 import MagneticButton from '@/components/features/MagneticButton';
 import SplitTextReveal from '@/components/features/SplitTextReveal';
+import { PROCESS_GLYPHS } from '@/components/illustrations/process-glyphs';
 
-const ICON_MAP: Record<string, React.ElementType> = {
-  Scan, Target, PenTool, Rocket, Layers, GraduationCap, TrendingUp,
-};
+const ICON_MAP = PROCESS_GLYPHS;
 
 // Extended descriptions for each phase
 const PHASE_DETAILS: Record<number, { overview: string; deliverables: string[]; duration: string; keyActivities: string[] }> = {
@@ -435,7 +431,7 @@ export default function Process() {
   const [activePhase, setActivePhase] = useState(0);
   const step = PROCESS_STEPS[activePhase];
   const details = PHASE_DETAILS[step.id];
-  const Icon = ICON_MAP[step.icon] || Scan;
+  const Icon = ICON_MAP[step.icon] || ICON_MAP.Scan;
 
   return (
     <>
@@ -474,7 +470,7 @@ export default function Process() {
           <SectionReveal direction="up">
             <div className="flex flex-wrap justify-center gap-1.5 sm:gap-2">
               {PROCESS_STEPS.map((s, i) => {
-                const StepIcon = ICON_MAP[s.icon] || Scan;
+                const StepIcon = ICON_MAP[s.icon] || ICON_MAP.Scan;
                 return (
                   <button
                     key={s.id}
@@ -645,7 +641,7 @@ export default function Process() {
                       </h3>
                       <div className="space-y-3">
                         {PROCESS_STEPS.map((s, i) => {
-                          const StepIcon = ICON_MAP[s.icon] || Scan;
+                          const StepIcon = ICON_MAP[s.icon] || ICON_MAP.Scan;
                           const isActive = i === activePhase;
                           const isPast = i < activePhase;
                           return (
@@ -748,7 +744,7 @@ export default function Process() {
                 <Link to="/contact">
                   <MagneticButton
                     as="div"
-                    className="inline-flex items-center gap-2 rounded-lg bg-primary px-8 py-4 text-base font-semibold text-primary-foreground transition-shadow duration-300 hover:shadow-[0_0_40px_hsla(152,76%,46%,0.35)] active:scale-[0.97]"
+                    className="inline-flex items-center gap-2 rounded-full bg-primary px-8 py-4 text-base font-semibold text-primary-foreground transition-shadow duration-300 hover:shadow-[0_0_40px_hsla(152,76%,46%,0.35)] active:scale-[0.97]"
                     strength={0.12}
                   >
                     Begin Discovery

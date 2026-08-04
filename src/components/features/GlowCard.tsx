@@ -44,9 +44,9 @@ export default function GlowCard({ children, className, glowOnHover = true, tilt
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       className={cn(
-        'group relative rounded-xl overflow-hidden',
+        'group relative rounded-lg overflow-hidden',
         'bg-kv-surface/60 backdrop-blur-sm',
-        'border border-border/50',
+        'hairline-border',
         'transition-all duration-500 ease-[cubic-bezier(0.03,0.98,0.52,0.99)]',
         'will-change-transform',
         glowOnHover && [

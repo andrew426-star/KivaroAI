@@ -21,6 +21,7 @@ export default {
       fontFamily: {
         display: ["Syne", "sans-serif"],
         body: ["Outfit", "sans-serif"],
+        mono: ["JetBrains Mono", "monospace"],
       },
       colors: {
         border: "hsl(var(--border))",

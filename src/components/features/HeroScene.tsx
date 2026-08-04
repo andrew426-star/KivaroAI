@@ -8,9 +8,10 @@ import * as THREE from 'three';
  * market-depth motif) driven entirely on the GPU via layered sine waves.
  */
 const TerrainMaterial = shaderMaterial(
-  { uTime: 0, uColorMid: new THREE.Color('#1cce7b'), uColorHigh: new THREE.Color('#a5e830') },
+  { uTime: 0, uIntro: 0, uColorMid: new THREE.Color('#1cce7b'), uColorHigh: new THREE.Color('#a5e830') },
   /* vertex */ `
     uniform float uTime;
+    uniform float uIntro;
     varying float vElevation;
     varying vec2 vUv;
 
@@ -25,7 +26,7 @@ const TerrainMaterial = shaderMaterial(
       elevation += wave(pos.xy, 0.16, 0.55, 1.0, uTime);
       elevation += wave(pos.xy, 0.37, 0.85, 0.4, uTime * 1.25);
       elevation += wave(pos.xy * 1.7, 0.52, 0.35, 0.16, uTime * 0.6);
-      pos.z += elevation * 0.55;
+      pos.z += elevation * 0.55 * uIntro;
       vElevation = elevation;
       gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
     }
@@ -33,6 +34,7 @@ const TerrainMaterial = shaderMaterial(
   /* fragment */ `
     uniform vec3 uColorMid;
     uniform vec3 uColorHigh;
+    uniform float uIntro;
     varying float vElevation;
     varying vec2 vUv;
 
@@ -43,10 +45,30 @@ const TerrainMaterial = shaderMaterial(
       float d = distance(vUv, vec2(0.5, 0.62));
       float fade = smoothstep(0.78, 0.1, d);
 
-      gl_FragColor = vec4(color, fade * 0.5);
+      gl_FragColor = vec4(color, fade * 0.5 * uIntro);
     }
   `
 );
+
+// Landing-animation boot sequence, in two overlapping stages (elapsed-time
+// driven off state.clock, not per-component accumulators, so every stage
+// stays in sync off one shared clock):
+//   1. AssemblyField — a scattered particle cloud streams inward and
+//      resolves onto the terrain's own flat (pre-elevation) grid, echoing
+//      "raw data resolving into a connected structure."
+//   2. Terrain reveal — once the particles have mostly arrived, the
+//      wireframe grid itself fades in and its elevation grows out of that
+//      flat plane (the existing uIntro ramp), completing the handoff from
+//      discrete points to the connected structure they were building.
+const ASSEMBLY_PARTICLE_DURATION = 1.7;
+const ASSEMBLY_STAGGER = 1.0;
+const ASSEMBLY_FADE_DURATION = 0.9;
+const TERRAIN_REVEAL_START = 2.0;
+const TERRAIN_REVEAL_DURATION = 1.6;
+
+function easeOutCubic(t: number) {
+  return 1 - Math.pow(1 - t, 3);
+}
 
 extend({ TerrainMaterial });
 
@@ -56,12 +78,25 @@ declare module '@react-three/fiber' {
   }
 }
 
-function Terrain({ segments }: { segments: number }) {
+function Terrain({ segments, reducedMotion }: { segments: number; reducedMotion: boolean }) {
   const ref = useRef<THREE.ShaderMaterial>(null);
 
-  useFrame((_, delta) => {
-    if (ref.current) {
-      ref.current.uniforms.uTime.value += delta;
+  useEffect(() => {
+    if (reducedMotion && ref.current) {
+      ref.current.uniforms.uIntro.value = 1;
+    }
+  }, [reducedMotion]);
+
+  useFrame((state, delta) => {
+    if (!ref.current) return;
+    ref.current.uniforms.uTime.value += delta;
+    if (!reducedMotion) {
+      const progress = THREE.MathUtils.clamp(
+        (state.clock.elapsedTime - TERRAIN_REVEAL_START) / TERRAIN_REVEAL_DURATION,
+        0,
+        1,
+      );
+      ref.current.uniforms.uIntro.value = easeOutCubic(progress);
     }
   });
 
@@ -79,8 +114,11 @@ function Terrain({ segments }: { segments: number }) {
   );
 }
 
+const PARTICLE_BASE_OPACITY = 0.55;
+
 function DataParticles({ count }: { count: number }) {
   const ref = useRef<THREE.Points>(null);
+  const materialRef = useRef<THREE.PointsMaterial>(null);
 
   const [positions, speeds] = useMemo(() => {
     const pos = new Float32Array(count * 3);
@@ -94,7 +132,7 @@ function DataParticles({ count }: { count: number }) {
     return [pos, spd];
   }, [count]);
 
-  useFrame((_, delta) => {
+  useFrame((state, delta) => {
     const geo = ref.current?.geometry;
     if (!geo) return;
     const arr = geo.attributes.position.array as Float32Array;
@@ -103,6 +141,15 @@ function DataParticles({ count }: { count: number }) {
       if (arr[i * 3 + 1] > 3.5) arr[i * 3 + 1] = -1.5;
     }
     geo.attributes.position.needsUpdate = true;
+
+    if (materialRef.current) {
+      const progress = THREE.MathUtils.clamp(
+        (state.clock.elapsedTime - TERRAIN_REVEAL_START) / TERRAIN_REVEAL_DURATION,
+        0,
+        1,
+      );
+      materialRef.current.opacity = PARTICLE_BASE_OPACITY * easeOutCubic(progress);
+    }
   });
 
   return (
@@ -111,15 +158,100 @@ function DataParticles({ count }: { count: number }) {
         <bufferAttribute attach="attributes-position" args={[positions, 3]} />
       </bufferGeometry>
       <pointsMaterial
+        ref={materialRef}
         size={0.035}
         color="#3adfad"
         transparent
-        opacity={0.55}
+        opacity={0}
         depthWrite={false}
         blending={THREE.AdditiveBlending}
         sizeAttenuation
       />
     </points>
+  );
+}
+
+function useAssemblyPoints(count: number) {
+  return useMemo(() => {
+    const scatter = new Float32Array(count * 3);
+    const target = new Float32Array(count * 3);
+    const delays = new Float32Array(count);
+    for (let i = 0; i < count; i++) {
+      // Target: scattered across the terrain's own flat XY extent
+      // (matches planeGeometry(16,16,...)'s span), z=0 — the terrain's
+      // rest plane before uIntro's elevation kicks in, so arriving
+      // particles hand off directly into the grid that grows under them.
+      const tx = (Math.random() - 0.5) * 15;
+      const ty = (Math.random() - 0.5) * 15;
+      target[i * 3] = tx;
+      target[i * 3 + 1] = ty;
+      target[i * 3 + 2] = 0;
+
+      // Scatter: offset from the target within the camera's own visible
+      // range (a wide swing here lands well outside the frustum given
+      // this group's steep rotation — verified empirically, not assumed —
+      // so this stays close enough to read as disorder without particles
+      // spending their approach off-screen).
+      const angle = Math.random() * Math.PI * 2;
+      const radius = 1.5 + Math.random() * 4.5;
+      scatter[i * 3] = tx + Math.cos(angle) * radius;
+      scatter[i * 3 + 1] = ty + Math.sin(angle) * radius * 0.6;
+      scatter[i * 3 + 2] = 0.3 + Math.random() * 2;
+
+      delays[i] = Math.random() * ASSEMBLY_STAGGER;
+    }
+    return { scatter, target, delays };
+  }, [count]);
+}
+
+// Scattered particle cloud that streams inward and resolves onto the
+// terrain's own flat grid — the "raw data becomes a connected structure"
+// beat. Only ever mounted when !reducedMotion (gated in Scene, matching
+// DataParticles/CameraRig's own gating), so no internal reduced-motion
+// branch is needed here.
+function AssemblyField({ count }: { count: number }) {
+  const ref = useRef<THREE.Points>(null);
+  const materialRef = useRef<THREE.PointsMaterial>(null);
+  const { scatter, target, delays } = useAssemblyPoints(count);
+  const current = useMemo(() => new Float32Array(scatter), [scatter]);
+
+  useFrame((state) => {
+    const geo = ref.current?.geometry;
+    if (!geo || !materialRef.current) return;
+    const t = state.clock.elapsedTime;
+    const arr = geo.attributes.position.array as Float32Array;
+    for (let i = 0; i < count; i++) {
+      const localT = THREE.MathUtils.clamp((t - delays[i]) / ASSEMBLY_PARTICLE_DURATION, 0, 1);
+      const eased = easeOutCubic(localT);
+      arr[i * 3] = THREE.MathUtils.lerp(scatter[i * 3], target[i * 3], eased);
+      arr[i * 3 + 1] = THREE.MathUtils.lerp(scatter[i * 3 + 1], target[i * 3 + 1], eased);
+      arr[i * 3 + 2] = THREE.MathUtils.lerp(scatter[i * 3 + 2], target[i * 3 + 2], eased);
+    }
+    geo.attributes.position.needsUpdate = true;
+
+    const fadeIn = THREE.MathUtils.clamp(t / 0.4, 0, 1);
+    const fadeOut = THREE.MathUtils.clamp((t - TERRAIN_REVEAL_START) / ASSEMBLY_FADE_DURATION, 0, 1);
+    materialRef.current.opacity = 0.95 * fadeIn * (1 - fadeOut);
+  });
+
+  return (
+    <group rotation={[-Math.PI / 2.35, 0, 0]} position={[0, -1.6, 2]}>
+      <points ref={ref}>
+        <bufferGeometry>
+          <bufferAttribute attach="attributes-position" args={[current, 3]} />
+        </bufferGeometry>
+        <pointsMaterial
+          ref={materialRef}
+          size={0.09}
+          color="#3adfad"
+          transparent
+          opacity={0}
+          depthWrite={false}
+          blending={THREE.AdditiveBlending}
+          sizeAttenuation
+        />
+      </points>
+    </group>
   );
 }
 
@@ -145,7 +277,17 @@ function CameraRig() {
   return null;
 }
 
-function Scene({ reducedMotion, segments, particleCount }: { reducedMotion: boolean; segments: number; particleCount: number }) {
+function Scene({
+  reducedMotion,
+  segments,
+  particleCount,
+  assemblyCount,
+}: {
+  reducedMotion: boolean;
+  segments: number;
+  particleCount: number;
+  assemblyCount: number;
+}) {
   useFrame((state) => {
     if (reducedMotion) state.invalidate();
   });
@@ -153,7 +295,8 @@ function Scene({ reducedMotion, segments, particleCount }: { reducedMotion: bool
   return (
     <>
       <fog attach="fog" args={['#080c0a', 6, 15]} />
-      <Terrain segments={segments} />
+      <Terrain segments={segments} reducedMotion={reducedMotion} />
+      {!reducedMotion && <AssemblyField count={assemblyCount} />}
       {!reducedMotion && <DataParticles count={particleCount} />}
       {!reducedMotion && <CameraRig />}
     </>
@@ -189,7 +332,12 @@ export default function HeroScene() {
         style={{ pointerEvents: 'none' }}
       >
         <Suspense fallback={null}>
-          <Scene reducedMotion={reducedMotion} segments={isSmall ? 48 : 80} particleCount={isSmall ? 60 : 140} />
+          <Scene
+            reducedMotion={reducedMotion}
+            segments={isSmall ? 48 : 80}
+            particleCount={isSmall ? 60 : 140}
+            assemblyCount={isSmall ? 110 : 280}
+          />
         </Suspense>
       </Canvas>
     </div>

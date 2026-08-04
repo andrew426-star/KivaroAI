@@ -3,19 +3,15 @@ import { PROCESS_STEPS } from '@/constants/mockData';
 import { useInView } from '@/hooks/useInView';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
-import {
-  Scan, Target, PenTool, Rocket, Layers, GraduationCap, TrendingUp,
-} from 'lucide-react';
+import { PROCESS_GLYPHS } from '@/components/illustrations/process-glyphs';
 
-const ICON_MAP: Record<string, React.ElementType> = {
-  Scan, Target, PenTool, Rocket, Layers, GraduationCap, TrendingUp,
-};
+const ICON_MAP = PROCESS_GLYPHS;
 
 export default function ProcessTimeline() {
   const [ref, inView] = useInView(0.1);
   const [activeStep, setActiveStep] = useState(0);
   const step = PROCESS_STEPS[activeStep];
-  const Icon = ICON_MAP[step.icon] || Scan;
+  const Icon = ICON_MAP[step.icon] || ICON_MAP.Scan;
 
   return (
     <div ref={ref} className={cn(
@@ -25,7 +21,7 @@ export default function ProcessTimeline() {
       {/* Step selector */}
       <div className="flex flex-wrap justify-center gap-1.5 sm:gap-2 mb-8 lg:mb-10">
         {PROCESS_STEPS.map((s, i) => {
-          const StepIcon = ICON_MAP[s.icon] || Scan;
+          const StepIcon = ICON_MAP[s.icon] || ICON_MAP.Scan;
           return (
             <button
               key={s.id}
@@ -60,7 +56,7 @@ export default function ProcessTimeline() {
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: -12, scale: 0.98 }}
           transition={{ duration: 0.35, ease: 'easeOut' }}
-          className="relative rounded-xl bg-kv-surface/40 border border-border/50 p-8 lg:p-10 backdrop-blur-sm scan-line overflow-hidden"
+          className="relative rounded-xl bg-kv-surface/40 hairline-border p-8 lg:p-10 backdrop-blur-sm scan-line overflow-hidden"
         >
           <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent" />
           <div className="flex flex-col lg:flex-row items-start gap-6">

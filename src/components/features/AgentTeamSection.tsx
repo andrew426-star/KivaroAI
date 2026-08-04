@@ -5,6 +5,8 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import SectionReveal from './SectionReveal';
+import SectionLabel from './SectionLabel';
+import { DIVISION_EMBLEMS } from '@/components/illustrations/division-emblems';
 import { cn } from '@/lib/utils';
 
 interface Agent {
@@ -152,10 +154,7 @@ export default function AgentTeamSection() {
         {/* Header */}
         <SectionReveal direction="blur">
           <div className="text-center mb-12">
-            <span className="inline-flex items-center gap-2 text-xs font-display font-semibold text-primary/70 uppercase tracking-widest mb-3">
-              <span className="size-1.5 rounded-full bg-primary animate-glow-pulse" />
-              Sovereign Agent Team
-            </span>
+            <SectionLabel index="05" label="Sovereign Agent Team" dot className="mb-3 justify-center" />
             <h2 className="font-display text-3xl lg:text-4xl font-bold text-foreground">
               15 Agents. 5 Divisions. Always On.
             </h2>
@@ -215,11 +214,12 @@ export default function AgentTeamSection() {
                 <div className="flex items-center gap-3 mb-4">
                   <div
                     className="size-8 rounded-lg flex items-center justify-center shrink-0"
-                    style={{ background: `${div.color}12`, border: `1px solid ${div.color}25` }}
+                    style={{ background: `${div.color}12`, border: `1px solid ${div.color}25`, color: div.color }}
                   >
-                    <span className="font-display text-xs font-bold" style={{ color: div.color }}>
-                      {div.id}
-                    </span>
+                    {(() => {
+                      const Emblem = DIVISION_EMBLEMS[div.id];
+                      return Emblem ? <Emblem className="size-4" /> : <span className="font-display text-xs font-bold">{div.id}</span>;
+                    })()}
                   </div>
                   <div>
                     <span className="font-display text-sm font-bold text-foreground">{div.label}</span>
@@ -241,7 +241,7 @@ export default function AgentTeamSection() {
 
         {/* Bottom stat bar */}
         <SectionReveal direction="up" delay={200}>
-          <div className="mt-12 rounded-xl border border-border/40 bg-kv-surface/20 p-6 flex flex-wrap justify-center gap-8 text-center">
+          <div className="mt-12 rounded-xl hairline-border bg-kv-surface/20 p-6 flex flex-wrap justify-center gap-8 text-center">
             {[
               { value: '15', label: 'Sovereign Agents' },
               { value: '5',  label: 'Operating Divisions' },

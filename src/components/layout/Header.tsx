@@ -71,7 +71,7 @@ export default function Header() {
         {/* Desktop CTA */}
         <Link
           to="/contact"
-          className="hidden md:inline-flex items-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground transition-all duration-300 hover:shadow-[0_0_30px_hsla(152,76%,46%,0.4),_0_0_60px_hsla(152,76%,46%,0.1)] hover:scale-[1.04] active:scale-[0.96] btn-magnetic overflow-hidden relative"
+          className="hidden md:inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground transition-all duration-300 hover:shadow-[0_0_30px_hsla(152,76%,46%,0.4),_0_0_60px_hsla(152,76%,46%,0.1)] hover:scale-[1.04] active:scale-[0.96] btn-magnetic overflow-hidden relative"
         >
           <span className="relative z-10">Start Consultation</span>
         </Link>
@@ -146,7 +146,7 @@ export default function Header() {
               >
                 <Link
                   to="/contact"
-                  className="mt-2 flex items-center justify-center rounded-lg bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground active:scale-[0.97] transition-transform"
+                  className="mt-2 flex items-center justify-center rounded-full bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground active:scale-[0.97] transition-transform"
                 >
                   Start Consultation
                 </Link>

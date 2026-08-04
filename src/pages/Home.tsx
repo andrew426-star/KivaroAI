@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import { SERVICES, STATS } from '@/constants/mockData';
 import { REGIONS } from '@/constants/config';
 import GlowCard from '@/components/features/GlowCard';
+import SectionLabel from '@/components/features/SectionLabel';
 import SectionReveal from '@/components/features/SectionReveal';
 import StatCounter from '@/components/features/StatCounter';
 import WorkflowDiagram from '@/components/features/WorkflowDiagram';
@@ -16,6 +17,8 @@ import TextMarquee from '@/components/features/TextMarquee';
 import SplitTextReveal from '@/components/features/SplitTextReveal';
 import CursorSpotlight from '@/components/features/CursorSpotlight';
 import ToolStack from '@/components/features/ToolStack';
+import HeroMotif from '@/components/illustrations/hero-motif';
+import ScrollParallax from '@/components/features/ScrollParallax';
 
 const HeroScene = lazy(() => import('@/components/features/HeroScene'));
 
@@ -27,7 +30,7 @@ const HERO_FEATURES = [
 
 const container = {
   hidden: {},
-  show: { transition: { staggerChildren: 0.08, delayChildren: 0.2 } },
+  show: { transition: { staggerChildren: 0.08, delayChildren: 0.3 } },
 };
 
 const item = {
@@ -55,7 +58,7 @@ export default function Home() {
             className="absolute inset-0"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 1.8, ease: 'easeOut' }}
+            transition={{ duration: 0.6, ease: 'easeOut' }}
           >
             <Suspense fallback={null}>
               <HeroScene />
@@ -68,7 +71,7 @@ export default function Home() {
           <div className="relative z-base mx-auto max-w-[1400px] w-full px-6 lg:px-10 pt-16 pb-20 lg:pt-8 lg:pb-0">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-6 items-center">
               {/* Left: Text */}
-              <div className="lg:col-span-7 xl:col-span-6">
+              <ScrollParallax className="lg:col-span-7 xl:col-span-6" distance={24}>
                 <motion.div
                   variants={container}
                   initial="hidden"
@@ -104,7 +107,7 @@ export default function Home() {
                     <Link to="/contact">
                       <MagneticButton
                         as="div"
-                        className="inline-flex items-center gap-2 rounded-lg bg-primary px-5 sm:px-7 py-3 sm:py-3.5 text-sm font-semibold text-primary-foreground transition-shadow duration-300 hover:shadow-[0_0_30px_hsla(152,76%,46%,0.35),_0_0_60px_hsla(152,76%,46%,0.1)] active:scale-[0.97]"
+                        className="inline-flex items-center gap-2 rounded-full bg-primary px-5 sm:px-7 py-3 sm:py-3.5 text-sm font-semibold text-primary-foreground transition-shadow duration-300 hover:shadow-[0_0_30px_hsla(152,76%,46%,0.35),_0_0_60px_hsla(152,76%,46%,0.1)] active:scale-[0.97]"
                         strength={0.15}
                       >
                         Schedule Discovery Call
@@ -113,7 +116,7 @@ export default function Home() {
                     </Link>
                     <Link
                       to="/services"
-                      className="inline-flex items-center gap-2 rounded-lg border border-border/60 bg-secondary/40 px-5 sm:px-6 py-3 sm:py-3.5 text-sm font-medium text-foreground hover:border-primary/30 hover:bg-secondary transition-all duration-300 active:scale-[0.97]"
+                      className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-secondary/40 px-5 sm:px-6 py-3 sm:py-3.5 text-sm font-medium text-foreground hover:border-primary/30 hover:bg-secondary transition-all duration-300 active:scale-[0.97]"
                     >
                       Explore Services
                       <ArrowRight className="size-4" />
@@ -135,7 +138,7 @@ export default function Home() {
                     ))}
                   </motion.div>
                 </motion.div>
-              </div>
+              </ScrollParallax>
 
               {/* Right: Workflow Diagram */}
               <motion.div
@@ -144,8 +147,9 @@ export default function Home() {
                 transition={{ duration: 1.2, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
                 className="lg:col-span-5 xl:col-span-6"
               >
-                <div className="relative rounded-2xl overflow-hidden bg-kv-surface/30 border border-border/40 backdrop-blur-sm p-4 lg:p-6 group hover:border-primary/20 transition-all duration-500">
+                <div className="relative rounded-2xl overflow-hidden bg-kv-surface/30 hairline-border backdrop-blur-sm p-4 lg:p-6 group hover:border-primary/20 transition-all duration-500">
                   <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
+                  <HeroMotif className="pointer-events-none absolute -top-2 right-2 h-16 w-28 text-primary opacity-40" />
                   <div className="flex items-center gap-2 mb-4">
                     <div className="flex gap-1.5">
                       <span className="size-2.5 rounded-full bg-primary/40 animate-glow-pulse" />
@@ -184,7 +188,7 @@ export default function Home() {
       <section className="relative z-base py-20 lg:py-28">
         <div className="mx-auto max-w-[1400px] px-6 lg:px-10">
           <SectionReveal direction="scale">
-            <div className="relative rounded-2xl border border-border/40 bg-kv-surface/30 backdrop-blur-sm p-10 lg:p-14 overflow-hidden">
+            <div className="relative rounded-2xl hairline-border bg-kv-surface/30 backdrop-blur-sm p-10 lg:p-14 overflow-hidden">
               <div className="absolute top-0 left-0 right-0 h-px shimmer-border" />
               <div className="absolute bottom-0 left-0 right-0 opacity-20 pointer-events-none h-12">
                 <MarketBars barCount={50} />
@@ -210,10 +214,7 @@ export default function Home() {
           <SectionReveal direction="left">
             <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4 mb-12">
               <div>
-                <span className="inline-flex items-center gap-2 text-xs font-display font-semibold text-primary/70 uppercase tracking-widest mb-3">
-                  <Network className="size-3.5" />
-                  Capabilities
-                </span>
+                <SectionLabel index="01" label="Capabilities" icon={Network} className="mb-3" />
                 <h2 className="font-display text-3xl lg:text-4xl font-bold text-foreground text-balance">
                   Institutional-Grade AI Systems
                 </h2>
@@ -272,10 +273,7 @@ export default function Home() {
         <div className="mx-auto max-w-[1400px] px-6 lg:px-10">
           <SectionReveal direction="blur">
             <div className="text-center mb-12">
-              <span className="inline-flex items-center gap-2 text-xs font-display font-semibold text-primary/70 uppercase tracking-widest mb-3">
-                <Network className="size-3.5" />
-                Built In-House
-              </span>
+              <SectionLabel index="02" label="Built In-House" icon={Network} className="mb-3 justify-center" />
               <h2 className="font-display text-3xl lg:text-4xl font-bold text-foreground">
                 The Stack Behind Every Deployment
               </h2>
@@ -293,10 +291,7 @@ export default function Home() {
         <div className="mx-auto max-w-[1400px] px-6 lg:px-10">
           <SectionReveal direction="blur">
             <div className="text-center mb-12">
-              <span className="inline-flex items-center gap-2 text-xs font-display font-semibold text-primary/70 uppercase tracking-widest mb-3">
-                <BarChart3 className="size-3.5" />
-                Methodology
-              </span>
+              <SectionLabel index="03" label="Methodology" icon={BarChart3} className="mb-3 justify-center" />
               <h2 className="font-display text-3xl lg:text-4xl font-bold text-foreground">
                 Seven-Phase Deployment Model
               </h2>
@@ -322,12 +317,10 @@ export default function Home() {
       <section className="relative z-base py-20 lg:py-28">
         <div className="mx-auto max-w-[1400px] px-6 lg:px-10">
           <SectionReveal direction="scale">
-            <div className="rounded-2xl border border-border/40 bg-kv-surface/20 backdrop-blur-sm overflow-hidden">
+            <div className="rounded-2xl hairline-border bg-kv-surface/20 backdrop-blur-sm overflow-hidden">
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-0">
                 <div className="lg:col-span-5 p-10 lg:p-14 flex flex-col justify-center">
-                  <span className="text-xs font-display font-semibold text-primary/70 uppercase tracking-widest mb-3">
-                    Regional Presence
-                  </span>
+                  <SectionLabel index="04" label="Regional Presence" className="mb-3" />
                   <h2 className="font-display text-2xl lg:text-3xl font-bold text-foreground">
                     Southern U.S. Coverage
                   </h2>
@@ -388,7 +381,7 @@ export default function Home() {
                   <Link to="/contact">
                     <MagneticButton
                       as="div"
-                      className="inline-flex items-center gap-2 rounded-lg bg-primary px-8 py-4 text-base font-semibold text-primary-foreground transition-shadow duration-300 hover:shadow-[0_0_40px_hsla(152,76%,46%,0.35),_0_0_80px_hsla(152,76%,46%,0.1)] active:scale-[0.97]"
+                      className="inline-flex items-center gap-2 rounded-full bg-primary px-8 py-4 text-base font-semibold text-primary-foreground transition-shadow duration-300 hover:shadow-[0_0_40px_hsla(152,76%,46%,0.35),_0_0_80px_hsla(152,76%,46%,0.1)] active:scale-[0.97]"
                       strength={0.12}
                     >
                       Start Consultation
