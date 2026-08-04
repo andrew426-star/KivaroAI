@@ -9,7 +9,7 @@ import SectionLabel from './SectionLabel';
 import { DIVISION_EMBLEMS } from '@/components/illustrations/division-emblems';
 import { cn } from '@/lib/utils';
 
-interface Agent {
+export interface Agent {
   id: string;
   name: string;
   role: string;
@@ -17,7 +17,7 @@ interface Agent {
   division: string;
 }
 
-interface Division {
+export interface Division {
   id: string;
   label: string;
   color: string;
@@ -25,7 +25,7 @@ interface Division {
   agents: Agent[];
 }
 
-const DIVISIONS: Division[] = [
+export const DIVISIONS: Division[] = [
   {
     id: 'RNI',
     label: 'Research & Intelligence',
@@ -88,13 +88,14 @@ function AgentCard({ agent, color, glow, index }: { agent: Agent; color: string;
 
   return (
     <motion.div
+      id={`agent-${agent.id}`}
       initial={{ opacity: 0, y: 16 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ delay: index * 0.05, duration: 0.4, ease: 'easeOut' }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      className="relative rounded-xl border bg-background/40 backdrop-blur-sm p-4 cursor-default transition-all duration-300"
+      className="relative rounded-xl border bg-background/40 backdrop-blur-sm p-4 cursor-default transition-all duration-300 scroll-mt-24"
       style={{
         borderColor: hovered ? `${color}40` : 'hsla(0,0%,100%,0.06)',
         boxShadow: hovered ? `0 0 20px ${glow}` : 'none',

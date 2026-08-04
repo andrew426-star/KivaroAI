@@ -12,7 +12,9 @@ export default function Layout() {
   const { pathname } = useLocation();
 
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'instant' });
+    // Scroll reset now happens in AnimatedOutlet, synced to the outgoing
+    // page's exit animation completing rather than firing instantly here
+    // — see AnimatedOutlet.tsx's onExitComplete.
     trackPageView(pathname);
   }, [pathname]);
 

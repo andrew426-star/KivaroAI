@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { type ReactNode } from 'react';
+import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion';
 
 interface PageTransitionProps {
   children: ReactNode;
@@ -33,10 +34,21 @@ const pageVariants = {
   },
 };
 
+// Near-instant opacity-only crossfade — no y-drift, no blur — when the
+// user has asked for reduced motion. This file previously had no
+// reduced-motion handling at all.
+const reducedVariants = {
+  initial: { opacity: 0 },
+  enter: { opacity: 1, transition: { duration: 0.15 } },
+  exit: { opacity: 0, transition: { duration: 0.1 } },
+};
+
 export default function PageTransition({ children, className }: PageTransitionProps) {
+  const reducedMotion = usePrefersReducedMotion();
+
   return (
     <motion.div
-      variants={pageVariants}
+      variants={reducedMotion ? reducedVariants : pageVariants}
       initial="initial"
       animate="enter"
       exit="exit"

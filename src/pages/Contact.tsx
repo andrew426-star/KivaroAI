@@ -1,3 +1,4 @@
+import { lazy, Suspense } from 'react';
 import { Mail, MapPin, Phone, Clock } from 'lucide-react';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { motion } from 'framer-motion';
@@ -7,6 +8,9 @@ import GlowCard from '@/components/features/GlowCard';
 import SectionReveal from '@/components/features/SectionReveal';
 import MarketBars from '@/components/features/MarketBars';
 import SplitTextReveal from '@/components/features/SplitTextReveal';
+import HeroEyebrow from '@/components/features/HeroEyebrow';
+
+const ContactField = lazy(() => import('@/components/features/ContactField'));
 
 const CONTACT_DETAILS = [
   {
@@ -46,18 +50,19 @@ export default function Contact() {
     <>
       {/* Hero */}
       <section className="relative z-base pt-16 pb-10 lg:pt-24 lg:pb-16 overflow-hidden">
+        <div className="absolute inset-0 opacity-40 pointer-events-none">
+          <Suspense fallback={null}>
+            <ContactField />
+          </Suspense>
+        </div>
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/60 to-background pointer-events-none" />
         <div className="absolute bottom-0 left-0 right-0 opacity-[0.03] pointer-events-none h-16">
           <MarketBars barCount={60} />
         </div>
         <div className="mx-auto max-w-[1400px] px-6 lg:px-10 relative">
           <SectionReveal direction="blur">
             <div className="max-w-2xl">
-              <span className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 mb-5">
-                <span className="size-1.5 rounded-full bg-primary animate-glow-pulse" />
-                <span className="text-xs font-medium text-primary/80 tracking-wide uppercase font-display">
-                  Get In Touch
-                </span>
-              </span>
+              <HeroEyebrow label="Get In Touch" className="mb-5" />
               <SplitTextReveal
                 text="Start Your Discovery"
                 as="h1"

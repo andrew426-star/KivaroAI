@@ -4,6 +4,7 @@ import { NAV_LINKS, SITE_CONFIG } from '@/constants/config';
 import { Menu, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
+import { ROUTE_PRELOADERS } from '@/lib/routePreload';
 import kivaroLogo from '@/assets/kivaro-logo.png';
 
 export default function Header() {
@@ -49,6 +50,8 @@ export default function Header() {
             <Link
               key={link.href}
               to={link.href}
+              onMouseEnter={() => ROUTE_PRELOADERS[link.href]?.()}
+              onFocus={() => ROUTE_PRELOADERS[link.href]?.()}
               className={cn(
                 'relative px-4 py-2 text-sm font-medium transition-all duration-300 rounded-md',
                 pathname === link.href

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, lazy, Suspense } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowUpRight, Filter, ArrowRight } from 'lucide-react';
 import { usePageMeta } from '@/hooks/usePageMeta';
@@ -11,7 +11,10 @@ import MagneticButton from '@/components/features/MagneticButton';
 import TextMarquee from '@/components/features/TextMarquee';
 import SplitTextReveal from '@/components/features/SplitTextReveal';
 import CursorSpotlight from '@/components/features/CursorSpotlight';
+import HeroEyebrow from '@/components/features/HeroEyebrow';
 import { cn } from '@/lib/utils';
+
+const ServiceOrbit = lazy(() => import('@/components/features/ServiceOrbit'));
 
 const CATEGORIES = [
   { id: 'all', label: 'All Services' },
@@ -46,12 +49,7 @@ export default function Services() {
           <div className="mx-auto max-w-[1400px] px-6 lg:px-10 relative">
             <SectionReveal direction="blur">
               <div className="max-w-3xl">
-                <span className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 mb-5">
-                  <span className="size-1.5 rounded-full bg-primary animate-glow-pulse" />
-                  <span className="text-xs font-medium text-primary/80 tracking-wide uppercase font-display">
-                    Capabilities
-                  </span>
-                </span>
+                <HeroEyebrow label="Capabilities" className="mb-5" />
                 <SplitTextReveal
                   text="AI Systems for Institutional Investment Operations"
                   as="h1"
@@ -71,49 +69,74 @@ export default function Services() {
       {/* Category Filter + Service List */}
       <section className="relative z-base pb-20 lg:pb-32">
         <div className="mx-auto max-w-[1400px] px-6 lg:px-10">
-          {/* Filter Bar */}
-          <SectionReveal direction="left">
-            <div className="flex flex-wrap items-center gap-2 mb-10">
-              <Filter className="size-4 text-muted-foreground mr-1" />
-              {CATEGORIES.map((cat) => (
-                <button
-                  key={cat.id}
-                  onClick={() => {
-                    setActiveCategory(cat.id);
-                    setExpandedId(null);
-                  }}
-                  className={cn(
-                    'relative px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 active:scale-95',
-                    activeCategory === cat.id
-                      ? 'bg-primary/10 text-primary border border-primary/25 shadow-[0_0_12px_hsla(152,76%,46%,0.08)]'
-                      : 'text-muted-foreground hover:text-foreground hover:bg-secondary/50 border border-transparent'
-                  )}
-                >
-                  {cat.label}
-                </button>
-              ))}
-            </div>
-          </SectionReveal>
+          {/* Mobile: compact orbit above the filter bar (persistent side panel is a
+              desktop-appropriate layout; mobile still gets the full 3D scene, just
+              repositioned rather than squeezed into a cramped sidebar) */}
+          <div className="lg:hidden mb-8 h-64 rounded-2xl hairline-border bg-kv-surface/20 overflow-hidden relative">
+            <Suspense fallback={null}>
+              <ServiceOrbit activeCategory={activeCategory} />
+            </Suspense>
+            <span className="label-eyebrow absolute top-4 left-4 text-primary/60 pointer-events-none">Service Map</span>
+          </div>
 
-          {/* Service Grid */}
-          <motion.div
-            layout
-            className="grid grid-cols-1 lg:grid-cols-2 gap-4"
-          >
-            {filtered.map((service, i) => (
-              <SectionReveal key={service.id} delay={i * 60} direction={i % 3 === 0 ? 'left' : i % 3 === 1 ? 'up' : 'right'}>
-                <ServiceCard
-                  service={service}
-                  index={SERVICES.indexOf(service)}
-                  expanded={expandedId === service.id}
-                  onToggle={() =>
-                    setExpandedId(expandedId === service.id ? null : service.id)
-                  }
-                />
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-6">
+            <div className="lg:col-span-8">
+              {/* Filter Bar */}
+              <SectionReveal direction="left">
+                <div className="flex flex-wrap items-center gap-2 mb-10">
+                  <Filter className="size-4 text-muted-foreground mr-1" />
+                  {CATEGORIES.map((cat) => (
+                    <button
+                      key={cat.id}
+                      onClick={() => {
+                        setActiveCategory(cat.id);
+                        setExpandedId(null);
+                      }}
+                      className={cn(
+                        'relative px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 active:scale-95',
+                        activeCategory === cat.id
+                          ? 'bg-primary/10 text-primary border border-primary/25 shadow-[0_0_12px_hsla(152,76%,46%,0.08)]'
+                          : 'text-muted-foreground hover:text-foreground hover:bg-secondary/50 border border-transparent'
+                      )}
+                    >
+                      {cat.label}
+                    </button>
+                  ))}
+                </div>
               </SectionReveal>
-            ))}
-          </motion.div>
 
+              {/* Service Grid */}
+              <motion.div
+                layout
+                className="grid grid-cols-1 xl:grid-cols-2 gap-4"
+              >
+                {filtered.map((service, i) => (
+                  <SectionReveal key={service.id} delay={i * 60} direction={i % 3 === 0 ? 'left' : i % 3 === 1 ? 'up' : 'right'}>
+                    <ServiceCard
+                      service={service}
+                      index={SERVICES.indexOf(service)}
+                      expanded={expandedId === service.id}
+                      onToggle={() =>
+                        setExpandedId(expandedId === service.id ? null : service.id)
+                      }
+                    />
+                  </SectionReveal>
+                ))}
+              </motion.div>
+            </div>
+
+            {/* Persistent 3D orbit panel — wired live to the active category filter */}
+            <div className="hidden lg:block lg:col-span-4">
+              <div className="sticky top-24 h-[460px] rounded-2xl hairline-border bg-kv-surface/20 overflow-hidden">
+                <Suspense fallback={null}>
+                  <ServiceOrbit activeCategory={activeCategory} />
+                </Suspense>
+                <div className="absolute top-4 left-4 right-4 flex items-center justify-between pointer-events-none">
+                  <span className="label-eyebrow text-primary/60">Service Map</span>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 

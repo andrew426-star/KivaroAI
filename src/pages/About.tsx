@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, lazy, Suspense } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowUpRight, ArrowRight, MapPin, Calendar, Shield, Eye, Target, Users, ChevronDown } from 'lucide-react';
 import { usePageMeta } from '@/hooks/usePageMeta';
@@ -11,6 +11,7 @@ import GlowCard from '@/components/features/GlowCard';
 import HudFrame from '@/components/features/HudFrame';
 import AboutMotif from '@/components/illustrations/about-motif';
 import ScrollParallax from '@/components/features/ScrollParallax';
+import HeroEyebrow from '@/components/features/HeroEyebrow';
 import SectionReveal from '@/components/features/SectionReveal';
 import FAQSection from '@/components/features/FAQSection';
 import MarketBars from '@/components/features/MarketBars';
@@ -19,6 +20,8 @@ import TextMarquee from '@/components/features/TextMarquee';
 import SplitTextReveal from '@/components/features/SplitTextReveal';
 import CursorSpotlight from '@/components/features/CursorSpotlight';
 import { cn } from '@/lib/utils';
+
+const AboutAtmosphere = lazy(() => import('@/components/features/AboutAtmosphere'));
 
 function MethodologyCards() {
   const [expandedId, setExpandedId] = useState<number | null>(null);
@@ -126,15 +129,16 @@ export default function About() {
     <>
       {/* Hero */}
       <section className="relative z-base pt-16 pb-16 lg:pt-24 lg:pb-24 overflow-hidden">
-        <div className="mx-auto max-w-[1400px] px-6 lg:px-10">
+        <div className="absolute inset-0 opacity-30 pointer-events-none">
+          <Suspense fallback={null}>
+            <AboutAtmosphere />
+          </Suspense>
+        </div>
+        <div className="absolute inset-0 bg-gradient-to-r from-background via-background/40 to-background pointer-events-none" />
+        <div className="mx-auto max-w-[1400px] px-6 lg:px-10 relative">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
             <SectionReveal className="lg:col-span-6" direction="left">
-              <span className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 mb-5">
-                <span className="size-1.5 rounded-full bg-primary animate-glow-pulse" />
-                <span className="text-xs font-medium text-primary/80 tracking-wide uppercase font-display">
-                  About Kivaro AI
-                </span>
-              </span>
+              <HeroEyebrow label="About Kivaro AI" className="mb-5" />
               <SplitTextReveal
                 text="Structured AI for Investment Excellence"
                 as="h1"

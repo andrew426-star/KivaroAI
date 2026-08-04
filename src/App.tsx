@@ -4,13 +4,14 @@ import Layout from '@/components/layout/Layout';
 import LoadingScreen from '@/components/features/LoadingScreen';
 import { Toaster } from '@/components/features/Toaster';
 import { useAuth } from '@/hooks/useAuth';
+import { preloadHome, preloadServices, preloadAgents, preloadAbout, preloadContact, preloadProcess } from '@/lib/routePreload';
 
-const Home = lazy(() => import('@/pages/Home'));
-const Services = lazy(() => import('@/pages/Services'));
-const About = lazy(() => import('@/pages/About'));
-const Contact = lazy(() => import('@/pages/Contact'));
-const Process = lazy(() => import('@/pages/Process'));
-const Agents = lazy(() => import('@/pages/Agents'));
+const Home = lazy(preloadHome);
+const Services = lazy(preloadServices);
+const About = lazy(preloadAbout);
+const Contact = lazy(preloadContact);
+const Process = lazy(preloadProcess);
+const Agents = lazy(preloadAgents);
 const AdminLogin = lazy(() => import('@/pages/AdminLogin'));
 const AdminDashboard = lazy(() => import('@/pages/AdminDashboard'));
 

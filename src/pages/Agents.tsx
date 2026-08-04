@@ -1,3 +1,4 @@
+import { lazy, Suspense } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import { usePageMeta } from '@/hooks/usePageMeta';
@@ -7,6 +8,9 @@ import MagneticButton from '@/components/features/MagneticButton';
 import CursorSpotlight from '@/components/features/CursorSpotlight';
 import SplitTextReveal from '@/components/features/SplitTextReveal';
 import AgentTeamSection from '@/components/features/AgentTeamSection';
+import HeroEyebrow from '@/components/features/HeroEyebrow';
+
+const AgentConstellation = lazy(() => import('@/components/features/AgentConstellation'));
 
 export default function Agents() {
   usePageMeta({
@@ -31,12 +35,7 @@ export default function Agents() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, ease: 'easeOut' }}
             >
-              <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 mb-6">
-                <span className="size-1.5 rounded-full bg-primary animate-glow-pulse" />
-                <span className="text-xs font-medium text-primary/80 tracking-wide uppercase font-display">
-                  Sovereign Agent Team
-                </span>
-              </div>
+              <HeroEyebrow label="Sovereign Agent Team" className="mb-6" />
             </motion.div>
 
             <SplitTextReveal
@@ -85,6 +84,21 @@ export default function Agents() {
           </div>
         </section>
       </CursorSpotlight>
+
+      {/* ===== CONSTELLATION ===== */}
+      <section className="relative z-base h-[420px] lg:h-[560px] overflow-hidden">
+        <motion.div
+          className="absolute inset-0"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.8, ease: 'easeOut' }}
+        >
+          <Suspense fallback={null}>
+            <AgentConstellation />
+          </Suspense>
+        </motion.div>
+        <div className="absolute inset-0 bg-gradient-to-b from-background/10 via-transparent to-background pointer-events-none" />
+      </section>
 
       {/* ===== AGENT TEAM ===== */}
       <AgentTeamSection />

@@ -19,6 +19,7 @@ import CursorSpotlight from '@/components/features/CursorSpotlight';
 import ToolStack from '@/components/features/ToolStack';
 import HeroMotif from '@/components/illustrations/hero-motif';
 import ScrollParallax from '@/components/features/ScrollParallax';
+import HeroEyebrow from '@/components/features/HeroEyebrow';
 
 const HeroScene = lazy(() => import('@/components/features/HeroScene'));
 
@@ -79,12 +80,7 @@ export default function Home() {
                 >
                   {/* Tag */}
                   <motion.div variants={item}>
-                    <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 mb-6">
-                      <span className="size-1.5 rounded-full bg-primary animate-glow-pulse" />
-                      <span className="text-xs font-medium text-primary/80 tracking-wide uppercase font-display">
-                        AI Automation for Investment Firms
-                      </span>
-                    </div>
+                    <HeroEyebrow label="AI Automation for Investment Firms" className="mb-6" />
                   </motion.div>
 
                   <SplitTextReveal

@@ -6,9 +6,10 @@ interface GlowCardProps {
   className?: string;
   glowOnHover?: boolean;
   tilt?: boolean;
+  id?: string;
 }
 
-export default function GlowCard({ children, className, glowOnHover = true, tilt = true }: GlowCardProps) {
+export default function GlowCard({ children, className, glowOnHover = true, tilt = true, id }: GlowCardProps) {
   const cardRef = useRef<HTMLDivElement>(null);
 
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
@@ -41,6 +42,7 @@ export default function GlowCard({ children, className, glowOnHover = true, tilt
   return (
     <div
       ref={cardRef}
+      id={id}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       className={cn(

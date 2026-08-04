@@ -29,8 +29,9 @@ export default function ServiceCard({ service, index, expanded, onToggle }: Serv
 
   return (
     <GlowCard
+      id={`service-${service.id}`}
       className={cn(
-        'group cursor-pointer transition-all duration-500',
+        'group cursor-pointer transition-all duration-500 scroll-mt-24',
         expanded && 'border-primary/30 shadow-[0_0_40px_hsla(152,76%,46%,0.08)]'
       )}
     >

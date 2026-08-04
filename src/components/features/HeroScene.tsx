@@ -1,54 +1,10 @@
-import { useMemo, useRef, useState, useEffect, Suspense } from 'react';
+import { useMemo, useRef, useEffect, Suspense } from 'react';
 import { Canvas, useFrame, useThree, extend } from '@react-three/fiber';
-import { shaderMaterial } from '@react-three/drei';
 import * as THREE from 'three';
+import { TerrainMaterial } from '@/lib/shaders/terrainMaterial';
+import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion';
 
-/**
- * Live data-terrain shader: an undulating wireframe surface (volatility-surface /
- * market-depth motif) driven entirely on the GPU via layered sine waves.
- */
-const TerrainMaterial = shaderMaterial(
-  { uTime: 0, uIntro: 0, uColorMid: new THREE.Color('#1cce7b'), uColorHigh: new THREE.Color('#a5e830') },
-  /* vertex */ `
-    uniform float uTime;
-    uniform float uIntro;
-    varying float vElevation;
-    varying vec2 vUv;
-
-    float wave(vec2 p, float freq, float speed, float amp, float t) {
-      return sin(p.x * freq + t * speed) * cos(p.y * freq * 0.8 - t * speed * 0.7) * amp;
-    }
-
-    void main() {
-      vUv = uv;
-      vec3 pos = position;
-      float elevation = 0.0;
-      elevation += wave(pos.xy, 0.16, 0.55, 1.0, uTime);
-      elevation += wave(pos.xy, 0.37, 0.85, 0.4, uTime * 1.25);
-      elevation += wave(pos.xy * 1.7, 0.52, 0.35, 0.16, uTime * 0.6);
-      pos.z += elevation * 0.55 * uIntro;
-      vElevation = elevation;
-      gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
-    }
-  `,
-  /* fragment */ `
-    uniform vec3 uColorMid;
-    uniform vec3 uColorHigh;
-    uniform float uIntro;
-    varying float vElevation;
-    varying vec2 vUv;
-
-    void main() {
-      float t = clamp(vElevation * 0.6 + 0.5, 0.0, 1.0);
-      vec3 color = mix(uColorMid, uColorHigh, t);
-
-      float d = distance(vUv, vec2(0.5, 0.62));
-      float fade = smoothstep(0.78, 0.1, d);
-
-      gl_FragColor = vec4(color, fade * 0.5 * uIntro);
-    }
-  `
-);
+extend({ TerrainMaterial });
 
 // Landing-animation boot sequence, in two overlapping stages (elapsed-time
 // driven off state.clock, not per-component accumulators, so every stage
@@ -68,14 +24,6 @@ const TERRAIN_REVEAL_DURATION = 1.6;
 
 function easeOutCubic(t: number) {
   return 1 - Math.pow(1 - t, 3);
-}
-
-extend({ TerrainMaterial });
-
-declare module '@react-three/fiber' {
-  interface ThreeElements {
-    terrainMaterial: Record<string, unknown>;
-  }
 }
 
 function Terrain({ segments, reducedMotion }: { segments: number; reducedMotion: boolean }) {
@@ -116,7 +64,15 @@ function Terrain({ segments, reducedMotion }: { segments: number; reducedMotion:
 
 const PARTICLE_BASE_OPACITY = 0.55;
 
-function DataParticles({ count }: { count: number }) {
+interface DataParticlesProps {
+  count: number;
+  size?: number;
+  baseOpacity?: number;
+  zSpread?: number;
+  speedRange?: [number, number];
+}
+
+function DataParticles({ count, size = 0.035, baseOpacity = PARTICLE_BASE_OPACITY, zSpread = 12, speedRange = [0.08, 0.26] }: DataParticlesProps) {
   const ref = useRef<THREE.Points>(null);
   const materialRef = useRef<THREE.PointsMaterial>(null);
 
@@ -126,11 +82,11 @@ function DataParticles({ count }: { count: number }) {
     for (let i = 0; i < count; i++) {
       pos[i * 3] = (Math.random() - 0.5) * 14;
       pos[i * 3 + 1] = Math.random() * 5 - 1.5;
-      pos[i * 3 + 2] = (Math.random() - 0.5) * 12;
-      spd[i] = 0.08 + Math.random() * 0.18;
+      pos[i * 3 + 2] = (Math.random() - 0.5) * zSpread;
+      spd[i] = speedRange[0] + Math.random() * (speedRange[1] - speedRange[0]);
     }
     return [pos, spd];
-  }, [count]);
+  }, [count, zSpread, speedRange]);
 
   useFrame((state, delta) => {
     const geo = ref.current?.geometry;
@@ -148,7 +104,7 @@ function DataParticles({ count }: { count: number }) {
         0,
         1,
       );
-      materialRef.current.opacity = PARTICLE_BASE_OPACITY * easeOutCubic(progress);
+      materialRef.current.opacity = baseOpacity * easeOutCubic(progress);
     }
   });
 
@@ -159,7 +115,7 @@ function DataParticles({ count }: { count: number }) {
       </bufferGeometry>
       <pointsMaterial
         ref={materialRef}
-        size={0.035}
+        size={size}
         color="#3adfad"
         transparent
         opacity={0}
@@ -277,67 +233,48 @@ function CameraRig() {
   return null;
 }
 
-function Scene({
-  reducedMotion,
-  segments,
-  particleCount,
-  assemblyCount,
-}: {
-  reducedMotion: boolean;
-  segments: number;
-  particleCount: number;
-  assemblyCount: number;
-}) {
+// Fixed desktop-tier constants on every viewport — per "maximize visuals
+// everywhere," this scene no longer scales geometry/particle counts down
+// on mobile. prefers-reduced-motion remains the only gate (an
+// accessibility contract, never a quality dial).
+const SEGMENTS = 80;
+const PARTICLE_COUNT = 140;
+const ASSEMBLY_COUNT = 280;
+const FAR_PARTICLE_COUNT = 70;
+
+function Scene({ reducedMotion }: { reducedMotion: boolean }) {
   useFrame((state) => {
     if (reducedMotion) state.invalidate();
   });
 
   return (
     <>
-      <fog attach="fog" args={['#080c0a', 6, 15]} />
-      <Terrain segments={segments} reducedMotion={reducedMotion} />
-      {!reducedMotion && <AssemblyField count={assemblyCount} />}
-      {!reducedMotion && <DataParticles count={particleCount} />}
+      <fog attach="fog" args={['#080c0a', 6, 17]} />
+      <Terrain segments={SEGMENTS} reducedMotion={reducedMotion} />
+      {!reducedMotion && <AssemblyField count={ASSEMBLY_COUNT} />}
+      {!reducedMotion && <DataParticles count={PARTICLE_COUNT} />}
+      {!reducedMotion && (
+        <DataParticles count={FAR_PARTICLE_COUNT} size={0.02} baseOpacity={0.28} zSpread={20} speedRange={[0.03, 0.09]} />
+      )}
       {!reducedMotion && <CameraRig />}
     </>
   );
 }
 
 export default function HeroScene() {
-  const [reducedMotion, setReducedMotion] = useState(false);
-  const [isSmall, setIsSmall] = useState(false);
-
-  useEffect(() => {
-    const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-    const sizeQuery = window.matchMedia('(max-width: 768px)');
-    setReducedMotion(motionQuery.matches);
-    setIsSmall(sizeQuery.matches);
-    const onMotion = () => setReducedMotion(motionQuery.matches);
-    const onSize = () => setIsSmall(sizeQuery.matches);
-    motionQuery.addEventListener('change', onMotion);
-    sizeQuery.addEventListener('change', onSize);
-    return () => {
-      motionQuery.removeEventListener('change', onMotion);
-      sizeQuery.removeEventListener('change', onSize);
-    };
-  }, []);
+  const reducedMotion = usePrefersReducedMotion();
 
   return (
     <div className="absolute inset-0" aria-hidden="true">
       <Canvas
-        dpr={[1, 1.5]}
-        gl={{ antialias: true, alpha: true, powerPreference: 'low-power' }}
-        camera={{ position: [0, 1.1, 4.4], fov: 55, near: 0.1, far: 20 }}
+        dpr={[1, 2]}
+        gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
+        camera={{ position: [0, 1.1, 4.4], fov: 55, near: 0.1, far: 24 }}
         frameloop={reducedMotion ? 'demand' : 'always'}
         style={{ pointerEvents: 'none' }}
       >
         <Suspense fallback={null}>
-          <Scene
-            reducedMotion={reducedMotion}
-            segments={isSmall ? 48 : 80}
-            particleCount={isSmall ? 60 : 140}
-            assemblyCount={isSmall ? 110 : 280}
-          />
+          <Scene reducedMotion={reducedMotion} />
         </Suspense>
       </Canvas>
     </div>
