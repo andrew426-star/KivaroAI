@@ -9,6 +9,7 @@ import CursorSpotlight from '@/components/features/CursorSpotlight';
 import HeroMotif from '@/components/illustrations/hero-motif';
 import ScrollParallax from '@/components/features/ScrollParallax';
 import HeroEyebrow from '@/components/features/HeroEyebrow';
+import ScrollCue from '@/components/features/ScrollCue';
 
 const HeroScene = lazy(() => import('@/components/features/HeroScene'));
 
@@ -146,6 +147,8 @@ export default function Section01Brain() {
 
         {/* Bottom gradient fade */}
         <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-background to-transparent" />
+
+        <ScrollCue />
       </section>
     </CursorSpotlight>
   );

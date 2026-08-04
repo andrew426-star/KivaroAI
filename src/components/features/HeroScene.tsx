@@ -1,24 +1,32 @@
 import { useMemo, useRef, useEffect, Suspense } from 'react';
 import { Canvas, useFrame, useThree, extend } from '@react-three/fiber';
+import { EffectComposer, Bloom } from '@react-three/postprocessing';
 import * as THREE from 'three';
 import { TerrainMaterial } from '@/lib/shaders/terrainMaterial';
+import { getSoftParticleTexture } from '@/lib/three/softParticleTexture';
+import NetworkLattice, { sampleLatticePoint } from './NetworkLattice';
 import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion';
 
 extend({ TerrainMaterial });
 
-// Landing-animation boot sequence, in two overlapping stages (elapsed-time
+// Landing-animation boot sequence, in three overlapping stages (elapsed-time
 // driven off state.clock, not per-component accumulators, so every stage
 // stays in sync off one shared clock):
-//   1. AssemblyField — a scattered particle cloud streams inward and
-//      resolves onto the terrain's own flat (pre-elevation) grid, echoing
-//      "raw data resolving into a connected structure."
-//   2. Terrain reveal — once the particles have mostly arrived, the
-//      wireframe grid itself fades in and its elevation grows out of that
-//      flat plane (the existing uIntro ramp), completing the handoff from
-//      discrete points to the connected structure they were building.
+//   1. AssemblyField — a scattered fine-particle cloud streams inward from
+//      every direction and condenses into the same volumetric region
+//      NetworkLattice targets — "raw data dissolving toward a shape."
+//   2. NetworkLattice — a second, bolder wave of hub points converges into
+//      that same region slightly after, then fades in real connecting
+//      edges between nearest neighbors once the whole lattice has landed —
+//      the actual subject of the morph: an intelligence/agent network
+//      materializing, not the flat terrain grid this used to dissolve onto.
+//   3. Terrain reveal — the wireframe ground grows out of a flat plane
+//      beneath/behind the lattice, now a dimmed ambient floor rather than
+//      the primary visual.
 const ASSEMBLY_PARTICLE_DURATION = 1.7;
 const ASSEMBLY_STAGGER = 1.0;
 const ASSEMBLY_FADE_DURATION = 0.9;
+const ASSEMBLY_RADIUS_SCALE = 1.6; // a bit past NetworkLattice's own radius=1, so fine dust forms a corona around the bold hub shape
 const TERRAIN_REVEAL_START = 2.0;
 const TERRAIN_REVEAL_DURATION = 1.6;
 
@@ -26,12 +34,14 @@ function easeOutCubic(t: number) {
   return 1 - Math.pow(1 - t, 3);
 }
 
-// Exact-fidelity palette colors read directly from the real --primary /
-// --kv-lime HSL tokens via setHSL, replacing the shader's eyeballed hex
-// defaults (#1cce7b / #a5e830) now that this scene is the flagship
-// section-01 visual.
-const COLOR_MID = new THREE.Color().setHSL(152 / 360, 0.76, 0.46);
-const COLOR_HIGH = new THREE.Color().setHSL(82 / 360, 0.8, 0.55);
+// Terrain is now a dimmed ambient floor beneath NetworkLattice, the hero's
+// actual subject — these colors are still read directly off the real
+// --primary / --kv-lime HSL tokens (same hue/saturation as before) via
+// setHSL, just at lower lightness so the terrain recedes rather than
+// competing with the lattice for attention.
+const TERRAIN_COLOR_MID = new THREE.Color().setHSL(152 / 360, 0.76, 0.24);
+const TERRAIN_COLOR_HIGH = new THREE.Color().setHSL(82 / 360, 0.8, 0.3);
+const TERRAIN_AMPLITUDE_SCALE = 0.55;
 
 function Terrain({ segments, reducedMotion }: { segments: number; reducedMotion: boolean }) {
   const ref = useRef<THREE.ShaderMaterial>(null);
@@ -60,8 +70,9 @@ function Terrain({ segments, reducedMotion }: { segments: number; reducedMotion:
       <planeGeometry args={[16, 16, segments, segments]} />
       <terrainMaterial
         ref={ref}
-        uColorMid={COLOR_MID}
-        uColorHigh={COLOR_HIGH}
+        uColorMid={TERRAIN_COLOR_MID}
+        uColorHigh={TERRAIN_COLOR_HIGH}
+        uAmplitudeScale={TERRAIN_AMPLITUDE_SCALE}
         transparent
         wireframe
         depthWrite={false}
@@ -71,7 +82,7 @@ function Terrain({ segments, reducedMotion }: { segments: number; reducedMotion:
   );
 }
 
-const PARTICLE_BASE_OPACITY = 0.55;
+const PARTICLE_BASE_OPACITY = 0.68;
 
 interface DataParticlesProps {
   count: number;
@@ -125,6 +136,7 @@ function DataParticles({ count, size = 0.035, baseOpacity = PARTICLE_BASE_OPACIT
       <pointsMaterial
         ref={materialRef}
         size={size}
+        map={getSoftParticleTexture()}
         color="#3adfad"
         transparent
         opacity={0}
@@ -142,26 +154,24 @@ function useAssemblyPoints(count: number) {
     const target = new Float32Array(count * 3);
     const delays = new Float32Array(count);
     for (let i = 0; i < count; i++) {
-      // Target: scattered across the terrain's own flat XY extent
-      // (matches planeGeometry(16,16,...)'s span), z=0 — the terrain's
-      // rest plane before uIntro's elevation kicks in, so arriving
-      // particles hand off directly into the grid that grows under them.
-      const tx = (Math.random() - 0.5) * 15;
-      const ty = (Math.random() - 0.5) * 15;
-      target[i * 3] = tx;
-      target[i * 3 + 1] = ty;
-      target[i * 3 + 2] = 0;
+      // Target: sampled from the same volumetric region NetworkLattice's
+      // hub nodes converge into, so the fine dust and the bold connected
+      // lattice condense into one coherent shape instead of two
+      // independent clouds — a corona of fine texture around a bold core.
+      const t = sampleLatticePoint(ASSEMBLY_RADIUS_SCALE);
+      target[i * 3] = t.x;
+      target[i * 3 + 1] = t.y;
+      target[i * 3 + 2] = t.z;
 
-      // Scatter: offset from the target within the camera's own visible
-      // range (a wide swing here lands well outside the frustum given
-      // this group's steep rotation — verified empirically, not assumed —
-      // so this stays close enough to read as disorder without particles
-      // spending their approach off-screen).
+      // Scatter: a point on a sphere around the target, arriving from
+      // every direction in 3D (not a flattened plane-scatter) — matches
+      // the turbulent, all-directions dispersal Meuze's own hero uses.
       const angle = Math.random() * Math.PI * 2;
-      const radius = 1.5 + Math.random() * 4.5;
-      scatter[i * 3] = tx + Math.cos(angle) * radius;
-      scatter[i * 3 + 1] = ty + Math.sin(angle) * radius * 0.6;
-      scatter[i * 3 + 2] = 0.3 + Math.random() * 2;
+      const elevation = Math.random() * Math.PI - Math.PI / 2;
+      const radius = 2 + Math.random() * 4;
+      scatter[i * 3] = t.x + Math.cos(angle) * Math.cos(elevation) * radius;
+      scatter[i * 3 + 1] = t.y + Math.sin(elevation) * radius * 0.8;
+      scatter[i * 3 + 2] = t.z + Math.sin(angle) * Math.cos(elevation) * radius;
 
       delays[i] = Math.random() * ASSEMBLY_STAGGER;
     }
@@ -169,11 +179,12 @@ function useAssemblyPoints(count: number) {
   }, [count]);
 }
 
-// Scattered particle cloud that streams inward and resolves onto the
-// terrain's own flat grid — the "raw data becomes a connected structure"
-// beat. Only ever mounted when !reducedMotion (gated in Scene, matching
-// DataParticles/CameraRig's own gating), so no internal reduced-motion
-// branch is needed here.
+// Fine dissolving-data particle cloud — the corona of dust that condenses
+// alongside NetworkLattice's bolder hub nodes. Only ever mounted when
+// !reducedMotion (gated in Scene, matching DataParticles/CameraRig's own
+// gating) — it's ambient texture, not the hero's actual content; the
+// content itself (NetworkLattice) renders its final static state under
+// reduced motion instead of being skipped.
 function AssemblyField({ count }: { count: number }) {
   const ref = useRef<THREE.Points>(null);
   const materialRef = useRef<THREE.PointsMaterial>(null);
@@ -200,23 +211,22 @@ function AssemblyField({ count }: { count: number }) {
   });
 
   return (
-    <group rotation={[-Math.PI / 2.35, 0, 0]} position={[0, -1.6, 2]}>
-      <points ref={ref}>
-        <bufferGeometry>
-          <bufferAttribute attach="attributes-position" args={[current, 3]} />
-        </bufferGeometry>
-        <pointsMaterial
-          ref={materialRef}
-          size={0.09}
-          color="#3adfad"
-          transparent
-          opacity={0}
-          depthWrite={false}
-          blending={THREE.AdditiveBlending}
-          sizeAttenuation
-        />
-      </points>
-    </group>
+    <points ref={ref}>
+      <bufferGeometry>
+        <bufferAttribute attach="attributes-position" args={[current, 3]} />
+      </bufferGeometry>
+      <pointsMaterial
+        ref={materialRef}
+        size={0.09}
+        map={getSoftParticleTexture()}
+        color="#3adfad"
+        transparent
+        opacity={0}
+        depthWrite={false}
+        blending={THREE.AdditiveBlending}
+        sizeAttenuation
+      />
+    </points>
   );
 }
 
@@ -236,7 +246,7 @@ function CameraRig() {
   useFrame(() => {
     camera.position.x += (target.current.x * 0.5 - camera.position.x) * 0.02;
     camera.position.y += (1.1 - target.current.y * 0.25 - camera.position.y) * 0.02;
-    camera.lookAt(0, -0.4, 0);
+    camera.lookAt(0.15, 0.1, 0.3);
   });
 
   return null;
@@ -245,7 +255,9 @@ function CameraRig() {
 // Fixed desktop-tier constants on every viewport — per "maximize visuals
 // everywhere," this scene no longer scales geometry/particle counts down
 // on mobile. prefers-reduced-motion remains the only gate (an
-// accessibility contract, never a quality dial).
+// accessibility contract, never a quality dial) for the ambient/decorative
+// layers; NetworkLattice itself always renders (static final state when
+// reduced motion is on) since it's the hero's actual content.
 const SEGMENTS = 80;
 const PARTICLE_COUNT = 140;
 const ASSEMBLY_COUNT = 280;
@@ -258,14 +270,18 @@ function Scene({ reducedMotion }: { reducedMotion: boolean }) {
 
   return (
     <>
-      <fog attach="fog" args={['#080c0a', 6, 17]} />
+      <fog attach="fog" args={['#080c0a', 6, 19]} />
       <Terrain segments={SEGMENTS} reducedMotion={reducedMotion} />
+      <NetworkLattice reducedMotion={reducedMotion} />
       {!reducedMotion && <AssemblyField count={ASSEMBLY_COUNT} />}
       {!reducedMotion && <DataParticles count={PARTICLE_COUNT} />}
       {!reducedMotion && (
         <DataParticles count={FAR_PARTICLE_COUNT} size={0.02} baseOpacity={0.28} zSpread={20} speedRange={[0.03, 0.09]} />
       )}
       {!reducedMotion && <CameraRig />}
+      <EffectComposer>
+        <Bloom luminanceThreshold={0.15} luminanceSmoothing={0.9} intensity={0.85} radius={0.55} mipmapBlur />
+      </EffectComposer>
     </>
   );
 }

@@ -4,6 +4,7 @@ import Header from './Header';
 import Footer from './Footer';
 import ParticleField from '@/components/features/ParticleField';
 import GridBackground from '@/components/features/GridBackground';
+import SectionRail from '@/components/features/SectionRail';
 import { trackPageView } from '@/lib/analytics';
 
 export default function Layout() {
@@ -18,6 +19,7 @@ export default function Layout() {
       <GridBackground />
       <ParticleField />
       <Header />
+      <SectionRail />
       {/* Spacer for fixed header (64px) */}
       <div className="h-16 shrink-0" aria-hidden="true" />
       <main className="relative z-base flex-1">
