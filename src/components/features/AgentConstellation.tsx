@@ -1,7 +1,8 @@
-import { useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { Suspense, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { Canvas, useFrame, type ThreeEvent } from '@react-three/fiber';
-import { Sparkles } from '@react-three/drei';
+import { Billboard, Line, Sparkles, Text } from '@react-three/drei';
 import { EffectComposer, Bloom, DepthOfField } from '@react-three/postprocessing';
+import { forceSimulation, forceManyBody, forceLink, forceCollide, forceX, forceY, type SimulationNodeDatum } from 'd3-force';
 import * as THREE from 'three';
 import { getSoftParticleTexture } from '@/lib/three/softParticleTexture';
 import { DIVISIONS } from './AgentTeamSection';
@@ -45,17 +46,43 @@ interface HoverTooltipData {
   y: number;
 }
 
-const RING_RADIUS = 2.15;
-const CLUSTER_JITTER = 0.4;
-const DEPTH_JITTER = 0.85; // real per-agent z-depth spread — "positioned at different depths... not flat on one plane"
-// A full 360deg ring compresses badly when viewed from one fixed front
-// camera — divisions positioned along the depth axis collapse toward the
-// screen center. A shallow arc facing the camera keeps all 5 clusters
-// spread left-to-right instead (verified empirically via real screenshots,
-// not assumed).
-const ARC_SPAN = (128 * Math.PI) / 180;
 const BOOT_DURATION = 1.1;
 const BOOT_STAGGER = 0.5;
+
+// Round 2: the hand-placed arc layout (sin/cos around a shared ring
+// radius) kept re-collapsing into one compressed central cluster —
+// nothing was actually pushing unrelated divisions apart, it just placed
+// them at fixed angles that happened to project close together from the
+// fixed front camera. Replaced with a real force-directed layout: mutual
+// node repulsion (charge) + real link attraction (only between actual
+// teammates) + collision (no overlap) + a per-division X/Y pull toward a
+// spread-out home position — same technique the brief's own
+// implementation note describes ("feed it force-simulated positions").
+// The simulation runs synchronously to convergence once at layout time
+// (not per-frame) — "let the simulation settle once on load," not a
+// continuously-recomputed live simulation, which would read as chaotic
+// float rather than an organized, settled constellation.
+interface SimNode extends SimulationNodeDatum {
+  divisionIndex: number;
+}
+
+const DIVISION_COUNT = DIVISIONS.length;
+const CLUSTER_SPREAD_X = 7.4;
+// Hand-tuned per-division Y/Z offsets — not derived from division size or
+// order. Y gives clusters a little vertical variety instead of sitting on
+// one dead-level line; Z is the depth separation Round 2 explicitly asked
+// for — one cluster sits forward, another recedes, rather than every
+// division living on the same flat plane.
+const CLUSTER_TARGET_Y = [0.35, -0.42, 0.55, -0.5, 0.3];
+const CLUSTER_TARGET_Z = [1.05, -0.85, 0.5, -1.35, 0.8];
+// Small per-node jitter on top of the cluster's own Z — organic texture,
+// not the primary source of depth separation anymore (that's
+// CLUSTER_TARGET_Z + the force layout itself), so this is deliberately
+// smaller than the original hand-placed version's depth spread.
+const NODE_DEPTH_JITTER = 0.4;
+// Leader-line length from a node out to its label anchor — "annotated
+// star chart" register, a short stub rather than a long pointer line.
+const LABEL_LEADER_LENGTH = 0.26;
 
 // Ambient, non-interactive starfield points — purely decorative texture
 // that fills out the scene without inventing any claim about real
@@ -70,42 +97,84 @@ const FILLER_COLOR = '#3adfad';
 
 function useConstellationLayout() {
   return useMemo(() => {
-    const nodes: AgentNode[] = [];
-    const links: AgentLink[] = [];
-    const clusters: ClusterCentroid[] = [];
-    const divisionCount = DIVISIONS.length;
+    interface AgentMeta {
+      id: string;
+      name: string;
+      role: string;
+      color: string;
+      divisionIndex: number;
+      divisionId: string;
+    }
+    const meta: AgentMeta[] = [];
+    const simNodes: SimNode[] = [];
+    const linkPairs: { aIndex: number; bIndex: number }[] = [];
 
     DIVISIONS.forEach((division, di) => {
-      const angle = -ARC_SPAN / 2 + (di / (divisionCount - 1)) * ARC_SPAN;
-      const centroid = new THREE.Vector3(
-        Math.sin(angle) * RING_RADIUS,
-        Math.cos(di * 1.7) * 0.35,
-        -Math.cos(angle) * RING_RADIUS * 0.55,
-      );
-      clusters.push({ position: centroid, color: division.color, size: division.agents.length });
-
-      const startIndex = nodes.length;
-      division.agents.forEach((agent, ai) => {
-        const localAngle = (ai / division.agents.length) * Math.PI * 2 + di;
-        const localRadius = CLUSTER_JITTER * (0.6 + 0.4 * Math.sin(ai * 2.1));
-        const pos: [number, number, number] = [
-          centroid.x + Math.cos(localAngle) * localRadius,
-          centroid.y + Math.sin(ai * 1.3) * 0.35,
-          centroid.z + Math.sin(localAngle) * localRadius + (Math.sin(ai * 3.7 + di) * DEPTH_JITTER),
-        ];
-        nodes.push({ id: agent.id, name: agent.name, role: agent.role, color: division.color, position: pos, divisionIndex: di, divisionId: division.id });
+      const startIndex = simNodes.length;
+      division.agents.forEach((agent) => {
+        simNodes.push({ divisionIndex: di });
+        meta.push({ id: agent.id, name: agent.name, role: agent.role, color: division.color, divisionIndex: di, divisionId: division.id });
       });
-
       // Real, honest edges: every pair of agents within the same real
       // division — an actual full mesh, not a hub-and-spoke star to an
       // invisible centroid. No inter-division edges — different divisions
       // have no real data relationship to depict.
-      const color = new THREE.Color(division.color);
-      for (let a = startIndex; a < nodes.length; a++) {
-        for (let b = a + 1; b < nodes.length; b++) {
-          links.push({ color, aIndex: a, bIndex: b });
+      for (let a = startIndex; a < simNodes.length; a++) {
+        for (let b = a + 1; b < simNodes.length; b++) {
+          linkPairs.push({ aIndex: a, bIndex: b });
         }
       }
+    });
+
+    const clusterTargetX = Array.from({ length: DIVISION_COUNT }, (_, i) =>
+      -CLUSTER_SPREAD_X / 2 + (i / (DIVISION_COUNT - 1)) * CLUSTER_SPREAD_X,
+    );
+
+    // d3-force's defaults assume a "pixel-scale" coordinate system (typical
+    // examples run charge strengths of -30 to -300 across node distances of
+    // 50-100+). This scene works in single-digit world units, and a charge
+    // anywhere near that pixel-scale range creates enormous inverse-square
+    // repulsion at these tiny distances — confirmed via a standalone
+    // simulation dry-run (charge -2.4 blew every cluster apart into a
+    // chaotic ±12-unit scatter before the weak homing force could ever
+    // catch up). These values were tuned by literally running the
+    // simulation standalone and comparing each cluster's converged
+    // position/spread against its target, not guessed.
+    const simulation = forceSimulation(simNodes)
+      .force('charge', forceManyBody().strength(-0.05))
+      .force('link', forceLink(linkPairs.map((p) => ({ source: p.aIndex, target: p.bIndex }))).distance(0.7).strength(0.8))
+      .force('collide', forceCollide(0.3))
+      .force('x', forceX<SimNode>((d) => clusterTargetX[d.divisionIndex]).strength(0.25))
+      .force('y', forceY<SimNode>((d) => CLUSTER_TARGET_Y[d.divisionIndex]).strength(0.25))
+      .stop();
+    for (let i = 0; i < 300; i++) simulation.tick();
+
+    const nodes: AgentNode[] = simNodes.map((sn, i) => {
+      const m = meta[i];
+      const z = CLUSTER_TARGET_Z[m.divisionIndex] + Math.sin(i * 3.7 + m.divisionIndex) * NODE_DEPTH_JITTER;
+      return {
+        id: m.id,
+        name: m.name,
+        role: m.role,
+        color: m.color,
+        position: [sn.x ?? clusterTargetX[m.divisionIndex], sn.y ?? CLUSTER_TARGET_Y[m.divisionIndex], z],
+        divisionIndex: m.divisionIndex,
+        divisionId: m.divisionId,
+      };
+    });
+
+    const links: AgentLink[] = linkPairs.map((p) => ({
+      color: new THREE.Color(meta[p.aIndex].color),
+      aIndex: p.aIndex,
+      bIndex: p.bIndex,
+    }));
+
+    const clusters: ClusterCentroid[] = DIVISIONS.map((division, di) => {
+      const divisionNodes = nodes.filter((n) => n.divisionIndex === di);
+      const centroid = divisionNodes
+        .reduce((acc, n) => acc.add(new THREE.Vector3(...n.position)), new THREE.Vector3())
+        .divideScalar(divisionNodes.length || 1);
+      return { position: centroid, color: division.color, size: division.agents.length };
     });
 
     // Bounding volume of the real layout, padded slightly, used to scatter
@@ -335,6 +404,112 @@ function ConstellationLinks({ links, nodes, hoveredIndex }: { links: AgentLink[]
   );
 }
 
+// Deliberately dim, not a bright near-white — Bloom's luminance threshold
+// (0.15, tuned for the scene's glowing nodes/beams) picked up full-bright
+// label text and gave it a glow halo large enough to visually dwarf its
+// actual geometry, confirmed via a real screenshot of a single close-up
+// label reading many times larger than its neighbors despite the scale
+// clamp below already capping its real size difference at 1.4x.
+const LABEL_COLOR = '#9fc9b8';
+// Without an explicit `font`, drei's <Text> (troika-three-text) falls back
+// to a runtime font-resolution service (unicode-font-resolver) that chains
+// several sequential fetches to a third-party CDN before any glyph can
+// render — confirmed via real network-request logging. Self-hosting the
+// one weight actually used here removes that dependency entirely.
+// Deliberately WOFF (v1), not WOFF2: troika-three-text bundles its own
+// woff2otf converter that explicitly only supports WOFF1 — a WOFF2 file
+// throws "woff2 fonts not supported" and the font never syncs (confirmed
+// via a real console error), regardless of how long you wait for it.
+const LABEL_FONT = '/fonts/jetbrains-mono-400.woff';
+
+// Round 2 explicitly asked for legible persistent labels back — "like an
+// annotated star chart": a short leader line from the node out to a label
+// anchor, with the name sitting in clear space beside it, rather than name
+// text competing for the exact same pixels as the glowing node itself.
+// Deliberately drei's <Text> (SDF, pure WebGL) + <Billboard>, not <Html> —
+// <Html> is a real DOM portal, and its per-frame position writes are what
+// caused the intermittent full-scene blank-out fixed earlier this session.
+// <Billboard> keeps the text facing the camera even as the constellation's
+// outer group slowly rotates; the leader line itself is a normal 3D line
+// so it stays visually attached to its node through that rotation.
+// World-space-sized Text at real, meaningfully-varied node depths (the
+// depth separation Round 2 explicitly asked for) means a node that
+// happens to sit unusually close to the camera — including one the
+// camera is easing toward on hover — can render its label at an
+// illegibly huge size from pure perspective, confirmed via a real
+// screenshot of a hovered node's label dwarfing the rest of the scene.
+// Countering perspective completely would look flat/wrong for a scene
+// that's supposed to have real depth; clamping the correction instead
+// keeps some "closer reads bigger" depth cue while capping how extreme
+// it's allowed to get.
+const LABEL_REFERENCE_DISTANCE = 5.5;
+const LABEL_MIN_SCALE = 0.8;
+const LABEL_MAX_SCALE = 1.15;
+
+function NodeLabel({ node, clusterCentroid }: { node: AgentNode; clusterCentroid: THREE.Vector3 }) {
+  // drei's <Text> (troika-three-text) renders a transient, wrongly-scaled
+  // placeholder mesh for the first frame or two while its font is still
+  // being parsed/laid out on a worker thread — confirmed via real
+  // screenshots showing a couple of labels rendering briefly gigantic
+  // before snapping to their correct size a few seconds in. onSync fires
+  // once that first real layout is ready; staying invisible until then
+  // avoids the flash entirely instead of just masking it with a fade.
+  const [synced, setSynced] = useState(false);
+  const scaleGroupRef = useRef<THREE.Group>(null);
+
+  const { anchor, points } = useMemo(() => {
+    const nodePos = new THREE.Vector3(...node.position);
+    const away = nodePos.clone().sub(clusterCentroid);
+    if (away.lengthSq() < 0.0001) away.set(0, 1, 0);
+    away.normalize().multiplyScalar(LABEL_LEADER_LENGTH);
+    const labelAnchor = nodePos.clone().add(away);
+    return { anchor: labelAnchor, points: [nodePos, labelAnchor] as [THREE.Vector3, THREE.Vector3] };
+  }, [node, clusterCentroid]);
+
+  useFrame((state) => {
+    const group = scaleGroupRef.current;
+    if (!group) return;
+    const distance = state.camera.position.distanceTo(anchor);
+    const scale = THREE.MathUtils.clamp(LABEL_REFERENCE_DISTANCE / distance, LABEL_MIN_SCALE, LABEL_MAX_SCALE);
+    group.scale.setScalar(scale);
+  });
+
+  return (
+    <>
+      <Line points={points} color={LABEL_COLOR} transparent opacity={synced ? 0.32 : 0} lineWidth={0.75} />
+      <group ref={scaleGroupRef} position={anchor}>
+        <Billboard visible={synced}>
+          <Text
+            font={LABEL_FONT}
+            fontSize={0.1}
+            color={LABEL_COLOR}
+            fillOpacity={0.75}
+            outlineWidth={0.004}
+            outlineColor="#050a08"
+            outlineOpacity={0.7}
+            anchorX="left"
+            anchorY="middle"
+            position={[0.03, 0, 0]}
+            onSync={() => setSynced(true)}
+          >
+            {node.name}
+          </Text>
+        </Billboard>
+      </group>
+    </>
+  );
+}
+
+function NodeLabels({ nodes, clusters }: { nodes: AgentNode[]; clusters: ClusterCentroid[] }) {
+  return (
+    <>
+      {nodes.map((node) => (
+        <NodeLabel key={node.id} node={node} clusterCentroid={clusters[node.divisionIndex].position} />
+      ))}
+    </>
+  );
+}
+
 let nebulaTexture: THREE.CanvasTexture | null = null;
 
 // getSoftParticleTexture()'s gradient is tuned for small bright particle
@@ -461,6 +636,14 @@ function Scene({
         <FillerField positions={fillerPositions} reducedMotion={reducedMotion} />
         <ConstellationLinks links={links} nodes={nodes} hoveredIndex={hoveredIndex} />
         <ConstellationNodes nodes={nodes} reducedMotion={reducedMotion} hoveredIndex={hoveredIndex} onHover={handleHover} onSelectAgent={onSelectAgent} />
+        {/* drei's <Text> suspends on its font promise — scoping Suspense to
+            just the labels (rather than relying on the outer lazy-load
+            boundary in Section02Agents.tsx) means a slow/uncached font
+            fetch only ever delays the labels themselves, never the
+            nodes/links/nebula sitting outside this boundary. */}
+        <Suspense fallback={null}>
+          <NodeLabels nodes={nodes} clusters={clusters} />
+        </Suspense>
       </group>
       <EffectComposer>
         {/* Same class of bug as the hero instrument's first pass: focusDistance

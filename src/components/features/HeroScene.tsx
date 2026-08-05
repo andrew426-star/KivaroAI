@@ -231,12 +231,33 @@ function Scene({ reducedMotion }: { reducedMotion: boolean }) {
       {!reducedMotion && <CameraRig />}
       <EffectComposer>
         {/* focusDistance is normalized [0,1] across the camera's near..far
-            range, not world units — the instrument sits ~4.8 world units
-            from the camera against a near/far of 0.1/24, so 0.012 (almost
-            AT the camera) blurred the entire scene into unreadable blobs.
-            0.2 puts the focus plane right on the instrument itself. */}
-        <DepthOfField focusDistance={0.2} focalLength={0.15} bokehScale={2} height={480} />
-        <Bloom luminanceThreshold={0.15} luminanceSmoothing={0.9} intensity={0.85} radius={0.55} mipmapBlur />
+            range, not world units. Round 2: Instrument.tsx now staggers
+            its 3 rings along their own depth axis (front ring ~4.16 world
+            units out, back ring ~5.37) specifically so this pass has real
+            front-to-back separation to blur across — focus sits on the
+            front ring (~0.17 normalized) so it reads crisp while the back
+            ring genuinely softens, a tighter focalLength + higher
+            bokehScale than before makes that falloff visible rather than
+            uniform. */}
+        {/* focusDistance is normalized [0,1] across the camera's near..far
+            range. The first attempt at a tight focalLength/high bokehScale
+            (0.11 / 2.6) blurred the entire instrument into near-invisibility
+            — a tilted torus this large already spans real depth across its
+            own geometry, so a narrow focal window wiped out even the "in
+            focus" ring along with the back one. A wider focalLength keeps
+            each ring's own surface legible while still visibly softening
+            the back ring relative to the front. */}
+        {/* A tight focalLength/high bokehScale (0.11 / 2.6) blurred the
+            whole instrument into near-invisibility — a tilted torus this
+            large already spans real depth across its own geometry, so a
+            narrow focal window wiped out the "in focus" ring along with
+            the back one. This wider window keeps every ring's own surface
+            legible while still visibly softening the back ring relative
+            to the front (confirmed via real screenshots, not computed
+            blind — the exact focus math is only an approximation once
+            multiple large tilted rings are staggered in depth). */}
+        <DepthOfField focusDistance={0.2} focalLength={0.24} bokehScale={1.7} height={480} />
+        <Bloom luminanceThreshold={0.12} luminanceSmoothing={0.9} intensity={1.05} radius={0.62} mipmapBlur />
       </EffectComposer>
     </>
   );
