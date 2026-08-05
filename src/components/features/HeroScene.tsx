@@ -1,85 +1,29 @@
 import { useMemo, useRef, useEffect, Suspense } from 'react';
-import { Canvas, useFrame, useThree, extend } from '@react-three/fiber';
-import { EffectComposer, Bloom } from '@react-three/postprocessing';
+import { Canvas, useFrame, useThree } from '@react-three/fiber';
+import { EffectComposer, Bloom, DepthOfField } from '@react-three/postprocessing';
 import * as THREE from 'three';
-import { TerrainMaterial } from '@/lib/shaders/terrainMaterial';
 import { getSoftParticleTexture } from '@/lib/three/softParticleTexture';
-import NetworkLattice, { sampleLatticePoint } from './NetworkLattice';
+import Instrument, { INSTRUMENT_CENTER, sampleInstrumentVolumePoint } from './Instrument';
 import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion';
+import { useElementInViewport } from '@/hooks/useElementInViewport';
 
-extend({ TerrainMaterial });
-
-// Landing-animation boot sequence, in three overlapping stages (elapsed-time
-// driven off state.clock, not per-component accumulators, so every stage
-// stays in sync off one shared clock):
+// Landing-animation boot sequence, in two overlapping stages (elapsed-time
+// driven off state.clock, not per-component accumulators, so both stay in
+// sync off one shared clock):
 //   1. AssemblyField — a scattered fine-particle cloud streams inward from
-//      every direction and condenses into the same volumetric region
-//      NetworkLattice targets — "raw data dissolving toward a shape."
-//   2. NetworkLattice — a second, bolder wave of hub points converges into
-//      that same region slightly after, then fades in real connecting
-//      edges between nearest neighbors once the whole lattice has landed —
-//      the actual subject of the morph: an intelligence/agent network
-//      materializing, not the flat terrain grid this used to dissolve onto.
-//   3. Terrain reveal — the wireframe ground grows out of a flat plane
-//      beneath/behind the lattice, now a dimmed ambient floor rather than
-//      the primary visual.
+//      every direction and condenses toward the instrument's own volume —
+//      "raw data dissolving toward a shape."
+//   2. Instrument — the ring system booms in ring-by-ring underneath/
+//      alongside that dust, resolving into the actual hero subject: a
+//      rotating navigational instrument, not an abstract network or a
+//      flat grid.
 const ASSEMBLY_PARTICLE_DURATION = 1.7;
 const ASSEMBLY_STAGGER = 1.0;
-const ASSEMBLY_FADE_DURATION = 0.9;
-const ASSEMBLY_RADIUS_SCALE = 1.6; // a bit past NetworkLattice's own radius=1, so fine dust forms a corona around the bold hub shape
-const TERRAIN_REVEAL_START = 2.0;
-const TERRAIN_REVEAL_DURATION = 1.6;
+const REVEAL_START = 1.2;
+const REVEAL_DURATION = 1.4;
 
 function easeOutCubic(t: number) {
   return 1 - Math.pow(1 - t, 3);
-}
-
-// Terrain is now a dimmed ambient floor beneath NetworkLattice, the hero's
-// actual subject — these colors are still read directly off the real
-// --primary / --kv-lime HSL tokens (same hue/saturation as before) via
-// setHSL, just at lower lightness so the terrain recedes rather than
-// competing with the lattice for attention.
-const TERRAIN_COLOR_MID = new THREE.Color().setHSL(152 / 360, 0.76, 0.24);
-const TERRAIN_COLOR_HIGH = new THREE.Color().setHSL(82 / 360, 0.8, 0.3);
-const TERRAIN_AMPLITUDE_SCALE = 0.55;
-
-function Terrain({ segments, reducedMotion }: { segments: number; reducedMotion: boolean }) {
-  const ref = useRef<THREE.ShaderMaterial>(null);
-
-  useEffect(() => {
-    if (reducedMotion && ref.current) {
-      ref.current.uniforms.uIntro.value = 1;
-    }
-  }, [reducedMotion]);
-
-  useFrame((state, delta) => {
-    if (!ref.current) return;
-    ref.current.uniforms.uTime.value += delta;
-    if (!reducedMotion) {
-      const progress = THREE.MathUtils.clamp(
-        (state.clock.elapsedTime - TERRAIN_REVEAL_START) / TERRAIN_REVEAL_DURATION,
-        0,
-        1,
-      );
-      ref.current.uniforms.uIntro.value = easeOutCubic(progress);
-    }
-  });
-
-  return (
-    <mesh rotation={[-Math.PI / 2.35, 0, 0]} position={[0, -1.6, 2]}>
-      <planeGeometry args={[16, 16, segments, segments]} />
-      <terrainMaterial
-        ref={ref}
-        uColorMid={TERRAIN_COLOR_MID}
-        uColorHigh={TERRAIN_COLOR_HIGH}
-        uAmplitudeScale={TERRAIN_AMPLITUDE_SCALE}
-        transparent
-        wireframe
-        depthWrite={false}
-        blending={THREE.AdditiveBlending}
-      />
-    </mesh>
-  );
 }
 
 const PARTICLE_BASE_OPACITY = 0.68;
@@ -120,7 +64,7 @@ function DataParticles({ count, size = 0.035, baseOpacity = PARTICLE_BASE_OPACIT
 
     if (materialRef.current) {
       const progress = THREE.MathUtils.clamp(
-        (state.clock.elapsedTime - TERRAIN_REVEAL_START) / TERRAIN_REVEAL_DURATION,
+        (state.clock.elapsedTime - REVEAL_START) / REVEAL_DURATION,
         0,
         1,
       );
@@ -154,11 +98,10 @@ function useAssemblyPoints(count: number) {
     const target = new Float32Array(count * 3);
     const delays = new Float32Array(count);
     for (let i = 0; i < count; i++) {
-      // Target: sampled from the same volumetric region NetworkLattice's
-      // hub nodes converge into, so the fine dust and the bold connected
-      // lattice condense into one coherent shape instead of two
-      // independent clouds — a corona of fine texture around a bold core.
-      const t = sampleLatticePoint(ASSEMBLY_RADIUS_SCALE);
+      // Target: sampled from the instrument's own volume, so the fine dust
+      // condenses toward the same region the ring system occupies instead
+      // of an unrelated cloud.
+      const t = sampleInstrumentVolumePoint();
       target[i * 3] = t.x;
       target[i * 3 + 1] = t.y;
       target[i * 3 + 2] = t.z;
@@ -180,10 +123,10 @@ function useAssemblyPoints(count: number) {
 }
 
 // Fine dissolving-data particle cloud — the corona of dust that condenses
-// alongside NetworkLattice's bolder hub nodes. Only ever mounted when
+// alongside the instrument's own boot-in. Only ever mounted when
 // !reducedMotion (gated in Scene, matching DataParticles/CameraRig's own
 // gating) — it's ambient texture, not the hero's actual content; the
-// content itself (NetworkLattice) renders its final static state under
+// content itself (Instrument) renders its final static state under
 // reduced motion instead of being skipped.
 function AssemblyField({ count }: { count: number }) {
   const ref = useRef<THREE.Points>(null);
@@ -206,8 +149,8 @@ function AssemblyField({ count }: { count: number }) {
     geo.attributes.position.needsUpdate = true;
 
     const fadeIn = THREE.MathUtils.clamp(t / 0.4, 0, 1);
-    const fadeOut = THREE.MathUtils.clamp((t - TERRAIN_REVEAL_START) / ASSEMBLY_FADE_DURATION, 0, 1);
-    materialRef.current.opacity = 0.95 * fadeIn * (1 - fadeOut);
+    const fadeOut = THREE.MathUtils.clamp((t - REVEAL_START) / 1.1, 0, 1);
+    materialRef.current.opacity = 0.9 * fadeIn * (1 - fadeOut * 0.7);
   });
 
   return (
@@ -217,7 +160,7 @@ function AssemblyField({ count }: { count: number }) {
       </bufferGeometry>
       <pointsMaterial
         ref={materialRef}
-        size={0.09}
+        size={0.045}
         map={getSoftParticleTexture()}
         color="#3adfad"
         transparent
@@ -230,23 +173,32 @@ function AssemblyField({ count }: { count: number }) {
   );
 }
 
+// Idle rotation + pointer-parallax + a gentle scroll-linked drift, so the
+// camera reads as alive even before the user moves the mouse — the brief's
+// "camera has a gentle idle rotation plus parallax response to
+// mouse/scroll." Scroll is read directly off window.scrollY inside the
+// frame loop (no extra listener/state — this Canvas only exists while
+// Section01Brain is likely near the top of the page anyway) and clamped to
+// a small range so it never fights the page's own scroll feel.
 function CameraRig() {
   const { camera } = useThree();
-  const target = useRef({ x: 0, y: 0 });
+  const pointerTarget = useRef({ x: 0, y: 0 });
 
   useEffect(() => {
     const handleMove = (e: PointerEvent) => {
-      target.current.x = (e.clientX / window.innerWidth - 0.5) * 2;
-      target.current.y = (e.clientY / window.innerHeight - 0.5) * 2;
+      pointerTarget.current.x = (e.clientX / window.innerWidth - 0.5) * 2;
+      pointerTarget.current.y = (e.clientY / window.innerHeight - 0.5) * 2;
     };
     window.addEventListener('pointermove', handleMove);
     return () => window.removeEventListener('pointermove', handleMove);
   }, []);
 
-  useFrame(() => {
-    camera.position.x += (target.current.x * 0.5 - camera.position.x) * 0.02;
-    camera.position.y += (1.1 - target.current.y * 0.25 - camera.position.y) * 0.02;
-    camera.lookAt(0.15, 0.1, 0.3);
+  useFrame((state) => {
+    const scrollDrift = THREE.MathUtils.clamp(window.scrollY / 900, 0, 1);
+    const idle = Math.sin(state.clock.elapsedTime * 0.06) * 0.15;
+    camera.position.x += (pointerTarget.current.x * 0.5 + idle - scrollDrift * 0.35 - camera.position.x) * 0.02;
+    camera.position.y += (1.1 - pointerTarget.current.y * 0.25 - scrollDrift * 0.3 - camera.position.y) * 0.02;
+    camera.lookAt(INSTRUMENT_CENTER[0], INSTRUMENT_CENTER[1], INSTRUMENT_CENTER[2]);
   });
 
   return null;
@@ -256,11 +208,10 @@ function CameraRig() {
 // everywhere," this scene no longer scales geometry/particle counts down
 // on mobile. prefers-reduced-motion remains the only gate (an
 // accessibility contract, never a quality dial) for the ambient/decorative
-// layers; NetworkLattice itself always renders (static final state when
+// layers; Instrument itself always renders (static final state when
 // reduced motion is on) since it's the hero's actual content.
-const SEGMENTS = 80;
 const PARTICLE_COUNT = 140;
-const ASSEMBLY_COUNT = 280;
+const ASSEMBLY_COUNT = 220;
 const FAR_PARTICLE_COUNT = 70;
 
 function Scene({ reducedMotion }: { reducedMotion: boolean }) {
@@ -271,8 +222,7 @@ function Scene({ reducedMotion }: { reducedMotion: boolean }) {
   return (
     <>
       <fog attach="fog" args={['#080c0a', 6, 19]} />
-      <Terrain segments={SEGMENTS} reducedMotion={reducedMotion} />
-      <NetworkLattice reducedMotion={reducedMotion} />
+      <Instrument reducedMotion={reducedMotion} />
       {!reducedMotion && <AssemblyField count={ASSEMBLY_COUNT} />}
       {!reducedMotion && <DataParticles count={PARTICLE_COUNT} />}
       {!reducedMotion && (
@@ -280,6 +230,12 @@ function Scene({ reducedMotion }: { reducedMotion: boolean }) {
       )}
       {!reducedMotion && <CameraRig />}
       <EffectComposer>
+        {/* focusDistance is normalized [0,1] across the camera's near..far
+            range, not world units — the instrument sits ~4.8 world units
+            from the camera against a near/far of 0.1/24, so 0.012 (almost
+            AT the camera) blurred the entire scene into unreadable blobs.
+            0.2 puts the focus plane right on the instrument itself. */}
+        <DepthOfField focusDistance={0.2} focalLength={0.15} bokehScale={2} height={480} />
         <Bloom luminanceThreshold={0.15} luminanceSmoothing={0.9} intensity={0.85} radius={0.55} mipmapBlur />
       </EffectComposer>
     </>
@@ -288,14 +244,26 @@ function Scene({ reducedMotion }: { reducedMotion: boolean }) {
 
 export default function HeroScene() {
   const reducedMotion = usePrefersReducedMotion();
+  // On this single-page site every section stays mounted forever — with
+  // no gate, this Canvas (plus AgentConstellation's, further down the
+  // page) would both keep rendering every frame with full Bloom+DOF
+  // postprocessing indefinitely, even scrolled far out of view. That's
+  // wasted GPU work on its own, and empirically (confirmed via real
+  // screenshots showing StatCounter/RadialGauge permanently stuck at
+  // their starting value even after 8 real seconds in view) heavy enough
+  // to starve other rAF-driven work on the page, like framer-motion's
+  // animate() calls elsewhere. frameloop drops to 'demand' once this
+  // scene scrolls out of the viewport (plus a 200px margin so it's
+  // already rendering by the time it becomes visible).
+  const [viewportRef, inViewport] = useElementInViewport<HTMLDivElement>();
 
   return (
-    <div className="absolute inset-0" aria-hidden="true">
+    <div ref={viewportRef} className="absolute inset-0" aria-hidden="true">
       <Canvas
         dpr={[1, 2]}
         gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
         camera={{ position: [0, 1.1, 4.4], fov: 55, near: 0.1, far: 24 }}
-        frameloop={reducedMotion ? 'demand' : 'always'}
+        frameloop={reducedMotion || !inViewport ? 'demand' : 'always'}
         style={{ pointerEvents: 'none' }}
       >
         <Suspense fallback={null}>

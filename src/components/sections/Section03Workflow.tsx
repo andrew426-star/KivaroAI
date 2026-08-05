@@ -4,6 +4,8 @@ import SectionReveal from '@/components/features/SectionReveal';
 import SectionLabel from '@/components/features/SectionLabel';
 import StatCounter from '@/components/features/StatCounter';
 import GlowCard from '@/components/features/GlowCard';
+import RadialGauge from '@/components/features/data-graphs/RadialGauge';
+import Sparkline from '@/components/features/data-graphs/Sparkline';
 
 const research = SERVICES.find((s) => s.id === 'research-automation')!;
 const operations = SERVICES.find((s) => s.id === 'operations-automation')!;
@@ -19,18 +21,21 @@ const BEATS = [
     title: research.title,
     description: research.description,
     stat: researchStat,
+    graph: 'gauge' as const,
   },
   {
     icon: Cog,
     title: operations.title,
     description: `${operations.description} ${reporting.description}`,
     stat: reportingStat,
+    graph: 'gauge' as const,
   },
   {
     icon: Rocket,
     title: 'Controlled Implementation',
     description: 'Phased deployment with validation checkpoints and performance benchmarks — each phase tested and approved before the next begins.',
     stat: deploymentStat,
+    graph: 'sparkline' as const,
   },
 ];
 
@@ -70,6 +75,13 @@ export default function Section03Workflow() {
                   </p>
                   <div className="mt-6 pt-6 border-t border-border/30">
                     <StatCounter value={beat.stat.value} suffix={beat.stat.suffix} label={beat.stat.label} />
+                    <div className="mt-4 flex justify-center">
+                      {beat.graph === 'gauge' ? (
+                        <RadialGauge value={parseInt(beat.stat.value, 10)} size={48} />
+                      ) : (
+                        <Sparkline count={10} heightClassName="h-8" className="w-24" />
+                      )}
+                    </div>
                   </div>
                 </div>
               </GlowCard>

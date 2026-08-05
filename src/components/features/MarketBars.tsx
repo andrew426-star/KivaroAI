@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useInView } from '@/hooks/useInView';
+import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion';
 
 interface Bar {
   height: number;
@@ -9,6 +10,7 @@ interface Bar {
 
 export default function MarketBars({ barCount = 24 }: { barCount?: number }) {
   const [ref, inView] = useInView(0.2);
+  const reducedMotion = usePrefersReducedMotion();
   const [bars, setBars] = useState<Bar[]>([]);
   const intervalRef = useRef<ReturnType<typeof setInterval>>();
 
@@ -29,6 +31,8 @@ export default function MarketBars({ barCount = 24 }: { barCount?: number }) {
 
     // Animate in
     setBars(prev => prev.map(b => ({ ...b, height: b.targetHeight })));
+
+    if (reducedMotion) return;
 
     // Fluctuate
     intervalRef.current = setInterval(() => {

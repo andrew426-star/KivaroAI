@@ -1,4 +1,5 @@
 import { useInView } from '@/hooks/useInView';
+import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion';
 import { useEffect, useRef, useState } from 'react';
 import { animate } from 'framer-motion';
 
@@ -12,6 +13,7 @@ interface StatCounterProps {
 
 export default function StatCounter({ value, suffix = '', label, signed = false }: StatCounterProps) {
   const [ref, inView] = useInView(0.3);
+  const reducedMotion = usePrefersReducedMotion();
   const [display, setDisplay] = useState(signed ? '-0' : '0');
   const [done, setDone] = useState(false);
   const hasAnimated = useRef(false);
@@ -28,6 +30,13 @@ export default function StatCounter({ value, suffix = '', label, signed = false 
     }
 
     const target = signed ? -Math.abs(numericValue) : numericValue;
+
+    if (reducedMotion) {
+      setDisplay(String(target));
+      setDone(true);
+      return;
+    }
+
     const controls = animate(0, target, {
       duration: 1.8,
       ease: 'easeOut',
@@ -39,7 +48,7 @@ export default function StatCounter({ value, suffix = '', label, signed = false 
     });
 
     return () => controls.stop();
-  }, [inView, value, signed]);
+  }, [inView, value, signed, reducedMotion]);
 
   return (
     <div ref={ref} className="text-center group">

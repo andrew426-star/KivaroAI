@@ -8,16 +8,19 @@ import MarketBars from '@/components/features/MarketBars';
 import founderHeadshot from '@/assets/founder-headshot.jpeg';
 import HudFrame from '@/components/features/HudFrame';
 import AboutMotif from '@/components/illustrations/about-motif';
+import SparkBars from '@/components/features/data-graphs/SparkBars';
+import Sparkline from '@/components/features/data-graphs/Sparkline';
+import RadialGauge from '@/components/features/data-graphs/RadialGauge';
 
 const architecture = SERVICES.find((s) => s.id === 'ai-architecture')!;
 
 const ARCHITECTURE_ICONS = [ShieldCheck, Lock, Cog, Activity];
 
 const STAT_STRIP = [
-  { value: '15', label: 'Sovereign Agents' },
-  { value: '5', label: 'Operating Divisions' },
-  { value: '24/7', label: 'Autonomous Operation' },
-  { value: '100%', label: 'Built In-House' },
+  { value: '15', label: 'Sovereign Agents', graph: 'bars' as const },
+  { value: '5', label: 'Operating Divisions', graph: 'bars' as const },
+  { value: '24/7', label: 'Autonomous Operation', graph: 'sparkline' as const },
+  { value: '100%', label: 'Built In-House', graph: 'gauge' as const },
 ];
 
 const VALUES = [
@@ -64,9 +67,14 @@ export default function Section04Trust() {
         <SectionReveal direction="scale">
           <div className="rounded-xl hairline-border bg-kv-surface/20 p-6 flex flex-wrap justify-center gap-8 text-center mb-14">
             {STAT_STRIP.map((stat) => (
-              <div key={stat.label}>
+              <div key={stat.label} className="flex flex-col items-center">
                 <div className="font-display text-2xl font-extrabold text-primary">{stat.value}</div>
                 <div className="text-xs text-muted-foreground font-display uppercase tracking-wider mt-0.5">{stat.label}</div>
+                <div className="mt-3">
+                  {stat.graph === 'gauge' && <RadialGauge value={100} size={40} />}
+                  {stat.graph === 'sparkline' && <Sparkline count={8} heightClassName="h-6" className="w-16" />}
+                  {stat.graph === 'bars' && <SparkBars count={8} barsClassName="h-6" className="w-16" />}
+                </div>
               </div>
             ))}
           </div>

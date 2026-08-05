@@ -1,6 +1,7 @@
 import { SERVICES, TOOLS } from '@/constants/mockData';
 import { DIVISIONS } from '@/components/features/AgentTeamSection';
 import TextMarquee from '@/components/features/TextMarquee';
+import TickerStrip from '@/components/features/data-graphs/TickerStrip';
 
 const SERVICE_TITLES = SERVICES.map((s) => s.title);
 const AGENT_NAME_ROLES = DIVISIONS.flatMap((d) => d.agents.map((a) => `${a.name} — ${a.role}`));
@@ -17,6 +18,7 @@ export default function Section05Marquee() {
       <TextMarquee words={SERVICE_TITLES} className="py-3" />
       <TextMarquee words={AGENT_NAME_ROLES} className="py-3" reverse />
       <TextMarquee words={TOOL_NAMES} className="py-3" />
+      <TickerStrip count={56} reverse />
     </div>
   );
 }

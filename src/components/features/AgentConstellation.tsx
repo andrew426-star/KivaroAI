@@ -1,12 +1,13 @@
 import { useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { Canvas, useFrame, type ThreeEvent } from '@react-three/fiber';
-import { Line, Html } from '@react-three/drei';
-import { EffectComposer, Bloom } from '@react-three/postprocessing';
+import { Sparkles } from '@react-three/drei';
+import { EffectComposer, Bloom, DepthOfField } from '@react-three/postprocessing';
 import * as THREE from 'three';
 import { getSoftParticleTexture } from '@/lib/three/softParticleTexture';
 import { DIVISIONS } from './AgentTeamSection';
 import PointerCameraRig from './PointerCameraRig';
 import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion';
+import { useElementInViewport } from '@/hooks/useElementInViewport';
 
 interface AgentNode {
   id: string;
@@ -19,12 +20,34 @@ interface AgentNode {
 }
 
 interface AgentLink {
+  color: THREE.Color;
+  aIndex: number;
+  bIndex: number;
+}
+
+interface ClusterCentroid {
+  position: THREE.Vector3;
   color: string;
-  points: [THREE.Vector3, THREE.Vector3];
+  size: number;
+}
+
+// Cursor-anchored, plain-DOM tooltip data — deliberately not drei's <Html>
+// (a 3D-anchored portal). Html's per-frame position writes raced with
+// R3F's own canvas resize/render cycle here and intermittently blanked
+// the whole scene for as long as a node stayed hovered (confirmed via
+// repeated real-browser diagnostics — a DOM/React-only div positioned
+// from the pointer event's own clientX/clientY sidesteps that path
+// entirely, at the cost of following the cursor rather than the node).
+interface HoverTooltipData {
+  name: string;
+  role: string;
+  x: number;
+  y: number;
 }
 
 const RING_RADIUS = 2.15;
 const CLUSTER_JITTER = 0.4;
+const DEPTH_JITTER = 0.85; // real per-agent z-depth spread — "positioned at different depths... not flat on one plane"
 // A full 360deg ring compresses badly when viewed from one fixed front
 // camera — divisions positioned along the depth axis collapse toward the
 // screen center. A shallow arc facing the camera keeps all 5 clusters
@@ -34,20 +57,22 @@ const ARC_SPAN = (128 * Math.PI) / 180;
 const BOOT_DURATION = 1.1;
 const BOOT_STAGGER = 0.5;
 
-// Ambient, non-interactive lattice-fill points — purely decorative texture
-// that makes the scene read as a dense network rather than a handful of
-// isolated clusters, the way Meuze's own node graph mixes bold hub nodes
-// with a much denser field of small connector points. These carry no
-// meaning of their own — never labeled, never clickable — so adding them
-// doesn't invent any claim about real relationships.
+// Ambient, non-interactive starfield points — purely decorative texture
+// that fills out the scene without inventing any claim about real
+// relationships. Deliberately NOT connected by edges to each other or to
+// real nodes: an earlier pass linked nearby points via nearest-neighbor,
+// which produced sparse, arbitrary-looking triangles spanning empty space
+// — reading as random "connect the dots" noise rather than an intentional
+// network. Real structure lives entirely in ConstellationLinks below,
+// which only connects agents who are actually real teammates.
 const FILLER_COUNT = 50;
-const FILLER_MAX_LINK_DIST = 0.85;
 const FILLER_COLOR = '#3adfad';
 
 function useConstellationLayout() {
   return useMemo(() => {
     const nodes: AgentNode[] = [];
     const links: AgentLink[] = [];
+    const clusters: ClusterCentroid[] = [];
     const divisionCount = DIVISIONS.length;
 
     DIVISIONS.forEach((division, di) => {
@@ -57,30 +82,28 @@ function useConstellationLayout() {
         Math.cos(di * 1.7) * 0.35,
         -Math.cos(angle) * RING_RADIUS * 0.55,
       );
+      clusters.push({ position: centroid, color: division.color, size: division.agents.length });
 
-      const divisionNodes: AgentNode[] = [];
+      const startIndex = nodes.length;
       division.agents.forEach((agent, ai) => {
         const localAngle = (ai / division.agents.length) * Math.PI * 2 + di;
         const localRadius = CLUSTER_JITTER * (0.6 + 0.4 * Math.sin(ai * 2.1));
         const pos: [number, number, number] = [
           centroid.x + Math.cos(localAngle) * localRadius,
           centroid.y + Math.sin(ai * 1.3) * 0.35,
-          centroid.z + Math.sin(localAngle) * localRadius,
+          centroid.z + Math.sin(localAngle) * localRadius + (Math.sin(ai * 3.7 + di) * DEPTH_JITTER),
         ];
-        divisionNodes.push({ id: agent.id, name: agent.name, role: agent.role, color: division.color, position: pos, divisionIndex: di, divisionId: division.id });
+        nodes.push({ id: agent.id, name: agent.name, role: agent.role, color: division.color, position: pos, divisionIndex: di, divisionId: division.id });
       });
-      nodes.push(...divisionNodes);
 
       // Real, honest edges: every pair of agents within the same real
       // division — an actual full mesh, not a hub-and-spoke star to an
       // invisible centroid. No inter-division edges — different divisions
       // have no real data relationship to depict.
-      for (let a = 0; a < divisionNodes.length; a++) {
-        for (let b = a + 1; b < divisionNodes.length; b++) {
-          links.push({
-            color: division.color,
-            points: [new THREE.Vector3(...divisionNodes[a].position), new THREE.Vector3(...divisionNodes[b].position)],
-          });
+      const color = new THREE.Color(division.color);
+      for (let a = startIndex; a < nodes.length; a++) {
+        for (let b = a + 1; b < nodes.length; b++) {
+          links.push({ color, aIndex: a, bIndex: b });
         }
       }
     });
@@ -105,22 +128,7 @@ function useConstellationLayout() {
       ));
     }
 
-    // Nearest-neighbor mesh among {real nodes + filler points} restricted
-    // to a max distance, so filler edges stay local/organic instead of
-    // drawing long lines across the whole scene.
-    const anchorPositions = [...nodes.map((n) => new THREE.Vector3(...n.position)), ...fillerPositions];
-    const fillerLinks: [THREE.Vector3, THREE.Vector3][] = [];
-    fillerPositions.forEach((p, fi) => {
-      const distances = anchorPositions
-        .map((q, qi) => ({ qi, d: qi === nodes.length + fi ? Infinity : p.distanceTo(q) }))
-        .sort((a, b) => a.d - b.d)
-        .slice(0, 2);
-      distances.forEach(({ qi, d }) => {
-        if (d < FILLER_MAX_LINK_DIST) fillerLinks.push([p, anchorPositions[qi]]);
-      });
-    });
-
-    return { nodes, links, fillerPositions, fillerLinks };
+    return { nodes, links, clusters, fillerPositions };
   }, []);
 }
 
@@ -153,7 +161,7 @@ function ConstellationNodes({
   nodes: AgentNode[];
   reducedMotion: boolean;
   hoveredIndex: number | null;
-  onHover: (index: number | null) => void;
+  onHover: (index: number | null, clientX?: number, clientY?: number) => void;
   onSelectAgent?: (agentId: string, divisionId: string) => void;
 }) {
   const coreRef = useRef<THREE.InstancedMesh>(null);
@@ -206,7 +214,7 @@ function ConstellationNodes({
 
   const handlePointerMove = (e: ThreeEvent<PointerEvent>) => {
     e.stopPropagation();
-    if (e.instanceId !== undefined) onHover(e.instanceId);
+    if (e.instanceId !== undefined) onHover(e.instanceId, e.clientX, e.clientY);
     document.body.style.cursor = 'pointer';
   };
   const handlePointerOut = () => {
@@ -250,96 +258,186 @@ function ConstellationNodes({
   );
 }
 
-function ConstellationLinks({ links }: { links: AgentLink[] }) {
+const PULSE_VERTEX = /* glsl */ `
+  varying vec2 vUv;
+  void main() {
+    vUv = uv;
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+  }
+`;
+const PULSE_FRAGMENT = /* glsl */ `
+  uniform float uTime;
+  uniform vec3 uColor;
+  uniform float uBrightness;
+  varying vec2 vUv;
+  void main() {
+    float pulse = pow(max(0.0, 1.0 - abs(fract(vUv.y - uTime * 0.35) - 0.5) * 2.0), 3.0);
+    float alpha = (0.12 + pulse * 0.85) * uBrightness;
+    gl_FragColor = vec4(uColor, alpha);
+  }
+`;
+
+// A real tapered tube (cone-like cylinder, thin at one end / thicker at
+// the other) between two real teammates, with a brightness-modulated
+// traveling pulse of light — "data physically moving between agents,"
+// not a flat static line.
+function PulseBeam({ start, end, color, active }: { start: THREE.Vector3; end: THREE.Vector3; color: THREE.Color; active: boolean }) {
+  const materialRef = useRef<THREE.ShaderMaterial>(null);
+
+  const { midpoint, quaternion, length } = useMemo(() => {
+    const dir = new THREE.Vector3().subVectors(end, start);
+    const len = dir.length();
+    const mid = new THREE.Vector3().addVectors(start, end).multiplyScalar(0.5);
+    const quat = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), dir.clone().normalize());
+    return { midpoint: mid, quaternion: quat, length: len };
+  }, [start, end]);
+
+  useFrame((state) => {
+    const mat = materialRef.current;
+    if (!mat) return;
+    mat.uniforms.uTime.value = state.clock.elapsedTime;
+    const target = active ? 2.2 : 1;
+    mat.uniforms.uBrightness.value = THREE.MathUtils.lerp(mat.uniforms.uBrightness.value, target, 0.08);
+  });
+
+  const uniforms = useMemo(() => ({ uTime: { value: 0 }, uColor: { value: color }, uBrightness: { value: 1 } }), [color]);
+
+  return (
+    <mesh position={midpoint} quaternion={quaternion}>
+      <cylinderGeometry args={[0.005, 0.012, length, 6, 1, true]} />
+      <shaderMaterial
+        ref={materialRef}
+        transparent
+        depthWrite={false}
+        blending={THREE.AdditiveBlending}
+        uniforms={uniforms}
+        vertexShader={PULSE_VERTEX}
+        fragmentShader={PULSE_FRAGMENT}
+        toneMapped={false}
+      />
+    </mesh>
+  );
+}
+
+function ConstellationLinks({ links, nodes, hoveredIndex }: { links: AgentLink[]; nodes: AgentNode[]; hoveredIndex: number | null }) {
   return (
     <>
       {links.map((link, i) => (
-        <Line
+        <PulseBeam
           key={i}
-          points={link.points}
+          start={new THREE.Vector3(...nodes[link.aIndex].position)}
+          end={new THREE.Vector3(...nodes[link.bIndex].position)}
           color={link.color}
-          transparent
-          opacity={0.4}
-          lineWidth={1.2}
+          active={hoveredIndex === link.aIndex || hoveredIndex === link.bIndex}
         />
       ))}
     </>
   );
 }
 
-function FillerField({ positions, links, reducedMotion }: { positions: THREE.Vector3[]; links: [THREE.Vector3, THREE.Vector3][]; reducedMotion: boolean }) {
+let nebulaTexture: THREE.CanvasTexture | null = null;
+
+// getSoftParticleTexture()'s gradient is tuned for small bright particle
+// dots (a hard-ish core, steep falloff) — reused at nebula scale, Bloom
+// picks up that brighter core and blooms it into a visibly hard-edged
+// circle instead of a diffuse haze. A much gentler, core-less gradient
+// (dim even at center) reads as atmosphere instead.
+function getNebulaTexture(): THREE.CanvasTexture {
+  if (nebulaTexture) return nebulaTexture;
+  const size = 128;
+  const canvas = document.createElement('canvas');
+  canvas.width = size;
+  canvas.height = size;
+  const ctx = canvas.getContext('2d')!;
+  const gradient = ctx.createRadialGradient(size / 2, size / 2, 0, size / 2, size / 2, size / 2);
+  gradient.addColorStop(0, 'rgba(255,255,255,0.45)');
+  gradient.addColorStop(0.35, 'rgba(255,255,255,0.2)');
+  gradient.addColorStop(0.7, 'rgba(255,255,255,0.06)');
+  gradient.addColorStop(1, 'rgba(255,255,255,0)');
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, 0, size, size);
+  nebulaTexture = new THREE.CanvasTexture(canvas);
+  return nebulaTexture;
+}
+
+// A soft-edged glow field behind each division cluster — "like a nebula
+// cluster" tying the group together visually, sized by its real member
+// count (a bigger real division reads as a bigger glow field, not an
+// arbitrary size).
+function ClusterNebula({ clusters }: { clusters: ClusterCentroid[] }) {
+  const texture = useMemo(() => getNebulaTexture(), []);
+  return (
+    <>
+      {clusters.map((c, i) => (
+        <sprite key={i} position={c.position} scale={[1.8 + c.size * 0.45, 1.8 + c.size * 0.45, 1]}>
+          <spriteMaterial map={texture} color={c.color} transparent opacity={0.22} depthWrite={false} blending={THREE.AdditiveBlending} toneMapped={false} />
+        </sprite>
+      ))}
+    </>
+  );
+}
+
+function FillerField({ positions, reducedMotion }: { positions: THREE.Vector3[]; reducedMotion: boolean }) {
   const pointsMaterialRef = useRef<THREE.PointsMaterial>(null);
-  const lineMaterialRef = useRef<THREE.LineBasicMaterial>(null);
   const positionArray = useMemo(() => {
     const arr = new Float32Array(positions.length * 3);
     positions.forEach((p, i) => { arr[i * 3] = p.x; arr[i * 3 + 1] = p.y; arr[i * 3 + 2] = p.z; });
     return arr;
   }, [positions]);
-  const linePositionArray = useMemo(() => {
-    const arr = new Float32Array(links.length * 6);
-    links.forEach(([a, b], i) => {
-      arr[i * 6] = a.x; arr[i * 6 + 1] = a.y; arr[i * 6 + 2] = a.z;
-      arr[i * 6 + 3] = b.x; arr[i * 6 + 4] = b.y; arr[i * 6 + 5] = b.z;
-    });
-    return arr;
-  }, [links]);
 
   useFrame((state) => {
-    const targetPointOpacity = 0.55;
-    const targetLineOpacity = 0.12;
+    const targetOpacity = 0.5;
+    if (!pointsMaterialRef.current) return;
     if (reducedMotion) {
-      if (pointsMaterialRef.current) pointsMaterialRef.current.opacity = targetPointOpacity;
-      if (lineMaterialRef.current) lineMaterialRef.current.opacity = targetLineOpacity;
+      pointsMaterialRef.current.opacity = targetOpacity;
       return;
     }
     const fadeIn = THREE.MathUtils.clamp(state.clock.elapsedTime / 1.6, 0, 1);
-    if (pointsMaterialRef.current) pointsMaterialRef.current.opacity = targetPointOpacity * fadeIn;
-    if (lineMaterialRef.current) lineMaterialRef.current.opacity = targetLineOpacity * fadeIn;
+    pointsMaterialRef.current.opacity = targetOpacity * fadeIn;
   });
 
   return (
-    <>
-      <points>
-        <bufferGeometry>
-          <bufferAttribute attach="attributes-position" args={[positionArray, 3]} />
-        </bufferGeometry>
-        <pointsMaterial
-          ref={pointsMaterialRef}
-          size={0.05}
-          map={getSoftParticleTexture()}
-          color={FILLER_COLOR}
-          transparent
-          opacity={0}
-          depthWrite={false}
-          blending={THREE.AdditiveBlending}
-          sizeAttenuation
-        />
-      </points>
-      <lineSegments>
-        <bufferGeometry>
-          <bufferAttribute attach="attributes-position" args={[linePositionArray, 3]} />
-        </bufferGeometry>
-        <lineBasicMaterial ref={lineMaterialRef} color={FILLER_COLOR} transparent opacity={0} depthWrite={false} />
-      </lineSegments>
-    </>
+    <points>
+      <bufferGeometry>
+        <bufferAttribute attach="attributes-position" args={[positionArray, 3]} />
+      </bufferGeometry>
+      <pointsMaterial
+        ref={pointsMaterialRef}
+        size={0.05}
+        map={getSoftParticleTexture()}
+        color={FILLER_COLOR}
+        transparent
+        opacity={0}
+        depthWrite={false}
+        blending={THREE.AdditiveBlending}
+        sizeAttenuation
+      />
+    </points>
   );
 }
 
-function HoverTooltip({ node }: { node: AgentNode }) {
-  return (
-    <Html position={node.position} center style={{ pointerEvents: 'none' }} zIndexRange={[100, 0]}>
-      <div className="whitespace-nowrap rounded-lg border border-primary/25 bg-background/90 backdrop-blur-sm px-3 py-1.5 -translate-y-8 text-center shadow-[0_0_20px_hsla(152,76%,46%,0.12)]">
-        <div className="font-display text-xs font-bold text-foreground">{node.name}</div>
-        <div className="text-[10px] text-muted-foreground uppercase tracking-wider">{node.role}</div>
-      </div>
-    </Html>
-  );
-}
-
-function Scene({ reducedMotion, onSelectAgent }: { reducedMotion: boolean; onSelectAgent?: (agentId: string, divisionId: string) => void }) {
+function Scene({
+  reducedMotion,
+  onSelectAgent,
+  onHoverChange,
+}: {
+  reducedMotion: boolean;
+  onSelectAgent?: (agentId: string, divisionId: string) => void;
+  onHoverChange: (tooltip: HoverTooltipData | null) => void;
+}) {
   const groupRef = useRef<THREE.Group>(null);
-  const { nodes, links, fillerPositions, fillerLinks } = useConstellationLayout();
+  const { nodes, links, clusters, fillerPositions } = useConstellationLayout();
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+
+  const handleHover = (index: number | null, clientX?: number, clientY?: number) => {
+    setHoveredIndex(index);
+    if (index === null || clientX === undefined || clientY === undefined) {
+      onHoverChange(null);
+    } else {
+      const node = nodes[index];
+      onHoverChange({ name: node.name, role: node.role, x: clientX, y: clientY });
+    }
+  };
 
   useFrame((_, delta) => {
     if (reducedMotion || !groupRef.current) return;
@@ -348,14 +446,32 @@ function Scene({ reducedMotion, onSelectAgent }: { reducedMotion: boolean; onSel
 
   return (
     <>
-      {!reducedMotion && <PointerCameraRig strength={0.3} />}
+      {!reducedMotion && (
+        <PointerCameraRig
+          strength={0.3}
+          hoverTarget={hoveredIndex !== null ? nodes[hoveredIndex].position : null}
+          hoverPull={0.0025}
+        />
+      )}
+      {!reducedMotion && (
+        <Sparkles count={140} scale={[6, 4, 5]} size={1.6} speed={0.08} opacity={0.22} color={FILLER_COLOR} noise={0.6} />
+      )}
       <group ref={groupRef}>
-        <FillerField positions={fillerPositions} links={fillerLinks} reducedMotion={reducedMotion} />
-        <ConstellationLinks links={links} />
-        <ConstellationNodes nodes={nodes} reducedMotion={reducedMotion} hoveredIndex={hoveredIndex} onHover={setHoveredIndex} onSelectAgent={onSelectAgent} />
-        {hoveredIndex !== null && <HoverTooltip node={nodes[hoveredIndex]} />}
+        <ClusterNebula clusters={clusters} />
+        <FillerField positions={fillerPositions} reducedMotion={reducedMotion} />
+        <ConstellationLinks links={links} nodes={nodes} hoveredIndex={hoveredIndex} />
+        <ConstellationNodes nodes={nodes} reducedMotion={reducedMotion} hoveredIndex={hoveredIndex} onHover={handleHover} onSelectAgent={onSelectAgent} />
       </group>
       <EffectComposer>
+        {/* Same class of bug as the hero instrument's first pass: focusDistance
+            is normalized [0,1] across the camera's near..far range (0.1..20
+            here), not world units. The real agent nodes sit roughly 5.5-6
+            world units from the camera, so 0.045 (almost at the camera)
+            blurred the whole cluster into mush. ~0.28 puts the focus plane
+            on the cluster itself; a wider focalLength keeps most of the
+            depth-jittered nodes readably sharp, only the furthest genuinely
+            soften. */}
+        <DepthOfField focusDistance={0.28} focalLength={0.25} bokehScale={1.6} height={480} />
         <Bloom luminanceThreshold={0.15} luminanceSmoothing={0.9} intensity={0.9} radius={0.5} mipmapBlur />
       </EffectComposer>
     </>
@@ -368,18 +484,37 @@ interface AgentConstellationProps {
 
 export default function AgentConstellation({ onSelectAgent }: AgentConstellationProps) {
   const reducedMotion = usePrefersReducedMotion();
+  // See HeroScene.tsx's matching fix for why this matters here specifically
+  // — with both this scene and the hero's Instrument running full Bloom+
+  // DepthOfField every frame regardless of scroll position (every section
+  // stays mounted on this single-page site), the combined GPU/main-thread
+  // load was empirically heavy enough to starve other pages' rAF-driven
+  // animations (StatCounter/RadialGauge stuck at their starting value even
+  // after 8 real seconds in view). Pausing whichever scene is currently
+  // off-screen fixes both the waste and the starvation.
+  const [viewportRef, inViewport] = useElementInViewport<HTMLDivElement>();
+  const [tooltip, setTooltip] = useState<HoverTooltipData | null>(null);
 
   return (
-    <div className="absolute inset-0">
+    <div ref={viewportRef} className="absolute inset-0">
       <Canvas
         dpr={[1, 2]}
         gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
         camera={{ position: [0, 0.85, 5.2], fov: 48, near: 0.1, far: 20 }}
-        frameloop={reducedMotion ? 'demand' : 'always'}
+        frameloop={reducedMotion || !inViewport ? 'demand' : 'always'}
       >
         <fog attach="fog" args={['#080c0a', 5, 11]} />
-        <Scene reducedMotion={reducedMotion} onSelectAgent={onSelectAgent} />
+        <Scene reducedMotion={reducedMotion} onSelectAgent={onSelectAgent} onHoverChange={setTooltip} />
       </Canvas>
+      {tooltip && (
+        <div
+          className="pointer-events-none fixed z-50 -translate-x-1/2 -translate-y-[calc(100%+14px)] whitespace-nowrap rounded-lg border border-primary/25 bg-background/90 backdrop-blur-sm px-3 py-1.5 text-center shadow-[0_0_20px_hsla(152,76%,46%,0.12)]"
+          style={{ left: tooltip.x, top: tooltip.y }}
+        >
+          <div className="font-display text-xs font-bold text-foreground">{tooltip.name}</div>
+          <div className="text-[10px] text-muted-foreground uppercase tracking-wider">{tooltip.role}</div>
+        </div>
+      )}
     </div>
   );
 }
