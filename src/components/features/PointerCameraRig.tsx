@@ -15,6 +15,15 @@ interface PointerCameraRigProps {
    * patching around it. */
   hoverTarget?: [number, number, number] | null;
   hoverPull?: number;
+  /** Caps how far camera.position.x/y can drift from its starting base
+   * position, regardless of how long a hover keeps pulling toward a
+   * far-off node. Without this, resting the cursor on a node near the
+   * edge of a wide scene for several seconds keeps accumulating the
+   * hoverPull nudge with nothing pulling back, panning the camera far
+   * enough to push opposite-side content outside the visible frame.
+   * Undefined = no cap (existing behavior, unchanged for callers that
+   * don't pass it). */
+  maxOffset?: number;
 }
 
 // Shared pointer-parallax camera drift, extracted from the pattern already
@@ -22,7 +31,13 @@ interface PointerCameraRigProps {
 // scenes so every page's 3D layer has a consistent "subtly reacts to your
 // cursor" feel, reusing a technique already shipped and tuned rather than
 // inventing a new one per scene.
-export default function PointerCameraRig({ strength = 0.4, lookAt = [0, 0, 0], hoverTarget = null, hoverPull = 0 }: PointerCameraRigProps) {
+export default function PointerCameraRig({
+  strength = 0.4,
+  lookAt = [0, 0, 0],
+  hoverTarget = null,
+  hoverPull = 0,
+  maxOffset,
+}: PointerCameraRigProps) {
   const { camera } = useThree();
   const target = useRef({ x: 0, y: 0 });
   const basePosition = useRef(camera.position.clone());
@@ -43,6 +58,10 @@ export default function PointerCameraRig({ strength = 0.4, lookAt = [0, 0, 0], h
     if (hoverTarget && hoverPull > 0) {
       camera.position.x += (hoverTarget[0] - camera.position.x) * hoverPull;
       camera.position.y += (hoverTarget[1] - camera.position.y) * hoverPull;
+    }
+    if (maxOffset !== undefined) {
+      camera.position.x = Math.min(Math.max(camera.position.x, base.x - maxOffset), base.x + maxOffset);
+      camera.position.y = Math.min(Math.max(camera.position.y, base.y - maxOffset), base.y + maxOffset);
     }
     camera.lookAt(...lookAt);
   });

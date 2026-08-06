@@ -67,7 +67,13 @@ interface SimNode extends SimulationNodeDatum {
 }
 
 const DIVISION_COUNT = DIVISIONS.length;
-const CLUSTER_SPREAD_X = 7.4;
+// Reduced from 7.4 (and the homing force below strengthened) — at the
+// wider spread, mutual node repulsion pushed cluster averages ~0.5 units
+// past their own target X, and individual nodes further still, putting
+// the outermost cluster's nodes close enough to the edge to clip during
+// hover/parallax. This keeps the "spread across the full width, not
+// compressed" read from the previous pass while adding real margin.
+const CLUSTER_SPREAD_X = 6.6;
 // Hand-tuned per-division Y/Z offsets — not derived from division size or
 // order. Y gives clusters a little vertical variety instead of sitting on
 // one dead-level line; Z is the depth separation Round 2 explicitly asked
@@ -144,8 +150,13 @@ function useConstellationLayout() {
       .force('charge', forceManyBody().strength(-0.05))
       .force('link', forceLink(linkPairs.map((p) => ({ source: p.aIndex, target: p.bIndex }))).distance(0.7).strength(0.8))
       .force('collide', forceCollide(0.3))
-      .force('x', forceX<SimNode>((d) => clusterTargetX[d.divisionIndex]).strength(0.25))
-      .force('y', forceY<SimNode>((d) => CLUSTER_TARGET_Y[d.divisionIndex]).strength(0.25))
+      // Strengthened from 0.25 — at that value clusters settled ~0.5 units
+      // past their own target X (confirmed via the same standalone dry-run
+      // technique above), which is what let the outermost cluster's nodes
+      // drift close enough to the frame edge to clip. A firmer home pull
+      // keeps clusters closer to their intended spread positions.
+      .force('x', forceX<SimNode>((d) => clusterTargetX[d.divisionIndex]).strength(0.6))
+      .force('y', forceY<SimNode>((d) => CLUSTER_TARGET_Y[d.divisionIndex]).strength(0.6))
       .stop();
     for (let i = 0; i < 300; i++) simulation.tick();
 
@@ -614,18 +625,25 @@ function Scene({
     }
   };
 
-  useFrame((_, delta) => {
+  // A continuous, unbounded rotation (the old `+= delta * speed`) will
+  // eventually swing the widest-spread clusters far enough around that
+  // they exit the camera's frame — confirmed visually on the live site.
+  // A bounded sway (sin, clamped amplitude) keeps the same "alive, slowly
+  // turning" feel while guaranteeing every node's worst-case screen
+  // position stays within the tested, safe composition.
+  useFrame((state) => {
     if (reducedMotion || !groupRef.current) return;
-    groupRef.current.rotation.y += delta * 0.06;
+    groupRef.current.rotation.y = Math.sin(state.clock.elapsedTime * 0.06) * 0.12;
   });
 
   return (
     <>
       {!reducedMotion && (
         <PointerCameraRig
-          strength={0.3}
+          strength={0.18}
           hoverTarget={hoveredIndex !== null ? nodes[hoveredIndex].position : null}
           hoverPull={0.0025}
+          maxOffset={0.6}
         />
       )}
       {!reducedMotion && (
@@ -646,16 +664,16 @@ function Scene({
         </Suspense>
       </group>
       <EffectComposer>
-        {/* Same class of bug as the hero instrument's first pass: focusDistance
-            is normalized [0,1] across the camera's near..far range (0.1..20
-            here), not world units. The real agent nodes sit roughly 5.5-6
-            world units from the camera, so 0.045 (almost at the camera)
-            blurred the whole cluster into mush. ~0.28 puts the focus plane
-            on the cluster itself; a wider focalLength keeps most of the
-            depth-jittered nodes readably sharp, only the furthest genuinely
-            soften. */}
-        <DepthOfField focusDistance={0.28} focalLength={0.25} bokehScale={1.6} height={480} />
-        <Bloom luminanceThreshold={0.15} luminanceSmoothing={0.9} intensity={0.9} radius={0.5} mipmapBlur />
+        {/* focusDistance is normalized [0,1] across the camera's near..far
+            range (0.1..20 here), not world units — 0.28 puts the focus
+            plane on the cluster itself. Round 3: the depth-of-field blur
+            and bloom spread were reading as soft/hazy rather than sharp —
+            a much wider focalLength (bigger in-focus range) and lower
+            bokehScale (less blur magnitude even outside it) keeps far-
+            depth nodes readable instead of mushy, and a tighter bloom
+            radius/intensity keeps glow from smearing edges. */}
+        <DepthOfField focusDistance={0.28} focalLength={0.45} bokehScale={0.7} height={480} />
+        <Bloom luminanceThreshold={0.18} luminanceSmoothing={0.85} intensity={0.75} radius={0.4} mipmapBlur />
       </EffectComposer>
     </>
   );
@@ -683,7 +701,7 @@ export default function AgentConstellation({ onSelectAgent }: AgentConstellation
       <Canvas
         dpr={[1, 2]}
         gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
-        camera={{ position: [0, 0.85, 5.2], fov: 48, near: 0.1, far: 20 }}
+        camera={{ position: [0, 0.85, 5.7], fov: 48, near: 0.1, far: 20 }}
         frameloop={reducedMotion || !inViewport ? 'demand' : 'always'}
       >
         <fog attach="fog" args={['#080c0a', 5, 11]} />

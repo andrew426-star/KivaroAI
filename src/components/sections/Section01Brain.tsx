@@ -43,8 +43,23 @@ export default function Section01Brain() {
           <Suspense fallback={null}>
             <HeroScene />
           </Suspense>
-          <div className="absolute inset-0 bg-gradient-to-b from-background/45 via-background/75 to-background" />
-          <div className="absolute inset-0 bg-gradient-to-r from-background via-transparent to-background/90" />
+          {/* Softened from the original /45-/75-opaque + opaque-transparent-/90
+              stops — that combination left the WebGL scene (rings, then the
+              market motif, then the particles that assemble into both)
+              almost entirely invisible on the real composited page, even
+              though the canvas itself rendered correctly in isolation.
+              Confirmed via direct canvas-vs-full-page screenshot comparison.
+              Left edge stays strongly dark for H1 legibility; right edge
+              (where the scene's content actually sits) no longer fades back
+              toward opaque, since the "AI Workflow Pipeline" card already
+              carries its own contrast. */}
+          <div className="absolute inset-0 bg-gradient-to-b from-background/15 via-background/20 to-background/60" />
+          {/* Targeted rather than a smooth full-width fade: strong opacity
+              held across the text column (0-40%), fading out by 60% so the
+              pipeline card / scene content to the right stays clear —
+              a smooth center-to-transparent fade left the text unreadably
+              busy once the scene was bright enough to actually see. */}
+          <div className="absolute inset-0 bg-gradient-to-r from-background/95 from-0% via-background/85 via-40% to-transparent to-60%" />
         </motion.div>
 
         {/* Hero Content */}

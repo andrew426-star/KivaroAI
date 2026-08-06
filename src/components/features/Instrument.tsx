@@ -2,6 +2,7 @@ import { useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Sparkles } from '@react-three/drei';
 import * as THREE from 'three';
+import { getMorphState, shapeVisibility } from '@/lib/three/heroMorphCycle';
 
 // "Instrument, not diagram" — the hero's centerpiece is a rotating
 // navigational instrument (astrolabe/orrery register) built from real ring
@@ -142,22 +143,21 @@ function RingOrbiters({ radius, count, speed }: { radius: number; count: number;
   );
 }
 
-function Ring({ spec, bootStart, reducedMotion }: { spec: RingSpec; bootStart: number; reducedMotion: boolean }) {
+function Ring({ spec, ringIndex, reducedMotion }: { spec: RingSpec; ringIndex: number; reducedMotion: boolean }) {
   const groupRef = useRef<THREE.Group>(null);
   const materialRef = useRef<THREE.MeshStandardMaterial>(null);
 
-  // Computes its own boot-in opacity every frame from the shared clock —
-  // a parent-level ref mutated in a *different* component's useFrame and
-  // passed down as a React prop would only ever reflect whatever value it
-  // held at the last React render (props don't update on ref mutation),
-  // which is exactly the bug that left every ring stuck at opacity 0.
+  // Computes its own visibility every frame from the shared clock via the
+  // hero's morph-cycle module — a parent-level ref mutated in a
+  // *different* component's useFrame and passed down as a React prop
+  // would only ever reflect whatever value it held at the last React
+  // render (props don't update on ref mutation), which is exactly the bug
+  // that once left every ring stuck at opacity 0.
   useFrame((state, delta) => {
     if (groupRef.current) groupRef.current.rotation[spec.spinAxis] += delta * spec.spinSpeed;
     if (materialRef.current) {
-      const progress = reducedMotion
-        ? 1
-        : THREE.MathUtils.clamp((state.clock.elapsedTime - bootStart) / BOOT_DURATION, 0, 1);
-      materialRef.current.opacity = easeOutCubic(progress);
+      const morph = getMorphState(state.clock.elapsedTime, reducedMotion);
+      materialRef.current.opacity = shapeVisibility('instrument', ringIndex * BOOT_STAGGER, BOOT_DURATION, morph);
     }
   });
 
@@ -176,6 +176,7 @@ function Ring({ spec, bootStart, reducedMotion }: { spec: RingSpec; bootStart: n
               metalness={0.8}
               transparent
               opacity={0}
+              depthWrite={false}
               toneMapped={false}
             />
           </mesh>
@@ -188,13 +189,10 @@ function Ring({ spec, bootStart, reducedMotion }: { spec: RingSpec; bootStart: n
   );
 }
 
-const BOOT_START = 0.3;
+// Fits inside heroMorphCycle's ASSEMBLE_DURATION (2.8s): the last ring
+// (index 2) starts at 2*BOOT_STAGGER=1.0s and finishes at 1.0+1.6=2.6s.
 const BOOT_STAGGER = 0.5;
 const BOOT_DURATION = 1.6;
-
-function easeOutCubic(t: number) {
-  return 1 - Math.pow(1 - t, 3);
-}
 
 function RingSystem({ reducedMotion }: { reducedMotion: boolean }) {
   const groupRef = useRef<THREE.Group>(null);
@@ -206,7 +204,7 @@ function RingSystem({ reducedMotion }: { reducedMotion: boolean }) {
   return (
     <group ref={groupRef}>
       {RINGS.map((spec, i) => (
-        <Ring key={i} spec={spec} bootStart={BOOT_START + i * BOOT_STAGGER} reducedMotion={reducedMotion} />
+        <Ring key={i} spec={spec} ringIndex={i} reducedMotion={reducedMotion} />
       ))}
     </group>
   );
@@ -215,19 +213,31 @@ function RingSystem({ reducedMotion }: { reducedMotion: boolean }) {
 const NEAR_PARTICLE_COLOR = new THREE.Color().setHSL(152 / 360, 0.75, 0.62);
 const FAR_PARTICLE_COLOR = new THREE.Color().setHSL(152 / 360, 0.65, 0.42);
 
-export default function Instrument({ reducedMotion }: { reducedMotion: boolean }) {
+// Lighting for the shared central locus both Instrument and MarketMotif
+// occupy (mounted once by HeroScene.tsx, not per-shape) — a real point/
+// directional light nested inside each shape's own group would double up
+// on whichever shape is currently visible, since lights aren't scoped to
+// their sibling meshes in three.js's scene graph.
+export function HeroLighting() {
   return (
     <group position={INSTRUMENT_CENTER}>
       <ambientLight intensity={0.32} />
-      {/* Key light — the primary directional source the metallic rings respond to. */}
+      {/* Key light — the primary directional source the metallic rings/candles respond to. */}
       <directionalLight position={[2.2, 2.4, 3.2]} intensity={1.5} color="#eaffef" />
       {/* Cool fill from the opposite side, lower intensity, so specular
           highlights read as directional rather than flat/shadeless. */}
       <directionalLight position={[-2.4, -1.2, 1.6]} intensity={0.45} color="#bfeede" />
-      {/* A point light seated in the instrument's own core — this is what
-          makes it read as a real light source lighting the particles
-          drifting near it, not just a glowing decal. */}
+      {/* A point light seated at the shared core — this is what makes
+          whichever shape is active read as a real light source lighting
+          the particles drifting near it, not just a glowing decal. */}
       <pointLight position={[0, 0, 0.4]} intensity={2.2} distance={4.5} decay={2} color={RING_COLOR} />
+    </group>
+  );
+}
+
+export default function Instrument({ reducedMotion }: { reducedMotion: boolean }) {
+  return (
+    <group position={INSTRUMENT_CENTER}>
       <RingSystem reducedMotion={reducedMotion} />
       {!reducedMotion && (
         <>
