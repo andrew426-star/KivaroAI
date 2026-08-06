@@ -457,6 +457,21 @@ const LABEL_REFERENCE_DISTANCE = 5.5;
 const LABEL_MIN_SCALE = 0.8;
 const LABEL_MAX_SCALE = 1.15;
 
+// A label sitting over its own cluster's bright nebula glow, another
+// cluster's halo, or the dense filler starfield can lose contrast
+// against whatever happens to be behind it at that particular position —
+// confirmed via a real screenshot where several labels (especially in the
+// smaller CBM cluster) were hard to pick out. A backdrop chip sized to
+// the text's own real measured bounds (not a guessed fixed box — text
+// length varies a lot, "Atlas" vs "Meridian") guarantees every label
+// reads against a flat, dark, known background regardless of scene
+// content behind it.
+interface TroikaSyncMesh {
+  textRenderInfo?: { blockBounds?: [number, number, number, number] };
+}
+const LABEL_BACKDROP_PAD_X = 0.035;
+const LABEL_BACKDROP_PAD_Y = 0.05;
+
 function NodeLabel({ node, clusterCentroid }: { node: AgentNode; clusterCentroid: THREE.Vector3 }) {
   // drei's <Text> (troika-three-text) renders a transient, wrongly-scaled
   // placeholder mesh for the first frame or two while its font is still
@@ -466,6 +481,7 @@ function NodeLabel({ node, clusterCentroid }: { node: AgentNode; clusterCentroid
   // once that first real layout is ready; staying invisible until then
   // avoids the flash entirely instead of just masking it with a fade.
   const [synced, setSynced] = useState(false);
+  const [bounds, setBounds] = useState<[number, number, number, number] | null>(null);
   const scaleGroupRef = useRef<THREE.Group>(null);
 
   const { anchor, points } = useMemo(() => {
@@ -490,18 +506,33 @@ function NodeLabel({ node, clusterCentroid }: { node: AgentNode; clusterCentroid
       <Line points={points} color={LABEL_COLOR} transparent opacity={synced ? 0.32 : 0} lineWidth={0.75} />
       <group ref={scaleGroupRef} position={anchor}>
         <Billboard visible={synced}>
+          {bounds && (
+            <mesh
+              position={[0.03 + (bounds[0] + bounds[2]) / 2, (bounds[1] + bounds[3]) / 2, -0.001]}
+              raycast={() => null}
+            >
+              <planeGeometry
+                args={[bounds[2] - bounds[0] + LABEL_BACKDROP_PAD_X, bounds[3] - bounds[1] + LABEL_BACKDROP_PAD_Y]}
+              />
+              <meshBasicMaterial color="#050a08" transparent opacity={0.6} depthWrite={false} toneMapped={false} />
+            </mesh>
+          )}
           <Text
             font={LABEL_FONT}
             fontSize={0.1}
             color={LABEL_COLOR}
-            fillOpacity={0.75}
+            fillOpacity={0.9}
             outlineWidth={0.004}
             outlineColor="#050a08"
-            outlineOpacity={0.7}
+            outlineOpacity={0.8}
             anchorX="left"
             anchorY="middle"
             position={[0.03, 0, 0]}
-            onSync={() => setSynced(true)}
+            onSync={(troikaMesh: TroikaSyncMesh) => {
+              setSynced(true);
+              const b = troikaMesh?.textRenderInfo?.blockBounds;
+              if (b) setBounds(b);
+            }}
           >
             {node.name}
           </Text>

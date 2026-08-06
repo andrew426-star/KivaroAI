@@ -3,7 +3,6 @@ import { ArrowUpRight, ArrowRight, Zap, Lock, TrendingUp } from 'lucide-react';
 import { motion } from 'framer-motion';
 import MagneticButton from '@/components/features/MagneticButton';
 import WorkflowDiagram from '@/components/features/WorkflowDiagram';
-import MarketBars from '@/components/features/MarketBars';
 import SplitTextReveal from '@/components/features/SplitTextReveal';
 import CursorSpotlight from '@/components/features/CursorSpotlight';
 import HeroMotif from '@/components/illustrations/hero-motif';
@@ -125,14 +124,20 @@ export default function Section01Brain() {
               </motion.div>
             </ScrollParallax>
 
-            {/* Right: Workflow Diagram */}
+            {/* Right: Workflow Diagram — a compact, glass corner HUD rather
+                than a large block, so it frames the hero's WebGL graphic
+                (rings, then the market motif) instead of sitting on top of
+                its core visual mass. Narrower, self-start-anchored to the
+                top of the row, and background dropped to near-transparent
+                with no backdrop-blur so the graphic reads clearly behind
+                and around it. */}
             <motion.div
               initial={{ opacity: 0, x: 40, filter: 'blur(10px)' }}
               animate={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
               transition={{ duration: 1.2, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
-              className="lg:col-span-5 xl:col-span-6"
+              className="lg:col-span-5 xl:col-span-5 lg:self-start lg:max-w-sm lg:ml-auto"
             >
-              <div className="relative rounded-2xl overflow-hidden bg-kv-surface/30 hairline-border backdrop-blur-sm p-4 lg:p-6 group hover:border-primary/20 transition-all duration-500">
+              <div className="relative rounded-2xl overflow-hidden bg-kv-surface/10 hairline-border p-4 lg:p-5 group hover:border-primary/20 transition-all duration-500">
                 <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
                 <HeroMotif className="pointer-events-none absolute -top-2 right-2 h-16 w-28 text-primary opacity-40" />
                 <div className="flex items-center gap-2 mb-4">
@@ -151,9 +156,6 @@ export default function Section01Brain() {
                   <span>Data Ingestion</span>
                   <span>Processing</span>
                   <span>Output</span>
-                </div>
-                <div className="mt-3 opacity-50">
-                  <MarketBars barCount={30} />
                 </div>
               </div>
             </motion.div>
