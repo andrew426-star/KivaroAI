@@ -5,7 +5,7 @@ import * as THREE from 'three';
 import { getSoftParticleTexture } from '@/lib/three/softParticleTexture';
 import Instrument, { HeroLighting, INSTRUMENT_CENTER, sampleInstrumentVolumePoint } from './Instrument';
 import MarketMotif, { sampleMarketMotifVolumePoint } from './MarketMotif';
-import { getMorphState, shapeVisibility } from '@/lib/three/heroMorphCycle';
+import { getMorphState, shapeVisibility, ASSEMBLE_DURATION } from '@/lib/three/heroMorphCycle';
 import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion';
 
 // Landing/loop boot sequence, driven off the shared heroMorphCycle module
@@ -24,6 +24,10 @@ const ASSEMBLY_PARTICLE_DURATION = 1.7;
 const ASSEMBLY_STAGGER = 1.0;
 const REVEAL_START = 1.2;
 const REVEAL_DURATION = 1.4;
+// How long the fine dust takes to fade fully out/in around a held shape —
+// out over the tail of assemble, in over the head of disperse — so "just
+// the graphic, no dust" during hold reads as a crossfade, not a hard cut.
+const DUST_CROSSFADE = 0.5;
 
 function easeOutCubic(t: number) {
   return 1 - Math.pow(1 - t, 3);
@@ -161,13 +165,27 @@ function AssemblyField({ count }: { count: number }) {
     }
     geo.attributes.position.needsUpdate = true;
 
-    // Bright while actively streaming (assembling/dispersing) or while
-    // fully scattered (the dust is the only visible content then), dimmer
-    // once a shape is fully held so the graphic itself stays the clear
-    // focal point instead of competing with the dust that formed it.
+    // The requested beat is a clean four-part loop: scattered dust -> dust
+    // streams together into the shape -> the shape stands alone, no dust
+    // -> the shape dissolves back into dust -> repeat. That means opacity
+    // has to reach true 0 while held (not just dim), with a short
+    // crossfade at each boundary so the dust doesn't hard-cut in/out —
+    // it fades out over the tail of assemble, exactly as the solid shape
+    // (Ring/Candle opacity, driven by the same formProgress) finishes
+    // fading in, and fades back in over the head of disperse as the shape
+    // starts dissolving.
     const fadeIn = THREE.MathUtils.clamp(t / 0.4, 0, 1);
-    const holdFactor = morph.phase === 'hold' ? 0.3 : 1;
-    materialRef.current.opacity = 0.9 * fadeIn * holdFactor;
+    let dustVisibility: number;
+    if (morph.phase === 'assemble') {
+      dustVisibility = THREE.MathUtils.clamp((ASSEMBLE_DURATION - morph.phaseElapsed) / DUST_CROSSFADE, 0, 1);
+    } else if (morph.phase === 'hold') {
+      dustVisibility = 0;
+    } else if (morph.phase === 'disperse') {
+      dustVisibility = THREE.MathUtils.clamp(morph.phaseElapsed / DUST_CROSSFADE, 0, 1);
+    } else {
+      dustVisibility = 1;
+    }
+    materialRef.current.opacity = 0.9 * fadeIn * dustVisibility;
   });
 
   return (
