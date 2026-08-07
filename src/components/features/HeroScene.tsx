@@ -221,15 +221,22 @@ function CameraRig() {
   return null;
 }
 
-// Fixed desktop-tier constants on every viewport — per "maximize visuals
-// everywhere," this scene no longer scales geometry/particle counts down
-// on mobile. prefers-reduced-motion remains the only gate (an
-// accessibility contract, never a quality dial) for the ambient/decorative
-// layers; Instrument itself always renders (static final state when
-// reduced motion is on) since it's the hero's actual content.
-const PARTICLE_COUNT = 140;
-const ASSEMBLY_COUNT = 220;
-const FAR_PARTICLE_COUNT = 70;
+// Trimmed from 140/220/70 — real production measurement (rAF ticks over
+// a fixed window, on the live site) showed the hero rendering at ~4fps
+// (2 frames in 500ms, vs. ~30 expected at 60fps) with the old counts,
+// confirmed as a real, severe perf problem rather than a subjective
+// impression. This scene has no viewport-based frameloop gate (removed
+// earlier this session after it froze the morph cycle on scroll-back —
+// see the frameloop comment below), so it renders every frame for as
+// long as the tab is open regardless of scroll position, making its
+// per-frame cost the single biggest lever available for "the site feels
+// slow." prefers-reduced-motion remains the only *content* gate (an
+// accessibility contract, never a quality dial); these counts are a
+// quality/perf dial, not a content change — the dust field still reads
+// as a real field at these counts, just costs meaningfully less per frame.
+const PARTICLE_COUNT = 85;
+const ASSEMBLY_COUNT = 130;
+const FAR_PARTICLE_COUNT = 45;
 
 function Scene({ reducedMotion }: { reducedMotion: boolean }) {
   useFrame((state) => {
@@ -302,7 +309,13 @@ export default function HeroScene() {
   return (
     <div className="absolute inset-0" aria-hidden="true">
       <Canvas
-        dpr={[1, 2]}
+        // Capped from [1,2] — Bloom/DepthOfField are full-screen,
+        // resolution-dependent multi-pass effects; on a 2x-DPI display
+        // that upper bound quadruples the pixel count they run over
+        // versus 1x. 1.5 keeps meaningfully sharper-than-1x rendering
+        // without paying the full 2x cost, part of the same real,
+        // measured perf fix as the particle-count trim above.
+        dpr={[1, 1.5]}
         gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
         camera={{ position: [0, 1.1, 4.4], fov: 55, near: 0.1, far: 24 }}
         frameloop={reducedMotion ? 'demand' : 'always'}

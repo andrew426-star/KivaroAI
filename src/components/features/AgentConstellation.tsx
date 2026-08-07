@@ -730,7 +730,14 @@ export default function AgentConstellation({ onSelectAgent }: AgentConstellation
   return (
     <div ref={viewportRef} className="absolute inset-0">
       <Canvas
-        dpr={[1, 2]}
+        // Capped from [1,2] — same real, measured perf fix applied to
+        // HeroScene.tsx: Bloom/DepthOfField are full-screen,
+        // resolution-dependent passes, and 2x DPI quadruples their pixel
+        // count versus 1x. This scene already idles correctly when
+        // scrolled out of view (frameloop below), so the win here is
+        // smaller than the hero's, but real GPU cost while it's actually
+        // in view either way.
+        dpr={[1, 1.5]}
         gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
         camera={{ position: [0, 0.85, 5.7], fov: 48, near: 0.1, far: 20 }}
         frameloop={reducedMotion || !inViewport ? 'demand' : 'always'}
