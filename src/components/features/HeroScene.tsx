@@ -3,7 +3,7 @@ import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { EffectComposer, Bloom, DepthOfField } from '@react-three/postprocessing';
 import * as THREE from 'three';
 import { getSoftParticleTexture } from '@/lib/three/softParticleTexture';
-import Instrument, { HeroLighting, INSTRUMENT_CENTER, sampleInstrumentVolumePoint } from './Instrument';
+import Instrument, { HeroLighting, INSTRUMENT_CENTER, CAMERA_LOOK_TARGET, sampleInstrumentVolumePoint } from './Instrument';
 import MarketMotif, { sampleMarketMotifVolumePoint } from './MarketMotif';
 import { getMorphState, shapeVisibility, ASSEMBLE_DURATION } from '@/lib/three/heroMorphCycle';
 import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion';
@@ -233,7 +233,7 @@ function CameraRig() {
     const idle = Math.sin(state.clock.elapsedTime * 0.06) * 0.15;
     camera.position.x += (pointerTarget.current.x * 0.5 + idle - scrollDrift * 0.35 - camera.position.x) * 0.02;
     camera.position.y += (1.1 - pointerTarget.current.y * 0.25 - scrollDrift * 0.3 - camera.position.y) * 0.02;
-    camera.lookAt(INSTRUMENT_CENTER[0], INSTRUMENT_CENTER[1], INSTRUMENT_CENTER[2]);
+    camera.lookAt(CAMERA_LOOK_TARGET[0], CAMERA_LOOK_TARGET[1], CAMERA_LOOK_TARGET[2]);
   });
 
   return null;
@@ -300,8 +300,16 @@ function Scene({ reducedMotion }: { reducedMotion: boolean }) {
             to the front (confirmed via real screenshots, not computed
             blind — the exact focus math is only an approximation once
             multiple large tilted rings are staggered in depth). */}
-        <DepthOfField focusDistance={0.2} focalLength={0.24} bokehScale={1.7} height={480} />
-        <Bloom luminanceThreshold={0.12} luminanceSmoothing={0.9} intensity={1.05} radius={0.62} mipmapBlur />
+        {/* Sharpened per direct feedback that the scene read as too soft:
+            a wider focalLength keeps more of the depth range in genuine
+            focus, and a lower bokehScale caps how much the out-of-focus
+            portion blurs — both confirmed via real screenshots against
+            the same failure mode noted above (too tight in the other
+            direction wipes the whole instrument out). Bloom's radius/
+            intensity trimmed to match — less glow-smear bleeding over
+            the rings'/candles' own edges. */}
+        <DepthOfField focusDistance={0.22} focalLength={0.32} bokehScale={1.15} height={480} />
+        <Bloom luminanceThreshold={0.14} luminanceSmoothing={0.85} intensity={0.85} radius={0.42} mipmapBlur />
       </EffectComposer>
     </>
   );
@@ -327,13 +335,14 @@ export default function HeroScene() {
   return (
     <div className="absolute inset-0" aria-hidden="true">
       <Canvas
-        // Capped from [1,2] — Bloom/DepthOfField are full-screen,
-        // resolution-dependent multi-pass effects; on a 2x-DPI display
-        // that upper bound quadruples the pixel count they run over
-        // versus 1x. 1.5 keeps meaningfully sharper-than-1x rendering
-        // without paying the full 2x cost, part of the same real,
-        // measured perf fix as the particle-count trim above.
-        dpr={[1, 1.5]}
+        // Capped from [1,2] for a real, measured perf fix (Bloom/
+        // DepthOfField are full-screen, resolution-dependent passes; 2x
+        // DPI quadruples their pixel count vs. 1x). Nudged back up from
+        // 1.5 to 1.75 after direct "sharpen it" feedback — still well
+        // under the original uncapped cost, but with the particle-count
+        // trim already in place there's headroom for a bit more
+        // resolution before it reintroduces the frame-rate problem.
+        dpr={[1, 1.75]}
         gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
         camera={{ position: [0, 1.1, 4.4], fov: 55, near: 0.1, far: 24 }}
         frameloop={reducedMotion ? 'demand' : 'always'}

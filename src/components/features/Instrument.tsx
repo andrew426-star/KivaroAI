@@ -18,7 +18,14 @@ import { getMorphState, shapeVisibility } from '@/lib/three/heroMorphCycle';
 // separation to act on — one ring crisp, the furthest genuinely soft),
 // and adds real key/fill/point lighting so the metalness on the material
 // actually has directional light to respond to.
-export const INSTRUMENT_CENTER: [number, number, number] = [0.85, 0.35, -0.2];
+// Shifted right (was x=0.85) so the graphic sits clear of both the text
+// column and the "AI Workflow Pipeline" card now stacked beneath it — both
+// live in the left ~45% of the hero. The camera still aims at
+// CAMERA_LOOK_TARGET, a fixed point *left* of this — since a camera always
+// centers whatever it looks at, moving this position alone wouldn't shift
+// anything on screen without also decoupling the look-at target from it.
+export const INSTRUMENT_CENTER: [number, number, number] = [2.15, 0.35, -0.2];
+export const CAMERA_LOOK_TARGET: [number, number, number] = [0.85, 0.35, -0.2];
 
 const RING_COLOR = new THREE.Color().setHSL(152 / 360, 0.76, 0.5);
 
