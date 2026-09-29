@@ -7,9 +7,9 @@ import { supabase } from '@/lib/supabase';
 import { FunctionsHttpError } from '@supabase/supabase-js';
 
 const INQUIRY_TYPES = [
+  'Pilot Application',
+  'Launch Waitlist',
   'Discovery Call',
-  'Pilot Engagement',
-  'Workflow Audit',
   'General Inquiry',
 ];
 

@@ -3,7 +3,7 @@ import type { NavLink } from '@/types';
 export const SITE_CONFIG = {
   name: 'Kivaro AI',
   tagline: 'AI Automation & Intelligence for Institutional Investment Firms',
-  description: 'Kivaro AI designs secure, high-performance AI workflows that accelerate research, streamline operations, and strengthen decision infrastructure for hedge funds, investment banks, private equity firms, and venture capital firms.',
+  description: 'Kivaro AI designs secure AI workflows that accelerate research, streamline operations, and strengthen reporting for hedge funds, private equity and venture capital firms, quant funds, and their research and investor-relations teams.',
   founded: 2025,
   founder: 'Andrew Thomas',
   location: 'Louisiana, United States',
@@ -11,9 +11,25 @@ export const SITE_CONFIG = {
   phone: '(985)-205-7688',
 } as const;
 
+// Public launch and the pilot program that precedes it. Facts, not
+// projections — shown in place of outcome statistics until pilots have
+// produced real ones.
+export const LAUNCH = {
+  label: 'January 2027',
+  pilotSeats: 3,
+  pilotWeeks: 4,
+} as const;
+
+export const PILOT_FACTS = [
+  { value: String(LAUNCH.pilotSeats), label: 'Pilot Seats' },
+  { value: String(LAUNCH.pilotWeeks), label: 'Weeks per Pilot' },
+  { value: '1', label: 'Workflow per Pilot' },
+  { value: 'Jan 2027', label: 'Public Launch' },
+] as const;
+
 export const NAV_LINKS: NavLink[] = [
   { label: 'Home', href: '#the-brain' },
-  { label: 'Agents', href: '#agents' },
+  { label: 'Services', href: '#services' },
   { label: 'Workflow', href: '#workflow' },
   { label: 'Trust', href: '#trust' },
   { label: 'Deploy', href: '#deploy' },

@@ -130,8 +130,8 @@ export default function Section06Deploy() {
               Precision over hype. <span className="text-gradient-animated">Measurable advantage.</span>
             </h2>
             <p className="mt-5 text-lg text-muted-foreground max-w-2xl mx-auto text-pretty">
-              Convert AI capability into institutional-grade operational systems. Schedule a discovery
-              call to map your highest-impact automation opportunities.
+              Kivaro AI launches publicly in January 2027. Until then, three firms get a four-week
+              pilot on one high-impact workflow. Apply for a seat, or join the launch waitlist.
             </p>
           </div>
         </SectionReveal>
@@ -140,9 +140,13 @@ export default function Section06Deploy() {
           <SectionReveal className="lg:col-span-7 xl:col-span-8" direction="left">
             <GlowCard>
               <div className="p-6 lg:p-10">
-                <h3 className="font-display text-xl font-bold text-foreground mb-6">
-                  Submit an Inquiry
+                <h3 className="font-display text-xl font-bold text-foreground mb-2">
+                  Apply for a Pilot or Join the Waitlist
                 </h3>
+                <p className="text-sm text-muted-foreground mb-6">
+                  Choose &ldquo;Pilot Application&rdquo; and tell us the workflow that eats the most of your
+                  team&apos;s week, or &ldquo;Launch Waitlist&rdquo; to hear when we go live.
+                </p>
                 <ContactForm />
               </div>
             </GlowCard>

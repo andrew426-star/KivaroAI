@@ -10,6 +10,7 @@ import HeroMotif from '@/components/illustrations/hero-motif';
 import ScrollParallax from '@/components/features/ScrollParallax';
 import HeroEyebrow from '@/components/features/HeroEyebrow';
 import ScrollCue from '@/components/features/ScrollCue';
+import { LAUNCH } from '@/constants/config';
 
 const HeroScene = lazy(() => import('@/components/features/HeroScene'));
 
@@ -80,7 +81,7 @@ export default function Section01Brain() {
           <ScrollParallax className="max-w-2xl" distance={24}>
             <motion.div variants={container} initial="hidden" animate="show">
               <motion.div variants={item}>
-                <HeroEyebrow label="AI Automation for Investment Firms" className="mb-6" />
+                <HeroEyebrow label={`Launching ${LAUNCH.label} · ${LAUNCH.pilotSeats} pilot seats open`} className="mb-6" />
               </motion.div>
 
               <SplitTextReveal
@@ -95,7 +96,7 @@ export default function Section01Brain() {
                 variants={item}
                 className="mt-4 sm:mt-6 text-base sm:text-lg text-muted-foreground leading-relaxed max-w-xl text-pretty"
               >
-                Kivaro AI converts artificial intelligence into disciplined operational advantage for hedge funds, investment banks, private equity, and venture capital firms — from due diligence automation to investment data pipelines and internal knowledge systems.
+                Kivaro AI converts artificial intelligence into disciplined operational advantage for hedge funds, private equity and venture capital firms, and quant funds — from due diligence automation to investment data pipelines, investor reporting, and internal knowledge systems.
               </motion.p>
 
               {/* CTAs */}
@@ -106,15 +107,15 @@ export default function Section01Brain() {
                     className="inline-flex items-center gap-2 rounded-full bg-primary px-5 sm:px-7 py-3 sm:py-3.5 text-sm font-semibold text-primary-foreground transition-shadow duration-300 hover:shadow-[0_0_30px_hsla(152,76%,46%,0.35),_0_0_60px_hsla(152,76%,46%,0.1)] active:scale-[0.97]"
                     strength={0.15}
                   >
-                    Schedule Discovery Call
+                    Apply for a Pilot
                     <ArrowUpRight className="size-4" />
                   </MagneticButton>
                 </a>
                 <a
-                  href="#agents"
+                  href="#services"
                   className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-secondary/40 px-5 sm:px-6 py-3 sm:py-3.5 text-sm font-medium text-foreground hover:border-primary/30 hover:bg-secondary transition-all duration-300 active:scale-[0.97]"
                 >
-                  Meet the Agents
+                  Explore Services
                   <ArrowRight className="size-4" />
                 </a>
               </motion.div>

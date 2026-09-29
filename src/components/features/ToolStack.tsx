@@ -4,18 +4,20 @@ import { useInView } from '@/hooks/useInView';
 import { motion } from 'framer-motion';
 
 const TOOL_ICONS: Record<string, string> = {
-  'Claude AI':  '◈',
-  'ElevenLabs': '♪',
+  'Gemini':     '◈',
+  'Groq':       '⚡',
+  'Fish Audio': '♪',
   'Next.js':    '▲',
+  'React':      '⚛',
   'TypeScript': 'TS',
   'Python':     'Py',
+  'FastAPI':    'Fa',
   'Node.js':    '⬡',
   'Supabase':   '⊕',
-  'MongoDB':    '◉',
+  'Pinecone':   '◉',
   'Docker':     '⬢',
-  'Railway':    '▣',
+  'Render':     '▣',
   'Vercel':     '▲',
-  'React':      '⚛',
 };
 
 const CATEGORY_COLOR: Record<string, string> = {

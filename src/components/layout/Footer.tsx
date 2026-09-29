@@ -61,7 +61,7 @@ export default function Footer() {
               </span>
             </a>
             <p className="mt-4 text-sm text-muted-foreground leading-relaxed max-w-xs">
-              Specialized AI automation and intelligence partner for hedge funds, investment banks, private equity, and venture capital firms across the Southern United States.
+              Specialized AI automation and intelligence partner for hedge funds, private equity and venture capital firms, and quant funds across the Southern United States.
             </p>
             <div className="mt-5 flex flex-col gap-2">
               <div className="flex items-center gap-2 text-sm text-muted-foreground">

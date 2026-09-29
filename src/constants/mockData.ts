@@ -1,4 +1,4 @@
-import type { Service, ProcessStep, Stat, ToolItem, FAQ } from '@/types';
+import type { Service, ProcessStep, ToolItem, FAQ } from '@/types';
 
 export const SERVICES: Service[] = [
   {
@@ -108,10 +108,10 @@ export const SERVICES: Service[] = [
   {
     id: 'ai-architecture',
     title: 'Secure AI Stack Architecture',
-    description: 'Design and implement enterprise-grade AI infrastructure using StackAI and integrated platforms with security, compliance, and performance at the core.',
+    description: 'Design and implement AI infrastructure on vetted enterprise platforms, with security, compliance, and performance at the core.',
     icon: 'Shield',
     features: [
-      'StackAI-based secure workflow deployment',
+      'Secure workflow deployment on vetted enterprise AI platforms',
       'Data isolation and encryption architecture',
       'Compliance-aware system design',
       'Performance monitoring and optimization',
@@ -136,7 +136,7 @@ export const PROCESS_STEPS: ProcessStep[] = [
   {
     id: 3,
     title: 'Architecture Design',
-    description: 'Secure AI workflow and agent architecture using StackAI and integrated tools, designed for institutional-grade security and compliance requirements.',
+    description: 'Secure AI workflow and agent architecture on vetted platforms and integrated tools, designed for institutional-grade security and compliance requirements.',
     icon: 'PenTool',
   },
   {
@@ -165,52 +165,48 @@ export const PROCESS_STEPS: ProcessStep[] = [
   },
 ];
 
-export const STATS: Stat[] = [
-  { label: 'Reduction in Research Processing Time', value: '73', suffix: '%' },
-  { label: 'Operational Tasks Automatable', value: '40', suffix: '+' },
-  { label: 'Average Deployment Timeline', value: '6', suffix: ' weeks' },
-  { label: 'Cost Reduction in Reporting Workflows', value: '58', suffix: '%' },
-];
 
 export const TOOLS: ToolItem[] = [
-  { name: 'Claude AI',   description: 'Primary LLM for all agent intelligence layers',  category: 'AI' },
-  { name: 'ElevenLabs',  description: 'Voice synthesis for conversational AI systems',   category: 'AI' },
-  { name: 'Next.js',     description: 'Production-grade React framework',                category: 'Frontend' },
-  { name: 'TypeScript',  description: 'Type-safe development across all codebases',      category: 'Frontend' },
-  { name: 'Python',      description: 'Backend AI pipelines and data processing',        category: 'Backend' },
-  { name: 'Node.js',     description: 'Event-driven API and integration services',       category: 'Backend' },
-  { name: 'Supabase',    description: 'Postgres database, auth, and realtime layer',     category: 'Data' },
-  { name: 'MongoDB',     description: 'Document storage for unstructured AI data',       category: 'Data' },
-  { name: 'Docker',      description: 'Containerised, reproducible deployments',         category: 'Infrastructure' },
-  { name: 'Railway',     description: 'Server infrastructure and service hosting',       category: 'Infrastructure' },
-  { name: 'Vercel',      description: 'Edge deployment and frontend delivery',           category: 'Infrastructure' },
-  { name: 'React',       description: 'Component-driven UI architecture',                category: 'Frontend' },
+  { name: 'Gemini',      description: 'LLM behind the in-house agent team and research pipelines', category: 'AI' },
+  { name: 'Groq',        description: 'Low-latency open-model inference for voice and assistants',  category: 'AI' },
+  { name: 'Fish Audio',  description: 'Voice synthesis for conversational AI systems',              category: 'AI' },
+  { name: 'Next.js',     description: 'Production-grade React framework',                           category: 'Frontend' },
+  { name: 'React',       description: 'Component-driven UI architecture',                           category: 'Frontend' },
+  { name: 'TypeScript',  description: 'Type-safe development across all codebases',                 category: 'Frontend' },
+  { name: 'Python',      description: 'Backend AI pipelines and data processing',                   category: 'Backend' },
+  { name: 'FastAPI',     description: 'Typed Python APIs for AI services',                          category: 'Backend' },
+  { name: 'Node.js',     description: 'Event-driven API and integration services',                  category: 'Backend' },
+  { name: 'Supabase',    description: 'Postgres database, auth, and realtime layer',                category: 'Data' },
+  { name: 'Pinecone',    description: 'Vector search for knowledge retrieval and memory',           category: 'Data' },
+  { name: 'Docker',      description: 'Containerised, reproducible deployments',                    category: 'Infrastructure' },
+  { name: 'Render',      description: 'Server infrastructure and service hosting',                  category: 'Infrastructure' },
+  { name: 'Vercel',      description: 'Edge deployment and frontend delivery',                      category: 'Infrastructure' },
 ];
 
 export const FAQS: FAQ[] = [
   {
     question: 'What types of investment firms does Kivaro AI work with?',
-    answer: 'We work with hedge funds, investment banks, private equity firms, venture capital firms, and other alternative investment institutions across the Southern United States. Our systems are adaptable to various firm sizes, asset classes, and strategies.',
+    answer: 'Hedge funds and their portfolio managers, research and analytics teams, investor relations and reporting teams, quant and hybrid discretionary funds, venture capital managers, and private equity firms, with a focus on the Southern United States.',
+  },
+  {
+    question: 'When does Kivaro AI launch?',
+    answer: 'Kivaro AI launches publicly in January 2027. Before then we are running a small pilot program with a few firms, and you can join the launch waitlist through the form below.',
+  },
+  {
+    question: 'What does a pilot look like?',
+    answer: 'We pick one high-impact workflow together, build and deploy an AI-automated version over about four weeks, and measure it against your current manual baseline. You keep the results and the write-up either way. Pilot seats are limited to three firms.',
   },
   {
     question: 'How do you handle data security and compliance?',
-    answer: 'Security is foundational to our architecture. We use StackAI for secure workflow deployment, implement data isolation and encryption, and design all systems with compliance awareness built in from day one.',
-  },
-  {
-    question: 'What is the typical engagement timeline?',
-    answer: 'Initial pilot deployments typically span 4-8 weeks from discovery to live operation. Complex multi-workflow implementations may extend to 12-16 weeks with phased rollout milestones.',
+    answer: 'Security is part of the design from the first conversation: least-privilege access, data isolation, and encryption. Where a firm has its own compliance requirements or approved vendors, we build within them.',
   },
   {
     question: 'Do you replace existing fund systems?',
-    answer: 'No. We integrate with and augment your existing infrastructure. Our approach connects to current tools, data sources, and reporting systems through integration layering rather than system replacement.',
-  },
-  {
-    question: 'What does a proof-of-value engagement look like?',
-    answer: 'We identify one high-impact workflow, deploy an AI-automated solution within 4-6 weeks, and measure specific performance metrics against the manual baseline. This validates the approach before broader implementation.',
+    answer: 'No. We integrate with and augment your existing infrastructure, connecting to current tools, data sources, and reporting systems rather than replacing them.',
   },
   {
     question: 'Is on-site work available?',
-    answer: 'Yes. On-site advisory and system mapping sessions are available for qualified engagements within our regional footprint across Texas, Louisiana, Georgia, Mississippi, and Florida.',
+    answer: 'Yes. On-site advisory and system mapping sessions are available across Texas, Louisiana, Georgia, Mississippi, and Florida.',
   },
 ];
 

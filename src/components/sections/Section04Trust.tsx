@@ -17,9 +17,9 @@ const architecture = SERVICES.find((s) => s.id === 'ai-architecture')!;
 const ARCHITECTURE_ICONS = [ShieldCheck, Lock, Cog, Activity];
 
 const STAT_STRIP = [
-  { value: '15', label: 'Sovereign Agents', graph: 'bars' as const },
-  { value: '5', label: 'Operating Divisions', graph: 'bars' as const },
-  { value: '24/7', label: 'Autonomous Operation', graph: 'sparkline' as const },
+  { value: '3', label: 'Pilot Seats', graph: 'bars' as const },
+  { value: '4', label: 'Weeks per Pilot', graph: 'bars' as const },
+  { value: 'Jan 2027', label: 'Public Launch', graph: 'sparkline' as const },
   { value: '100%', label: 'Built In-House', graph: 'gauge' as const },
 ];
 
@@ -129,8 +129,8 @@ export default function Section04Trust() {
               </div>
               <div className="lg:col-span-8 p-8 lg:p-10 flex flex-col justify-center">
                 <blockquote className="text-foreground/85 leading-relaxed text-pretty text-base sm:text-lg italic">
-                  "We work with hedge funds, investment banks, private equity firms, venture capital
-                  firms, and other institutional investors that want artificial intelligence
+                  "We work with hedge funds, private equity and venture capital firms, quant funds,
+                  and the research and investor-relations teams inside them that want artificial intelligence
                   implemented with structure, discipline, and measurable impact — not experimentation
                   for its own sake. The objective is operational leverage through intelligent systems.
                   That is the standard we build to."

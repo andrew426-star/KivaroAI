@@ -35,8 +35,8 @@ function App() {
               still links to them. vercel.json's redirects handle this at
               the HTTP layer for production; these are the client-side
               fallback for local dev/preview where that config isn't applied. */}
-          <Route path="/services" element={<Navigate to="/#agents" replace />} />
-          <Route path="/agents" element={<Navigate to="/#agents" replace />} />
+          <Route path="/services" element={<Navigate to="/#services" replace />} />
+          <Route path="/agents" element={<Navigate to="/#services" replace />} />
           <Route path="/process" element={<Navigate to="/#deploy" replace />} />
           <Route path="/about" element={<Navigate to="/#trust" replace />} />
           <Route path="/contact" element={<Navigate to="/#deploy" replace />} />

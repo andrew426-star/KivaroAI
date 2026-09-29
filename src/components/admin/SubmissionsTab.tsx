@@ -38,7 +38,9 @@ interface Props {
 type SortField = 'submitted_at' | 'name' | 'email' | 'inquiry_type' | 'exported';
 type SortDir   = 'asc' | 'desc';
 
-const INQUIRY_TYPES = ['All', 'Discovery Call', 'Pilot Engagement', 'Workflow Audit', 'General Inquiry'];
+// Current form options first; the older ones stay so past submissions can
+// still be filtered.
+const INQUIRY_TYPES = ['All', 'Pilot Application', 'Launch Waitlist', 'Discovery Call', 'General Inquiry', 'Pilot Engagement', 'Workflow Audit'];
 const CHART_COLORS  = [
   'hsl(152,76%,46%)', 'hsl(160,80%,42%)', 'hsl(82,80%,55%)',
   'hsl(190,70%,50%)', 'hsl(45,90%,55%)',

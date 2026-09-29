@@ -1,19 +1,22 @@
 import { Search, Cog, Rocket } from 'lucide-react';
-import { SERVICES, STATS } from '@/constants/mockData';
+import { SERVICES } from '@/constants/mockData';
+import { LAUNCH } from '@/constants/config';
 import SectionReveal from '@/components/features/SectionReveal';
 import SectionLabel from '@/components/features/SectionLabel';
 import StatCounter from '@/components/features/StatCounter';
 import GlowCard from '@/components/features/GlowCard';
-import RadialGauge from '@/components/features/data-graphs/RadialGauge';
 import Sparkline from '@/components/features/data-graphs/Sparkline';
 
 const research = SERVICES.find((s) => s.id === 'research-automation')!;
 const operations = SERVICES.find((s) => s.id === 'operations-automation')!;
 const reporting = SERVICES.find((s) => s.id === 'reporting-automation')!;
 
-const researchStat = STATS.find((s) => s.label === 'Reduction in Research Processing Time')!;
-const reportingStat = STATS.find((s) => s.label === 'Cost Reduction in Reporting Workflows')!;
-const deploymentStat = STATS.find((s) => s.label === 'Average Deployment Timeline')!;
+// Pilot-program facts, not outcome percentages: until pilots have run,
+// there are no client results to quote. Case-study numbers replace these
+// once pilots finish.
+const researchStat = { value: '1', suffix: '', label: 'Workflow per Pilot' };
+const reportingStat = { value: String(LAUNCH.pilotWeeks), suffix: ' weeks', label: 'From Kickoff to Live' };
+const deploymentStat = { value: String(LAUNCH.pilotSeats), suffix: '', label: `Pilot Seats Before ${LAUNCH.label}` };
 
 const BEATS = [
   {
@@ -21,21 +24,18 @@ const BEATS = [
     title: research.title,
     description: research.description,
     stat: researchStat,
-    graph: 'gauge' as const,
   },
   {
     icon: Cog,
     title: operations.title,
     description: `${operations.description} ${reporting.description}`,
     stat: reportingStat,
-    graph: 'gauge' as const,
   },
   {
     icon: Rocket,
     title: 'Controlled Implementation',
     description: 'Phased deployment with validation checkpoints and performance benchmarks — each phase tested and approved before the next begins.',
     stat: deploymentStat,
-    graph: 'sparkline' as const,
   },
 ];
 
@@ -50,8 +50,8 @@ export default function Section03Workflow() {
               From Raw Data to Deployed Advantage
             </h2>
             <p className="mt-3 text-muted-foreground max-w-2xl mx-auto text-pretty">
-              Three stages, one measurable outcome at each — research automation, operations and
-              reporting automation, and controlled implementation.
+              Three stages — research automation, operations and reporting automation, and
+              controlled implementation — each measured against your team&apos;s current baseline.
             </p>
           </div>
         </SectionReveal>
@@ -76,11 +76,7 @@ export default function Section03Workflow() {
                   <div className="mt-6 pt-6 border-t border-border/30">
                     <StatCounter value={beat.stat.value} suffix={beat.stat.suffix} label={beat.stat.label} />
                     <div className="mt-4 flex justify-center">
-                      {beat.graph === 'gauge' ? (
-                        <RadialGauge value={parseInt(beat.stat.value, 10)} size={48} />
-                      ) : (
-                        <Sparkline count={10} heightClassName="h-8" className="w-24" />
-                      )}
+                      <Sparkline count={10} heightClassName="h-8" className="w-24" />
                     </div>
                   </div>
                 </div>
