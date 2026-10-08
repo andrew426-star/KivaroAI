@@ -7,6 +7,7 @@
  */
 import { useState } from 'react';
 import { motion } from 'framer-motion';
+import { EASE_OUT, STAGGER } from '@/lib/motion';
 
 export interface Agent {
   id: string;
@@ -72,7 +73,7 @@ export function AgentCard({ agent, color, glow, index, example }: { agent: Agent
       initial={{ opacity: 0, y: 16 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      transition={{ delay: index * 0.05, duration: 0.4, ease: 'easeOut' }}
+      transition={{ delay: index * STAGGER, duration: 0.5, ease: EASE_OUT }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       className="relative rounded-xl border bg-background/40 backdrop-blur-sm p-4 cursor-default transition-all duration-300 scroll-mt-24"

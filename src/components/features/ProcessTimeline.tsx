@@ -4,6 +4,7 @@ import { useInView } from '@/hooks/useInView';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import { PROCESS_GLYPHS } from '@/components/illustrations/process-glyphs';
+import { EASE_OUT } from '@/lib/motion';
 
 const ICON_MAP = PROCESS_GLYPHS;
 
@@ -55,7 +56,7 @@ export default function ProcessTimeline() {
           initial={{ opacity: 0, y: 12, scale: 0.98 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: -12, scale: 0.98 }}
-          transition={{ duration: 0.35, ease: 'easeOut' }}
+          transition={{ duration: 0.4, ease: EASE_OUT }}
           className="relative rounded-xl bg-kv-surface/40 hairline-border p-8 lg:p-10 backdrop-blur-sm scan-line overflow-hidden"
         >
           <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent" />

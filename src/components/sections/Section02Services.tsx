@@ -5,6 +5,7 @@ import ServiceCard from '@/components/features/ServiceCard';
 import SectionReveal from '@/components/features/SectionReveal';
 import SectionLabel from '@/components/features/SectionLabel';
 import { DIVISION_EMBLEMS } from '@/components/illustrations/division-emblems';
+import { STAGGER_MS } from '@/lib/motion';
 
 // Services first — what a firm actually engages Kivaro for — then the
 // in-house agent team as proof of practice. The agents run Kivaro's own
@@ -32,7 +33,7 @@ export default function Section02Services() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 items-start">
           {SERVICES.map((service, i) => (
-            <SectionReveal key={service.id} delay={(i % 3) * 80} direction="up">
+            <SectionReveal key={service.id} delay={(i % 3) * STAGGER_MS} direction="up">
               <ServiceCard
                 service={service}
                 index={i}

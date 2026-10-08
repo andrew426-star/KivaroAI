@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   Search, Database, ShieldCheck, Cog, Bot, Library, FileText, LayoutDashboard, Shield, ChevronDown,
 } from 'lucide-react';
+import { EASE_OUT, STAGGER } from '@/lib/motion';
 
 const ICON_MAP: Record<string, React.ElementType> = {
   Search, Database, ShieldCheck, Cog, Bot, Library, FileText, LayoutDashboard, Shield,
@@ -72,7 +73,7 @@ export default function ServiceCard({ service, index, expanded, onToggle }: Serv
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: 'auto', opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.35, ease: 'easeOut' }}
+              transition={{ duration: 0.4, ease: EASE_OUT }}
               className="overflow-hidden"
             >
               <div className="mt-5 pt-5 border-t border-border/50">
@@ -82,7 +83,7 @@ export default function ServiceCard({ service, index, expanded, onToggle }: Serv
                       key={f}
                       initial={{ opacity: 0, x: -8 }}
                       animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: fi * 0.08, duration: 0.3 }}
+                      transition={{ delay: fi * STAGGER, duration: 0.4, ease: EASE_OUT }}
                       className="flex items-start gap-2 text-sm text-foreground/75"
                     >
                       <span className="mt-1.5 size-1.5 rounded-full bg-primary/50 shrink-0" />

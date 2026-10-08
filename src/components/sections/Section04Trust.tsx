@@ -11,6 +11,7 @@ import AboutMotif from '@/components/illustrations/about-motif';
 import SparkBars from '@/components/features/data-graphs/SparkBars';
 import Sparkline from '@/components/features/data-graphs/Sparkline';
 import RadialGauge from '@/components/features/data-graphs/RadialGauge';
+import { STAGGER_MS } from '@/lib/motion';
 
 const architecture = SERVICES.find((s) => s.id === 'ai-architecture')!;
 
@@ -91,7 +92,7 @@ export default function Section04Trust() {
           {architecture.features.map((feature, i) => {
             const Icon = ARCHITECTURE_ICONS[i] ?? ShieldCheck;
             return (
-              <SectionReveal key={feature} delay={i * 80} direction="up">
+              <SectionReveal key={feature} delay={i * STAGGER_MS} direction="up">
                 <GlowCard>
                   <div className="p-5">
                     <span className="flex items-center justify-center size-10 rounded-lg bg-primary/8 border border-primary/15 mb-3">
@@ -162,7 +163,7 @@ export default function Section04Trust() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {VALUES.map((v, i) => (
-            <SectionReveal key={v.title} delay={i * 80} direction={i % 2 === 0 ? 'left' : 'right'}>
+            <SectionReveal key={v.title} delay={Math.floor(i / 2) * STAGGER_MS} direction={i % 2 === 0 ? 'left' : 'right'}>
               <GlowCard>
                 <div className="p-7">
                   <div className="flex items-start gap-4">

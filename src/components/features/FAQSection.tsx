@@ -3,6 +3,7 @@ import { FAQS } from '@/constants/mockData';
 import { ChevronDown, MessageSquare } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
+import { EASE_OUT, STAGGER } from '@/lib/motion';
 
 export default function FAQSection() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
@@ -14,7 +15,7 @@ export default function FAQSection() {
           key={i}
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: i * 0.06, duration: 0.4 }}
+          transition={{ delay: i * STAGGER, duration: 0.5, ease: EASE_OUT }}
           className={cn(
             'rounded-xl border transition-all duration-300',
             openIndex === i
@@ -48,7 +49,7 @@ export default function FAQSection() {
                 initial={{ height: 0, opacity: 0 }}
                 animate={{ height: 'auto', opacity: 1 }}
                 exit={{ height: 0, opacity: 0 }}
-                transition={{ duration: 0.25, ease: 'easeOut' }}
+                transition={{ duration: 0.3, ease: EASE_OUT }}
                 className="overflow-hidden"
               >
                 <div className="px-6 pb-5 pl-[3.25rem]">

@@ -2,6 +2,7 @@ import { TOOLS } from '@/constants/mockData';
 import GlowCard from './GlowCard';
 import { useInView } from '@/hooks/useInView';
 import { motion } from 'framer-motion';
+import { EASE_OUT, STAGGER } from '@/lib/motion';
 
 const TOOL_ICONS: Record<string, string> = {
   'Gemini':     '◈',
@@ -40,7 +41,7 @@ export default function ToolStack() {
             key={tool.name}
             initial={{ opacity: 0, y: 20, scale: 0.95 }}
             animate={inView ? { opacity: 1, y: 0, scale: 1 } : {}}
-            transition={{ delay: i * 0.06, duration: 0.5, ease: 'easeOut' }}
+            transition={{ delay: i * STAGGER, duration: 0.5, ease: EASE_OUT }}
           >
             <GlowCard className="text-center h-full">
               <div className="p-4 lg:p-5 flex flex-col items-center">

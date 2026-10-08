@@ -6,6 +6,7 @@ import SectionLabel from '@/components/features/SectionLabel';
 import StatCounter from '@/components/features/StatCounter';
 import GlowCard from '@/components/features/GlowCard';
 import Sparkline from '@/components/features/data-graphs/Sparkline';
+import { STAGGER_MS } from '@/lib/motion';
 
 const research = SERVICES.find((s) => s.id === 'research-automation')!;
 const operations = SERVICES.find((s) => s.id === 'operations-automation')!;
@@ -58,7 +59,7 @@ export default function Section03Workflow() {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6">
           {BEATS.map((beat, i) => (
-            <SectionReveal key={beat.title} delay={i * 100} direction={i === 0 ? 'left' : i === 2 ? 'right' : 'up'}>
+            <SectionReveal key={beat.title} delay={i === 1 ? 0 : STAGGER_MS} direction={i === 0 ? 'left' : i === 2 ? 'right' : 'up'}>
               <GlowCard className="h-full">
                 <div className="p-6 lg:p-8 flex flex-col h-full">
                   <div className="flex items-center gap-3 mb-4">

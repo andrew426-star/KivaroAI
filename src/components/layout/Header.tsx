@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { useScrollSpy } from '@/hooks/useScrollSpy';
 import kivaroLogo from '@/assets/kivaro-logo.png';
+import { EASE_OUT } from '@/lib/motion';
 
 export default function Header() {
   const activeId = useScrollSpy(SECTION_IDS);
@@ -111,7 +112,7 @@ export default function Header() {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.3, ease: 'easeOut' }}
+            transition={{ duration: 0.3, ease: EASE_OUT }}
             className="md:hidden bg-background border-t border-border overflow-hidden"
           >
             <div className="flex flex-col px-6 py-4 gap-1">

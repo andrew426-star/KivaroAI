@@ -11,6 +11,7 @@ import SectionLabel from '@/components/features/SectionLabel';
 import MarketBars from '@/components/features/MarketBars';
 import FAQSection from '@/components/features/FAQSection';
 import ContactForm from '@/components/features/ContactForm';
+import { STAGGER_MS } from '@/lib/motion';
 
 // 7 real PROCESS_STEPS compressed into 4 stages — the last stage carries
 // only 1 underlying phase (7 doesn't split evenly into 4), never padded
@@ -34,7 +35,7 @@ function StageCard({ stage, index }: { stage: (typeof STAGES)[number]; index: nu
   const steps = PROCESS_STEPS.filter((s) => stage.stepIds.includes(s.id));
 
   return (
-    <SectionReveal delay={index * 90} direction="scale">
+    <SectionReveal delay={index * STAGGER_MS} direction="scale">
       <GlowCard className={cn('transition-all duration-500', expanded && 'border-primary/30 shadow-[0_0_30px_hsla(152,76%,46%,0.08)]')}>
         <button onClick={() => setExpanded((e) => !e)} className="w-full text-left p-6">
           <div className="flex items-center justify-between mb-3">
@@ -118,7 +119,7 @@ export default function Section06Deploy() {
               Common questions about our engagements, security, and methodology.
             </p>
           </SectionReveal>
-          <SectionReveal className="lg:col-span-8" direction="right" delay={100}>
+          <SectionReveal className="lg:col-span-8" direction="right">
             <FAQSection />
           </SectionReveal>
         </div>
@@ -153,7 +154,7 @@ export default function Section06Deploy() {
           </SectionReveal>
 
           <div className="lg:col-span-5 xl:col-span-4 space-y-6">
-            <SectionReveal delay={100} direction="right">
+            <SectionReveal delay={STAGGER_MS} direction="right">
               <GlowCard>
                 <div className="p-6">
                   <h3 className="font-display text-base font-bold text-foreground mb-5">
@@ -184,7 +185,7 @@ export default function Section06Deploy() {
               </GlowCard>
             </SectionReveal>
 
-            <SectionReveal delay={200} direction="right">
+            <SectionReveal delay={STAGGER_MS * 2} direction="right">
               <GlowCard>
                 <div className="p-6">
                   <h3 className="font-display text-base font-bold text-foreground mb-3">Service Regions</h3>

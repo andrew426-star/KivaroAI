@@ -2,6 +2,7 @@ import { useToast } from '@/hooks/use-toast';
 import { X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { AnimatePresence, motion } from 'framer-motion';
+import { EASE_OUT } from '@/lib/motion';
 
 export function Toaster() {
   const { toasts, toast: _ } = useToast();
@@ -15,7 +16,7 @@ export function Toaster() {
             initial={{ opacity: 0, y: 20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 10, scale: 0.95 }}
-            transition={{ duration: 0.2, ease: 'easeOut' }}
+            transition={{ duration: 0.25, ease: EASE_OUT }}
             className={cn(
               'rounded-lg border px-4 py-3 shadow-lg backdrop-blur-sm',
               t.variant === 'destructive'

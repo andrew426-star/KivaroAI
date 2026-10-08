@@ -2,12 +2,11 @@ import { useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { getMorphState, shapeVisibility } from '@/lib/three/heroMorphCycle';
-import { INSTRUMENT_CENTER } from './Instrument';
+import { HERO_CENTER } from './LogoMark';
 
 // The hero's second particle-morph subject — a candlestick chart
 // silhouette, the confirmed "market/data motif" direction, sharing
-// Instrument.tsx's exact material/color/lighting conventions (same
-// RING_COLOR-family green, same metalness/roughness, lit by the shared
+// LogoMark.tsx's lighting rig and the site's signal-green family (same same metalness/roughness, lit by the shared
 // HeroLighting rig) so the two graphics read as two faces of one system,
 // not two unrelated styles. Ties into the trading/market-data visual
 // language already used elsewhere on the site (MarketBars, ticker strips).
@@ -44,6 +43,11 @@ const CANDLE_SPACING = 0.38;
 const CANDLE_WIDTH = 0.22;
 const WICK_RADIUS = 0.02;
 const AMPLITUDE = 1.7;
+// Matches LogoMark's footprint so the two halves of the cycle balance.
+const MOTIF_SCALE = 0.68;
+// The rising trend weights the chart's mass low-left; lift it so it sits
+// on the same visual centre as the logo mark.
+const MOTIF_POSITION: [number, number, number] = [HERO_CENTER[0], HERO_CENTER[1] + 0.2, HERO_CENTER[2]];
 
 const ALL_VALUES = RAW_CANDLES.flatMap((c) => [c.open, c.close, c.high, c.low]);
 const VALUE_MIN = Math.min(...ALL_VALUES);
@@ -79,9 +83,9 @@ const LAYOUT: CandleLayout[] = RAW_CANDLES.map((c, i) => {
   };
 });
 
-// Fits inside heroMorphCycle's ASSEMBLE_DURATION (2.8s): the last candle
-// (index 10) starts at 10*0.2=2.0s and finishes at 2.0+0.75=2.75s.
-const CANDLE_STAGGER = 0.2;
+// Fits inside heroMorphCycle's ASSEMBLE_DURATION (2.4s): the last candle
+// (index 10) starts at 10*0.16=1.6s and finishes at 1.6+0.75=2.35s.
+export const CANDLE_STAGGER = 0.16;
 const CANDLE_ASSEMBLE_DURATION = 0.75;
 
 function CandleBodies() {
@@ -210,7 +214,7 @@ export default function MarketMotif({ reducedMotion }: { reducedMotion: boolean 
   if (reducedMotion) return null;
 
   return (
-    <group position={INSTRUMENT_CENTER}>
+    <group position={MOTIF_POSITION} scale={MOTIF_SCALE}>
       <CandleBodies />
       <CandleWicks />
       <TrendLine />
@@ -218,13 +222,40 @@ export default function MarketMotif({ reducedMotion }: { reducedMotion: boolean 
   );
 }
 
-// Re-exported for HeroScene.tsx's fine-dust AssemblyField layer, which
-// condenses toward the market motif's own volume during its turn in the
-// cycle — mirrors sampleInstrumentVolumePoint's role for the other shape.
-export function sampleMarketMotifVolumePoint(): THREE.Vector3 {
-  return new THREE.Vector3(
-    INSTRUMENT_CENTER[0] + (Math.random() - 0.5) * (CANDLE_SPACING * CANDLE_COUNT + 0.6),
-    INSTRUMENT_CENTER[1] + (Math.random() - 0.5) * (AMPLITUDE * 2 + 0.8),
-    INSTRUMENT_CENTER[2] + (Math.random() - 0.5) * 0.9,
-  );
+export { CANDLE_COUNT };
+
+/**
+ * A world-space point on the chart itself — candle body surfaces, wicks
+ * and the trend line — plus the index of the candle it belongs to, so the
+ * dust field can time each particle's arrival to its own candle's build.
+ */
+export function sampleMarketMotifPoint(): { point: THREE.Vector3; candle: number } {
+  const candle = Math.floor(Math.random() * CANDLE_COUNT);
+  const c = LAYOUT[candle];
+  const half = CANDLE_WIDTH / 2;
+  const roll = Math.random();
+  const p = new THREE.Vector3();
+  if (roll < 0.72) {
+    // Body: a random face of the box, a third of the time pinned to an edge.
+    const height = Math.max(c.bodyTop - c.bodyBottom, 0.04);
+    const axis = Math.floor(Math.random() * 3);
+    const side = Math.random() < 0.5 ? -1 : 1;
+    const extent = [half, height / 2, half];
+    const coords = [0, 1, 2].map((a) => (Math.random() * 2 - 1) * extent[a]);
+    coords[axis] = side * extent[axis];
+    if (Math.random() < 0.33) {
+      const other = (axis + 1 + Math.floor(Math.random() * 2)) % 3;
+      coords[other] = Math.sign(coords[other] || 1) * extent[other];
+    }
+    p.set(c.x + coords[0], (c.bodyTop + c.bodyBottom) / 2 + coords[1], coords[2]);
+  } else if (roll < 0.88) {
+    p.set(c.x, THREE.MathUtils.lerp(c.wickBottom, c.wickTop, Math.random()), 0);
+  } else {
+    // Trend line, between this candle's close and the next one's.
+    const next = LAYOUT[Math.min(candle + 1, CANDLE_COUNT - 1)];
+    const f = Math.random();
+    p.set(THREE.MathUtils.lerp(c.x, next.x, f), THREE.MathUtils.lerp(c.closeY, next.closeY, f) + 0.16, 0.02);
+  }
+  p.multiplyScalar(MOTIF_SCALE).add(new THREE.Vector3(...MOTIF_POSITION));
+  return { point: p, candle };
 }

@@ -11,6 +11,7 @@ import ScrollParallax from '@/components/features/ScrollParallax';
 import HeroEyebrow from '@/components/features/HeroEyebrow';
 import ScrollCue from '@/components/features/ScrollCue';
 import { LAUNCH } from '@/constants/config';
+import { EASE_OUT, STAGGER } from '@/lib/motion';
 
 const HeroScene = lazy(() => import('@/components/features/HeroScene'));
 
@@ -22,12 +23,12 @@ const HERO_FEATURES = [
 
 const container = {
   hidden: {},
-  show: { transition: { staggerChildren: 0.08, delayChildren: 0.3 } },
+  show: { transition: { staggerChildren: STAGGER, delayChildren: 0.3 } },
 };
 
 const item = {
   hidden: { opacity: 0, y: 16 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: 'easeOut' } },
+  show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: EASE_OUT } },
 };
 
 export default function Section01Brain() {
@@ -39,7 +40,7 @@ export default function Section01Brain() {
           className="absolute inset-0"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 0.6, ease: 'easeOut' }}
+          transition={{ duration: 0.6, ease: EASE_OUT }}
         >
           <Suspense fallback={null}>
             <HeroScene />

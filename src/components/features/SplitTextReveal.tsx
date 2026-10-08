@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
+import { EASE_OUT, STAGGER } from '@/lib/motion';
 
 interface SplitTextRevealProps {
   text: string;
@@ -23,9 +24,9 @@ const wordVariants = {
     rotateX: 0,
     filter: 'blur(0px)',
     transition: {
-      delay: i * 0.06,
+      delay: i * STAGGER,
       duration: 0.7,
-      ease: [0.22, 1, 0.36, 1],
+      ease: EASE_OUT,
     },
   }),
 };
