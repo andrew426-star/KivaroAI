@@ -16,11 +16,13 @@ const architecture = SERVICES.find((s) => s.id === 'ai-architecture')!;
 
 const ARCHITECTURE_ICONS = [ShieldCheck, Lock, Cog, Activity];
 
+// Facts, not client outcomes: firms researched and pitched are prospects,
+// and the workflow count is the in-house library demoed on sample data.
 const STAT_STRIP = [
-  { value: '3', label: 'Pilot Seats', graph: 'bars' as const },
-  { value: '4', label: 'Weeks per Pilot', graph: 'bars' as const },
-  { value: 'Jan 2027', label: 'Public Launch', graph: 'sparkline' as const },
-  { value: '100%', label: 'Built In-House', graph: 'gauge' as const },
+  { value: '6', label: 'Workflows Built In-House', graph: 'bars' as const },
+  { value: '74', label: 'Firms Researched', graph: 'bars' as const },
+  { value: '15+', label: 'Deals on Founder\'s DD Platform', graph: 'sparkline' as const },
+  { value: '100%', label: 'Outputs Cited to Source', graph: 'gauge' as const },
 ];
 
 const VALUES = [
@@ -57,8 +59,8 @@ export default function Section04Trust() {
               Institutional-Grade by Design
             </h2>
             <p className="mt-3 text-muted-foreground max-w-2xl mx-auto text-pretty">
-              Security, architecture, and operating principles built for the standards investment
-              firms already answer to.
+              Your data stays inside systems you control, every output is cited, and an analyst
+              signs off before anything is relied on.
             </p>
           </div>
         </SectionReveal>
@@ -129,16 +131,16 @@ export default function Section04Trust() {
               </div>
               <div className="lg:col-span-8 p-8 lg:p-10 flex flex-col justify-center">
                 <blockquote className="text-foreground/85 leading-relaxed text-pretty text-base sm:text-lg italic">
-                  "We work with hedge funds, private equity and venture capital firms, quant funds,
-                  and the research and investor-relations teams inside them that want artificial intelligence
-                  implemented with structure, discipline, and measurable impact — not experimentation
-                  for its own sake. The objective is operational leverage through intelligent systems.
-                  That is the standard we build to."
+                  "Private investment firms have no in-house AI engineers and no secure AI for deal
+                  data. We build one workflow at a time, on the firm&apos;s own data, and score it
+                  against the firm&apos;s own answer key. Our number is a projection until a pilot
+                  measures it. That is the standard we build to."
                 </blockquote>
                 <p className="mt-5 text-sm text-muted-foreground leading-relaxed text-pretty">
-                  Andrew founded Kivaro AI to close the execution gap between advanced AI capabilities
-                  and practical deployment inside institutional investment environments. His approach
-                  emphasizes methodical systems building over experimental prototyping.
+                  Andrew has shipped this work before. At Humming Agent AI he was in the production
+                  stack within weeks; their CTO said he&apos;d &ldquo;hire him back the moment we had the
+                  budget.&rdquo; He also built an M&amp;A due-diligence platform applied across more than
+                  15 deals, and he designs and builds every Kivaro workflow himself.
                 </p>
               </div>
             </div>

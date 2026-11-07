@@ -24,8 +24,9 @@ export default function Section02Services() {
               AI Systems Built Around Your Workflows
             </h2>
             <p className="mt-3 text-muted-foreground max-w-2xl mx-auto text-pretty">
-              From research and due diligence to fund operations and investor reporting — each
-              engagement starts with one workflow, measured against how your team does it today.
+              Built for private equity first, then venture capital, hedge funds and family offices —
+              firms with no in-house AI engineers. Each engagement starts with one workflow, measured
+              against how your team does it today.
             </p>
           </div>
         </SectionReveal>
@@ -50,16 +51,16 @@ export default function Section02Services() {
               <div>
                 <span className="label-eyebrow text-primary/70">In Practice</span>
                 <h3 className="mt-1 font-display text-xl lg:text-2xl font-bold text-foreground">
-                  How we run Kivaro: four AI agents, every day
+                  How we run Kivaro: {agents.length} AI agents, every day
                 </h3>
               </div>
               <p className="text-sm text-muted-foreground max-w-xl text-pretty">
-                We build agent systems for firms because we run on them ourselves. These four handle
-                Kivaro&apos;s own research, outreach, content and operations, with a human reviewing
-                anything that leaves the building.
+                We build agent systems for firms because we run on them ourselves. They handle
+                Kivaro&apos;s own research, outreach, content, operations, finance and engineering,
+                with a human approving anything that leaves the building.
               </p>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
               {agents.map(({ agent, division }, i) => {
                 const Emblem = DIVISION_EMBLEMS[division.id];
                 return (

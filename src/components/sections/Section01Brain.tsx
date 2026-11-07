@@ -81,7 +81,7 @@ export default function Section01Brain() {
           <ScrollParallax className="max-w-2xl" distance={24}>
             <motion.div variants={container} initial="hidden" animate="show">
               <motion.div variants={item}>
-                <HeroEyebrow label={`Launching ${LAUNCH.label} · ${LAUNCH.pilotSeats} pilot seats open`} className="mb-6" />
+                <HeroEyebrow label={`Launching ${LAUNCH.date} · ${LAUNCH.pilotSeats} pilot seats open`} className="mb-6" />
               </motion.div>
 
               <SplitTextReveal
@@ -96,7 +96,7 @@ export default function Section01Brain() {
                 variants={item}
                 className="mt-4 sm:mt-6 text-base sm:text-lg text-muted-foreground leading-relaxed max-w-xl text-pretty"
               >
-                Kivaro AI converts artificial intelligence into disciplined operational advantage for hedge funds, private equity and venture capital firms, and quant funds — from due diligence automation to investment data pipelines, investor reporting, and internal knowledge systems.
+                Secure AI workflows for private investment firms — private equity first, then venture capital, hedge funds and family offices. A deal team spends 40 to 80 hours reading one deal by hand; we turn it into a cited draft an analyst verifies, running on your own data inside systems you control.
               </motion.p>
 
               {/* CTAs */}

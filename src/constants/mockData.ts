@@ -2,14 +2,27 @@ import type { Service, ProcessStep, ToolItem, FAQ } from '@/types';
 
 export const SERVICES: Service[] = [
   {
+    id: 'due-diligence',
+    title: 'AI-Assisted Due Diligence',
+    description: 'A private equity analyst opens the CIM, the financials and the contracts, copies the numbers into Excel, checks them against each other, then writes the memo: 40 to 80 hours per deal. We turn that into a cited diligence draft in under an hour, for the analyst to verify.',
+    icon: 'ShieldCheck',
+    features: [
+      'Extraction from CIMs, financials and contracts in the data room',
+      'Numbers cross-checked across documents, with breaks flagged',
+      'Draft diligence memo with every figure cited to its page',
+      'Add-on closes mapped to your KPI template',
+    ],
+    category: 'research',
+  },
+  {
     id: 'research-automation',
-    title: 'AI Research Workflow Automation',
-    description: 'Accelerate investment research with AI-powered pipelines that process filings, earnings calls, market data, and proprietary datasets into structured, actionable intelligence.',
+    title: 'Research & Deal Flow Automation',
+    description: 'A venture associate reads and logs hundreds of decks a month; a hedge fund analyst combs filings and transcripts before the open. We automate the reading: deck triage for venture teams and a cited pre-market brief for hedge funds.',
     icon: 'Search',
     features: [
-      'Automated SEC filing extraction and summarization',
-      'Earnings call transcript analysis and sentiment scoring',
-      'Market signal aggregation from multi-source data feeds',
+      'Pitch deck triage and logging against your thesis',
+      'Pre-market brief from filings and earnings call transcripts',
+      '10-K risk factors checked against later 8-Ks, every flag cited',
       'Proprietary research template generation',
     ],
     category: 'research',
@@ -28,27 +41,14 @@ export const SERVICES: Service[] = [
     category: 'intelligence',
   },
   {
-    id: 'due-diligence',
-    title: 'AI-Assisted Due Diligence Systems',
-    description: 'Systematize due diligence workflows with AI agents that extract, cross-reference, and flag critical information across documents and data rooms.',
-    icon: 'ShieldCheck',
-    features: [
-      'Document intelligence extraction from data rooms',
-      'Automated risk factor identification and scoring',
-      'Cross-reference verification across multiple sources',
-      'Compliance checkpoint automation',
-    ],
-    category: 'research',
-  },
-  {
     id: 'operations-automation',
     title: 'Fund Operations Automation',
     description: 'Eliminate manual bottlenecks across fund administration, deal and portfolio reconciliation, NAV calculations, and operational reporting through intelligent automation.',
     icon: 'Cog',
     features: [
-      'Trade reconciliation and exception handling',
+      'Fund record reconciliation with breaks flagged for review',
+      'Invoice audits that flag overcharges, cited to the page',
       'Automated NAV calculation verification',
-      'Operational report generation and distribution',
       'Workflow orchestration across fund admin systems',
     ],
     category: 'operations',
@@ -108,17 +108,33 @@ export const SERVICES: Service[] = [
   {
     id: 'ai-architecture',
     title: 'Secure AI Stack Architecture',
-    description: 'Design and implement AI infrastructure on vetted enterprise platforms, with security, compliance, and performance at the core.',
+    description: 'Every workflow runs on the firm\'s own data, inside systems it controls, with no deal data leaving for a public chatbot.',
     icon: 'Shield',
     features: [
-      'Secure workflow deployment on vetted enterprise AI platforms',
-      'Data isolation and encryption architecture',
-      'Compliance-aware system design',
-      'Performance monitoring and optimization',
+      'Runs on your data, inside systems you control',
+      'Least-privilege access and a full audit log',
+      'Every output cited back to its source page',
+      'An analyst signs off before anything is relied on',
     ],
     category: 'architecture',
   },
 ];
+
+// Built in-house and demoed on sample fund data and public SEC filings —
+// not client results. Every pilot starts from one of these, rebuilt on the
+// firm's own data.
+export const WORKFLOW_LIBRARY = {
+  count: 6,
+  flagships: [
+    { segment: 'Private Equity', title: 'Cited Diligence Draft', detail: 'CIM, financials and contracts read, cross-checked and drafted into a memo, every figure cited.' },
+    { segment: 'Venture Capital', title: 'Deck Triage', detail: 'Hundreds of decks a month read, logged and ranked against your thesis.' },
+    { segment: 'Hedge Funds', title: 'Pre-Market Brief', detail: 'Filings and transcripts combed before the open into one sourced brief.' },
+  ],
+  demos: [
+    'Found 9 breaks in 26 fund records',
+    'Checked 10-K risk factors against a later 8-K, every flag cited',
+  ],
+} as const;
 
 export const PROCESS_STEPS: ProcessStep[] = [
   {
@@ -186,27 +202,35 @@ export const TOOLS: ToolItem[] = [
 export const FAQS: FAQ[] = [
   {
     question: 'What types of investment firms does Kivaro AI work with?',
-    answer: 'Hedge funds and their portfolio managers, research and analytics teams, investor relations and reporting teams, quant and hybrid discretionary funds, venture capital managers, and private equity firms, with a focus on the Southern United States.',
+    answer: 'Private investment firms without in-house AI engineers: private equity first, especially deal teams short on capacity, then venture capital, hedge funds and family offices. We are based in Louisiana and focus on the Southern United States.',
   },
   {
     question: 'When does Kivaro AI launch?',
-    answer: 'Kivaro AI launches publicly in January 2027. Before then we are running a small pilot program with a few firms, and you can join the launch waitlist through the form below.',
+    answer: 'Kivaro AI launches publicly on January 12, 2027. Before then we are running a pilot program with three firms, and you can join the launch waitlist through the form below.',
   },
   {
     question: 'What does a pilot look like?',
-    answer: 'We pick one high-impact workflow together, build and deploy an AI-automated version over about four weeks, and measure it against your current manual baseline. You keep the results and the write-up either way. Pilot seats are limited to three firms.',
+    answer: 'Four weeks on one workflow. Week one, baseline: we log hours on recent deals and your analysts build an answer key. Week two, build: one workflow inside your systems. Week three, side by side: live deals run both ways and an analyst checks every citation. Week four, score: hours saved, accuracy against the answer key, and a go or no-go on a pass mark agreed up front.',
+  },
+  {
+    question: 'How much does it cost?',
+    answer: 'Pricing follows the proof: $2,500 for the pilot, $15,000 to implement the workflow if it passes, then $3,000 a month to run, monitor and maintain it.',
+  },
+  {
+    question: 'Are your time savings real?',
+    answer: 'Reading one deal by hand takes 40 to 80 hours. Our workflows produce a draft in about 50 minutes, which an analyst still verifies. We project a deal team gets back about 15 hours a week, but that is a projection until a pilot measures it on your deals, which is what week four is for.',
   },
   {
     question: 'How do you handle data security and compliance?',
-    answer: 'Security is part of the design from the first conversation: least-privilege access, data isolation, and encryption. Where a firm has its own compliance requirements or approved vendors, we build within them.',
+    answer: 'Each workflow runs on your own data, inside systems you control, with least-privilege access and an audit log. Every output is cited back to the page it came from, and an analyst signs off before anything is relied on. Where a firm has its own compliance requirements or approved vendors, we build within them.',
+  },
+  {
+    question: 'Who does the work?',
+    answer: 'Andrew Thomas, our founder, designs and builds every system himself, supported by a part-time contract engineer and our in-house AI agent team.',
   },
   {
     question: 'Do you replace existing fund systems?',
     answer: 'No. We integrate with and augment your existing infrastructure, connecting to current tools, data sources, and reporting systems rather than replacing them.',
-  },
-  {
-    question: 'Is on-site work available?',
-    answer: 'Yes. On-site advisory and system mapping sessions are available across Texas, Louisiana, Georgia, Mississippi, and Florida.',
   },
 ];
 

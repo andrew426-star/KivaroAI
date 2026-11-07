@@ -1,6 +1,8 @@
 /**
- * The AI team that runs Kivaro AI's own operations — Atlas, Pipeline, Pulse
- * and Chronicle. Shown on the site as proof that Kivaro builds and operates
+ * The AI team that runs Kivaro AI's own operations — Elliot, Marcus, Claire,
+ * Grace, Warren, Owen and Julian (renamed from Atlas, Pipeline, Pulse,
+ * Chronicle, Ledger, Forge and Cipher on 2026-11-07; the ids keep the old
+ * names). Shown on the site as proof that Kivaro builds and operates
  * agent systems daily, not as the product a client buys (that's the
  * Services grid). Mirrors kiv-console's src/lib/agents/roster.ts; the
  * division ids key the emblems in illustrations/division-emblems.tsx.
@@ -31,7 +33,7 @@ export const DIVISIONS: Division[] = [
     color: 'hsl(199,89%,60%)',
     glow: 'rgba(56,189,248,0.15)',
     agents: [
-      { id: 'atlas', name: 'Atlas', role: 'Market Scout', division: 'RNI', description: "Tracks developments across hedge funds, private equity, venture capital and fund operations, and surfaces the conversations and publicity openings worth Kivaro's time." },
+      { id: 'atlas', name: 'Elliot', role: 'Fund Market Scout', division: 'RNI', description: 'Researches our target segments, private equity first, and finds the firms short on capacity, the pre-seed investors and the publicity openings worth our time.' },
     ],
   },
   {
@@ -40,7 +42,7 @@ export const DIVISIONS: Division[] = [
     color: 'hsl(152,76%,46%)',
     glow: 'rgba(28,185,100,0.15)',
     agents: [
-      { id: 'pipeline', name: 'Pipeline', role: 'Outreach Lead', division: 'ADW', description: 'Runs the Autonomous Lead Engine: researches firms, drafts tailored outreach for review, and keeps follow-ups on schedule.' },
+      { id: 'pipeline', name: 'Marcus', role: 'Closer', division: 'ADW', description: 'Runs outreach on the Autonomous Lead Engine: prospects, tailored pitches for review, follow-ups and demo scripts.' },
     ],
   },
   {
@@ -49,16 +51,35 @@ export const DIVISIONS: Division[] = [
     color: 'hsl(262,72%,65%)',
     glow: 'rgba(139,92,246,0.12)',
     agents: [
-      { id: 'pulse', name: 'Pulse', role: 'Content Strategist', division: 'CBM', description: "Plans and drafts Kivaro's LinkedIn, X and Instagram content for a fund-industry audience, for a human to edit and publish." },
+      { id: 'pulse', name: 'Claire', role: 'Content Voice', division: 'CBM', description: "Plans and drafts founder-led LinkedIn and X content for a fund-industry audience, for a human to edit and publish." },
     ],
   },
   {
     id: 'BPT',
-    label: 'Operations',
+    label: 'Launch Operations',
     color: 'hsl(170,70%,48%)',
     glow: 'rgba(20,184,166,0.12)',
     agents: [
-      { id: 'chronicle', name: 'Chronicle', role: 'Chief of Staff', division: 'BPT', description: 'Keeps the plan on schedule: weekly reviews, pace against targets, deadlines, and calendar pressure points.' },
+      { id: 'chronicle', name: 'Grace', role: 'Launch Chief of Staff', division: 'BPT', description: 'Keeps the launch on schedule: weekly reviews, pace against targets, deadlines, and admin and legal checklists.' },
+    ],
+  },
+  {
+    id: 'FPA',
+    label: 'Finance',
+    color: 'hsl(45,90%,55%)',
+    glow: 'rgba(234,179,8,0.12)',
+    agents: [
+      { id: 'ledger', name: 'Warren', role: 'Finance & Portfolio', division: 'FPA', description: 'Tracks revenue and cash against the financial model. Read-only: it reports and flags, and never moves money.' },
+    ],
+  },
+  {
+    id: 'ENG',
+    label: 'Engineering',
+    color: 'hsl(28,90%,58%)',
+    glow: 'rgba(249,115,22,0.12)',
+    agents: [
+      { id: 'forge', name: 'Owen', role: 'Builder', division: 'ENG', description: 'Turns a requested feature or fix into a tested branch for review. Never pushes or merges on its own.' },
+      { id: 'cipher', name: 'Julian', role: 'Test & QA', division: 'ENG', description: 'Runs tests, lint and builds, and reports what fails and why. Changes no code unless asked.' },
     ],
   },
 ];

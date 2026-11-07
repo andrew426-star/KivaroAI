@@ -82,10 +82,21 @@ function BPT(props: GlyphProps) {
   );
 }
 
+// ENG — Engineering: code brackets around a build cursor
+function ENG(props: GlyphProps) {
+  return (
+    <Base {...props}>
+      <path d="M8.5 7 4 12l4.5 5M15.5 7 20 12l-4.5 5" />
+      <line x1="13" y1="6" x2="11" y2="18" strokeOpacity="0.5" />
+    </Base>
+  );
+}
+
 export const DIVISION_EMBLEMS: Record<string, React.ElementType<GlyphProps>> = {
   RNI,
   ADW,
   FPA,
   CBM,
   BPT,
+  ENG,
 };

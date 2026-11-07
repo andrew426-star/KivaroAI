@@ -22,7 +22,8 @@ export default function StatCounter({ value, suffix = '', label, signed = false 
     if (!inView || hasAnimated.current) return;
     hasAnimated.current = true;
 
-    const numericValue = parseInt(value, 10);
+    // Number(), not parseInt: a range like "40–80" must render as-is, not count to 40.
+    const numericValue = Number(value);
     if (isNaN(numericValue)) {
       setDisplay(value);
       setDone(true);
