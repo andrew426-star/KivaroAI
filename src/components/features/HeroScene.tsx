@@ -21,20 +21,21 @@ const GRID_Z = 100;
 const SPAN_X = 22;
 const SPAN_Z = 11;
 const Z_OFFSET = -3.2;
-const SCAN_PERIOD = 9; // seconds per sweep
-const SCAN_FROM = -11;
-const SCAN_TO = 12;
+// The beam sweeps only the part of the terrain not under the hero copy.
+const SCAN_PERIOD = 7; // seconds per sweep
+const SCAN_FROM = -2.5;
+const SCAN_TO = 12.5;
 const DUST_COUNT = 420;
 // Reduced motion renders one still frame, with the beam parked mid-sweep.
-const STILL_TIME = 5.2;
+const STILL_TIME = 4.1;
 
 // Shared by the GLSL and the CPU marker placement: keep the two in step.
 const HEIGHT_GLSL = /* glsl */ `
   float terrainHeight(vec2 p, float t) {
     float rise = 0.55 + 0.45 * smoothstep(-6.0, 7.0, p.x);
-    float h = 0.38 * sin(p.x * 0.52 + t * 0.32) * cos(p.y * 0.68 - t * 0.22);
-    h += 0.22 * sin(p.x * 1.25 - p.y * 0.9 + t * 0.45);
-    h += 0.09 * sin(p.x * 2.6 + p.y * 2.2 - t * 0.7);
+    float h = 0.62 * sin(p.x * 0.52 + t * 0.32) * cos(p.y * 0.68 - t * 0.22);
+    h += 0.34 * sin(p.x * 1.25 - p.y * 0.9 + t * 0.45);
+    h += 0.12 * sin(p.x * 2.6 + p.y * 2.2 - t * 0.7);
     return h * rise;
   }
   float scanX(float t) {
@@ -44,9 +45,9 @@ const HEIGHT_GLSL = /* glsl */ `
 
 function terrainHeight(x: number, z: number, t: number) {
   const rise = 0.55 + 0.45 * THREE.MathUtils.smoothstep(x, -6, 7);
-  let h = 0.38 * Math.sin(x * 0.52 + t * 0.32) * Math.cos(z * 0.68 - t * 0.22);
-  h += 0.22 * Math.sin(x * 1.25 - z * 0.9 + t * 0.45);
-  h += 0.09 * Math.sin(x * 2.6 + z * 2.2 - t * 0.7);
+  let h = 0.62 * Math.sin(x * 0.52 + t * 0.32) * Math.cos(z * 0.68 - t * 0.22);
+  h += 0.34 * Math.sin(x * 1.25 - z * 0.9 + t * 0.45);
+  h += 0.12 * Math.sin(x * 2.6 + z * 2.2 - t * 0.7);
   return h * rise;
 }
 
@@ -79,27 +80,27 @@ const TERRAIN_VERTEX = /* glsl */ `
 
     float sx = scanX(uTime);
     float dx = p.x - sx;
-    float beam = exp(-dx * dx / 0.18);
+    float beam = exp(-dx * dx / 0.22);
     float trail = dx < 0.0 ? exp(dx / 2.8) : 0.0;
-    p.y += beam * 0.12;
+    p.y += beam * 0.18;
 
-    float peak = smoothstep(-0.25, 0.55, p.y);
-    vec3 deep = vec3(0.03, 0.16, 0.12);
-    vec3 crest = vec3(0.10, 0.62, 0.42);
+    float peak = smoothstep(-0.45, 0.85, p.y);
+    vec3 deep = vec3(0.05, 0.26, 0.19);
+    vec3 crest = vec3(0.14, 0.78, 0.52);
     vec3 lit = vec3(0.72, 1.0, 0.88);
     vec3 col = mix(deep, crest, peak);
     col = mix(col, crest * 1.25, trail * 0.55);
     col = mix(col, lit, beam);
     // A few points per sweep catch and hold the light: the "facts" found.
-    float spark = step(0.985, aSeed) * trail;
+    float spark = step(0.975, aSeed) * trail;
     col = mix(col, lit, spark);
 
     vec4 mv = modelViewMatrix * vec4(p, 1.0);
-    float depthFade = smoothstep(19.0, 6.0, -mv.z);
+    float depthFade = smoothstep(17.0, 4.0, -mv.z);
     float edgeFade = smoothstep(${(SPAN_X / 2).toFixed(1)}, ${(SPAN_X / 2 - 3).toFixed(1)}, abs(position.x - 1.0));
     vColor = col;
-    vAlpha = (0.38 + 0.5 * peak + 0.6 * beam + 0.35 * trail + spark) * depthFade * edgeFade;
-    gl_PointSize = (2.2 + 2.6 * beam + 2.0 * spark) * uPixelRatio * (6.0 / -mv.z);
+    vAlpha = (0.6 + 0.6 * peak + 0.9 * beam + 0.45 * trail + spark) * depthFade * edgeFade;
+    gl_PointSize = (3.2 + 3.5 * beam + 3.0 * spark) * uPixelRatio * (6.0 / -mv.z);
     gl_Position = projectionMatrix * mv;
   }
 `;
@@ -248,7 +249,7 @@ function CitationMarkers({ reducedMotion }: { reducedMotion: boolean }) {
         float strength = max(max(color.r, color.g), color.b);
         vColor = color;
         vAlpha = strength;
-        gl_PointSize = (4.0 + 9.0 * strength) * uPixelRatio * (6.0 / -mv.z);
+        gl_PointSize = (6.0 + 16.0 * strength) * uPixelRatio * (6.0 / -mv.z);
         gl_Position = projectionMatrix * mv;
       }
     `,
@@ -262,17 +263,17 @@ function CitationMarkers({ reducedMotion }: { reducedMotion: boolean }) {
       const [x, z] = MARKERS[i];
       const ground = terrainHeight(x, z, t);
       const since = sx - x; // world units since the beam passed this marker
-      const lit = since > 0 ? Math.exp(-since / 4.5) : 0;
+      const lit = since > 0 ? Math.exp(-since / 6) : 0;
       const pulse = since > 0 && since < 0.9 ? 1 - since / 0.9 : 0;
       const rise = 0.25 + 0.75 * THREE.MathUtils.smoothstep(since, 0, 0.8);
-      const height = since > 0 ? 0.55 + 0.5 * ((i * 37) % 10) / 10 : 0;
+      const height = since > 0 ? 0.45 + 0.4 * ((i * 37) % 10) / 10 : 0;
       const top = ground + height * rise;
-      const strength = Math.min(1, lit * 0.85 + pulse * 0.6);
+      const strength = Math.min(1, lit + pulse * 0.6);
 
       headPos.set([x, top, z], i * 3);
       headColor.set([0.6 * strength, 1.0 * strength, 0.82 * strength], i * 3);
       linePos.set([x, ground, z, x, top, z], i * 6);
-      const base = 0.15 * strength;
+      const base = 0.3 * strength;
       lineColor.set([base * 0.6, base, base * 0.8, 0.55 * strength, 0.9 * strength, 0.7 * strength], i * 6);
     }
     const pg = pointsRef.current?.geometry;
@@ -317,7 +318,7 @@ function CitationMarkers({ reducedMotion }: { reducedMotion: boolean }) {
 // Slow idle drift plus pointer parallax and a small scroll-linked dip.
 // Scroll is read in the frame loop (no listener/state) and clamped so it
 // never fights the page's own scroll.
-const LOOK_AT = new THREE.Vector3(2.4, 0, -2.2);
+const LOOK_AT = new THREE.Vector3(3.2, -0.4, -2.6);
 
 function CameraRig({ reducedMotion }: { reducedMotion: boolean }) {
   const { camera } = useThree();
@@ -341,7 +342,7 @@ function CameraRig({ reducedMotion }: { reducedMotion: boolean }) {
     const scroll = THREE.MathUtils.clamp(window.scrollY / 900, 0, 1);
     const idle = Math.sin(state.clock.elapsedTime * 0.07) * 0.35;
     camera.position.x += (0.6 + pointer.current.x * 0.6 + idle - camera.position.x) * 0.025;
-    camera.position.y += (2.3 - pointer.current.y * 0.3 + scroll * 0.6 - camera.position.y) * 0.025;
+    camera.position.y += (3.1 - pointer.current.y * 0.3 + scroll * 0.6 - camera.position.y) * 0.025;
     camera.lookAt(LOOK_AT);
   });
 
@@ -356,7 +357,7 @@ function Scene({ reducedMotion }: { reducedMotion: boolean }) {
       {!reducedMotion && <Dust reducedMotion={reducedMotion} />}
       <CameraRig reducedMotion={reducedMotion} />
       <EffectComposer multisampling={0}>
-        <Bloom luminanceThreshold={0.22} luminanceSmoothing={0.6} intensity={1.1} radius={0.55} mipmapBlur />
+        <Bloom luminanceThreshold={0.18} luminanceSmoothing={0.6} intensity={1.25} radius={0.6} mipmapBlur />
       </EffectComposer>
     </>
   );
@@ -372,7 +373,7 @@ export default function HeroScene() {
       <Canvas
         dpr={[1, 2]}
         gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
-        camera={{ position: [0.6, 2.3, 6.2], fov: 50, near: 0.1, far: 30 }}
+        camera={{ position: [0.6, 3.1, 4.8], fov: 50, near: 0.1, far: 30 }}
         frameloop={reducedMotion ? 'demand' : 'always'}
         style={{ pointerEvents: 'none' }}
       >

@@ -13,7 +13,7 @@ import Sparkline from '@/components/features/data-graphs/Sparkline';
 const ICONS = [Briefcase, Layers, LineChart];
 const STATS = [
   { value: '40–80', suffix: ' hrs', label: 'One deal, read by hand' },
-  { value: '~50', suffix: ' min', label: 'To a draft an analyst verifies' },
+  { value: '50', suffix: ' min', label: 'To a draft an analyst verifies' },
   { value: '15', suffix: ' hrs/wk', label: 'Projected back per deal team' },
 ];
 
