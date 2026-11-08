@@ -33,7 +33,7 @@ export const DIVISIONS: Division[] = [
     color: 'hsl(199,89%,60%)',
     glow: 'rgba(56,189,248,0.15)',
     agents: [
-      { id: 'atlas', name: 'Elliot', role: 'Fund Market Scout', division: 'RNI', description: 'Researches our target segments, private equity first, and finds the firms short on capacity, the pre-seed investors and the publicity openings worth our time.' },
+      { id: 'atlas', name: 'Elliot', role: 'Fund Market Scout', division: 'RNI', description: 'Researches our target segments across hedge funds, private equity, venture capital and quant funds, and finds the firms short on capacity, the pre-seed investors and the publicity openings worth our time.' },
     ],
   },
   {

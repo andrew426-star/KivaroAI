@@ -96,7 +96,7 @@ export default function Section01Brain() {
                 variants={item}
                 className="mt-4 sm:mt-6 text-base sm:text-lg text-muted-foreground leading-relaxed max-w-xl text-pretty"
               >
-                Secure AI workflows for private investment firms — private equity first, then venture capital, hedge funds and family offices. A deal team spends 40 to 80 hours reading one deal by hand; we turn it into a cited draft an analyst verifies, running on your own data inside systems you control.
+                Secure AI workflows for every desk in an investment firm: hedge fund partners and PMs, research and analytics, operations and compliance, investor relations, quant and hybrid discretionary funds, venture capital and private equity. We take the first pass on the reading, retyping and reconciling, cited to the source and running inside systems you control.
               </motion.p>
 
               {/* CTAs */}

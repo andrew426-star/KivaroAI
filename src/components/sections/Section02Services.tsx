@@ -24,9 +24,9 @@ export default function Section02Services() {
               AI Systems Built Around Your Workflows
             </h2>
             <p className="mt-3 text-muted-foreground max-w-2xl mx-auto text-pretty">
-              Built for private equity first, then venture capital, hedge funds and family offices —
-              firms with no in-house AI engineers. Each engagement starts with one workflow, measured
-              against how your team does it today.
+              Nine workflows for hedge funds, private equity, venture capital and quant funds, and the
+              research, operations, compliance and investor-relations teams inside them. Each engagement
+              starts with one workflow, measured against how your team does it today.
             </p>
           </div>
         </SectionReveal>

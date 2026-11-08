@@ -202,7 +202,7 @@ export const TOOLS: ToolItem[] = [
 export const FAQS: FAQ[] = [
   {
     question: 'What types of investment firms does Kivaro AI work with?',
-    answer: 'Private investment firms without in-house AI engineers: private equity first, especially deal teams short on capacity, then venture capital, hedge funds and family offices. We are based in Louisiana and focus on the Southern United States.',
+    answer: 'Investment firms without in-house AI engineers: hedge fund partners and portfolio managers, research and analytics teams, operations and compliance units, investor relations and reporting teams, quant and hybrid discretionary funds, venture capital managers and private equity firms. We are based in Louisiana and focus on the Southern United States.',
   },
   {
     question: 'When does Kivaro AI launch?',

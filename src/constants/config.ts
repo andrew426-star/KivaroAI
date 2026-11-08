@@ -3,7 +3,7 @@ import type { NavLink } from '@/types';
 export const SITE_CONFIG = {
   name: 'Kivaro AI',
   tagline: 'AI Automation & Intelligence for Institutional Investment Firms',
-  description: 'Kivaro AI builds secure AI workflows for private investment firms: private equity first, then venture capital, hedge funds and family offices. Each workflow runs on the firm\'s own data, inside systems it controls, and every output is cited back to its source.',
+  description: 'Kivaro AI builds secure AI workflows for hedge funds, private equity, venture capital and quant funds, and the research, operations, compliance and investor-relations teams inside them. Each workflow runs on the firm\'s own data, inside systems it controls, and every output is cited back to its source.',
   founded: 2025,
   founder: 'Andrew Thomas',
   location: 'Louisiana, United States',
