@@ -3,27 +3,11 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import Layout from '@/components/layout/Layout';
 import LoadingScreen from '@/components/features/LoadingScreen';
 import { Toaster } from '@/components/features/Toaster';
-import { useAuth } from '@/hooks/useAuth';
 
 const Home = lazy(() => import('@/pages/Home'));
-const AdminLogin = lazy(() => import('@/pages/AdminLogin'));
-const AdminDashboard = lazy(() => import('@/pages/AdminDashboard'));
-
-function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const { user, loading } = useAuth();
-
-  if (loading) return <LoadingScreen />;
-  if (!user) return <Navigate to="/admin/login" replace />;
-  return <>{children}</>;
-}
-
-function PublicOnlyRoute({ children }: { children: React.ReactNode }) {
-  const { user, loading } = useAuth();
-
-  if (loading) return <LoadingScreen />;
-  if (user) return <Navigate to="/admin" replace />;
-  return <>{children}</>;
-}
+const AdminLogin = lazy(() => import('@/pages/AdminLoginRoute'));
+const AdminDashboard = lazy(() => import('@/pages/AdminDashboardRoute'));
+const NotFound = lazy(() => import('@/pages/NotFound'));
 
 function App() {
   return (
@@ -43,22 +27,11 @@ function App() {
           <Route element={<Layout />}>
             <Route path="/" element={<Home />} />
           </Route>
-          <Route
-            path="/admin/login"
-            element={
-              <PublicOnlyRoute>
-                <AdminLogin />
-              </PublicOnlyRoute>
-            }
-          />
-          <Route
-            path="/admin"
-            element={
-              <ProtectedRoute>
-                <AdminDashboard />
-              </ProtectedRoute>
-            }
-          />
+          <Route path="/admin/login" element={<AdminLogin />} />
+          <Route path="/admin" element={<AdminDashboard />} />
+          <Route element={<Layout />}>
+            <Route path="*" element={<NotFound />} />
+          </Route>
         </Routes>
       </Suspense>
       <Toaster />
