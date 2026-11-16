@@ -2,7 +2,11 @@
 <html lang="en" class="dark">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+    <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta name="theme-color" content="#080c0a" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
@@ -15,16 +19,22 @@
 
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://www.kivaroai.com" />
+    <meta property="og:url" content="https://www.kivaroai.com/" />
+    <meta property="og:site_name" content="Kivaro AI" />
+    <meta property="og:locale" content="en_US" />
     <meta property="og:title" content="Kivaro AI — AI Automation & Intelligence for Institutional Investment Firms" />
     <meta property="og:description" content="Kivaro AI builds secure AI workflows for hedge funds, private equity, venture capital and quant funds, and the research, operations, compliance and investor-relations teams inside them. Cited diligence drafts, deck triage and pre-market briefs, on your own data." />
-    <meta property="og:image" content="/og-image.jpg" />
+    <meta property="og:image" content="https://www.kivaroai.com/og-image.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Kivaro AI: AI automation and intelligence for institutional investment firms" />
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Kivaro AI — AI Automation & Intelligence for Institutional Investment Firms" />
     <meta name="twitter:description" content="Kivaro AI builds secure AI workflows for hedge funds, private equity, venture capital and quant funds, and the research, operations, compliance and investor-relations teams inside them. Cited diligence drafts, deck triage and pre-market briefs, on your own data." />
-    <meta name="twitter:image" content="/og-image.jpg" />
+    <meta name="twitter:image" content="https://www.kivaroai.com/og-image.jpg" />
+    <meta name="twitter:image:alt" content="Kivaro AI: AI automation and intelligence for institutional investment firms" />
 
     <!-- Schema.org Structured Data: Organization + LocalBusiness -->
     <script type="application/ld+json">
@@ -33,7 +43,8 @@
       "@type": ["Organization", "LocalBusiness"],
       "name": "Kivaro AI",
       "url": "https://www.kivaroai.com",
-      "logo": "https://www.kivaroai.com/og-image.jpg",
+      "logo": "https://www.kivaroai.com/logo.png",
+      "image": "https://www.kivaroai.com/og-image.jpg",
       "description": "Kivaro AI builds secure AI workflows for hedge funds, private equity, venture capital and quant funds, and the research, operations, compliance and investor-relations teams inside them. Cited diligence drafts, deck triage and pre-market briefs, run on each firm's own data, for firms across the Southern United States.",
       "foundingDate": "2025",
       "founder": {
@@ -104,7 +115,7 @@
       "@context": "https://schema.org",
       "@type": "WebSite",
       "name": "Kivaro AI",
-      "url": "https://www.kivaroai.com",
+      "url": "https://www.kivaroai.com/",
       "description": "AI Automation & Intelligence for Institutional Investment Firms",
       "publisher": {
         "@type": "Organization",
@@ -122,7 +133,8 @@
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
     <script type="text/javascript">
-      (function(d, t) {
+      // Deferred: the chat widget loads once the page is up and idle.
+      function loadVoiceflow(d, t) {
         var v = d.createElement(t), s = d.getElementsByTagName(t)[0];
         v.onload = function() {
           window.voiceflow.chat.load({
@@ -135,7 +147,12 @@
           });
         }
         v.src = "https://cdn.voiceflow.com/widget-next/bundle.mjs"; v.type = "text/javascript"; s.parentNode.insertBefore(v, s);
-      })(document, 'script');
+      }
+      window.addEventListener('load', function () {
+        var start = function () { loadVoiceflow(document, 'script'); };
+        if ('requestIdleCallback' in window) window.requestIdleCallback(start, { timeout: 4000 });
+        else setTimeout(start, 2000);
+      });
     </script>
   </body>
 </html>

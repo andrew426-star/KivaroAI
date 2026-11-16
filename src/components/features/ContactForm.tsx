@@ -3,8 +3,6 @@ import { useToast } from '@/hooks/use-toast';
 import { Send, CheckCircle2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
-import { supabase } from '@/lib/supabase';
-import { FunctionsHttpError } from '@supabase/supabase-js';
 
 const INQUIRY_TYPES = [
   'Pilot Application',
@@ -39,6 +37,12 @@ export default function ContactForm() {
     setSending(true);
 
     try {
+      // Loaded on submit, not with the page: most visitors never send it,
+      // and the Supabase client is a large part of the bundle.
+      const [{ supabase }, { FunctionsHttpError }] = await Promise.all([
+        import('@/lib/supabase'),
+        import('@supabase/supabase-js'),
+      ]);
       const { data, error } = await supabase.functions.invoke('submit-inquiry', {
         body: {
           name: formData.name,

@@ -1,4 +1,6 @@
-import { supabase } from './supabase';
+// The Supabase client loads after the page has painted, on the first view
+// tracked, rather than with the bundle every visitor waits for.
+const db = () => import('./supabase').then((m) => m.supabase);
 
 const SID_KEY   = 'kv_sid';
 const SINIT_KEY = 'kv_sinit';
@@ -31,6 +33,7 @@ function detectBrowser(): string {
 
 async function ensureSession(page: string): Promise<void> {
   if (sessionStorage.getItem(SINIT_KEY)) return;
+  const supabase = await db();
   const sessionId = getSessionId();
   const params = new URLSearchParams(window.location.search);
 
@@ -57,6 +60,7 @@ export async function trackPageView(page: string): Promise<void> {
 
   try {
     await ensureSession(page);
+    const supabase = await db();
 
     const sessionId = getSessionId();
     const now = Date.now();

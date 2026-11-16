@@ -1,5 +1,7 @@
 import { useEffect } from 'react';
 
+export const SITE_URL = 'https://www.kivaroai.com';
+
 interface PageMeta {
   title: string;
   description: string;
@@ -33,7 +35,7 @@ export function usePageMeta({ title, description, canonicalPath }: PageMeta) {
 
     // Update OG URL
     const ogUrl = document.querySelector('meta[property="og:url"]');
-    const fullUrl = `https://www.kivaro.ai${canonicalPath || '/'}`;
+    const fullUrl = `${SITE_URL}${canonicalPath || '/'}`;
     if (ogUrl) ogUrl.setAttribute('content', fullUrl);
 
     // Set canonical link
